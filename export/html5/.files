@@ -1,0 +1,35 @@
+export/html5/bin/assets/data/data-goes-here.txt
+export/html5/bin/assets/images/characters/bf.png
+export/html5/bin/assets/images/characters/bf.xml
+export/html5/bin/assets/images/characters/dad.png
+export/html5/bin/assets/images/characters/dad.xml
+export/html5/bin/assets/images/game/notes/default.png
+export/html5/bin/assets/images/game/notes/default.xml
+export/html5/bin/assets/images/images-go-here.txt
+export/html5/bin/assets/images/menus/mainmenu/credits.png
+export/html5/bin/assets/images/menus/mainmenu/credits.xml
+export/html5/bin/assets/images/menus/mainmenu/donate.png
+export/html5/bin/assets/images/menus/mainmenu/donate.xml
+export/html5/bin/assets/images/menus/mainmenu/freeplay.png
+export/html5/bin/assets/images/menus/mainmenu/freeplay.xml
+export/html5/bin/assets/images/menus/mainmenu/options.png
+export/html5/bin/assets/images/menus/mainmenu/options.xml
+export/html5/bin/assets/images/menus/mainmenu/story mode.png
+export/html5/bin/assets/images/menus/mainmenu/story mode.xml
+export/html5/bin/assets/images/menus/menuBG.png
+export/html5/bin/assets/images/stages/default/back.png
+export/html5/bin/assets/images/stages/default/curtains.png
+export/html5/bin/assets/images/stages/default/floor.png
+export/html5/bin/assets/images/stages/default/stage_light.png
+export/html5/bin/assets/music/music-goes-here.txt
+export/html5/bin/assets/songs/Premeditated/chart/hard.json
+export/html5/bin/assets/sounds/sounds-go-here.txt
+export/html5/bin/flixel/sounds/beep.mp3
+export/html5/bin/flixel/sounds/flixel.mp3
+export/html5/bin/flixel/sounds/beep.ogg
+export/html5/bin/flixel/sounds/flixel.ogg
+export/html5/bin/flixel/fonts/nokiafc22
+export/html5/bin/flixel/fonts/monsterrat
+export/html5/bin/flixel/images/ui/button.png
+export/html5/bin/flixel/images/logo/default.png
+export/html5/bin/manifest/default.json
