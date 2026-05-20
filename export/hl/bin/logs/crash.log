@@ -1,0 +1,33 @@
+=== CRASH REPORT ===
+Date: 2026-05-20 11:17:05
+Error: crash test
+
+--- Call Stack ---
+states/Tests.hx:21
+flixel/FlxGame.hx:588
+flixel/FlxGame.hx:675
+flixel/FlxGame.hx:628
+flixel/FlxGame.hx:501
+lime/app/Module.hx:0
+openfl/events/EventDispatcher.hx:465
+openfl/events/EventDispatcher.hx:463
+openfl/display/DisplayObject.hx:1498
+openfl/display/Stage.hx:1354
+openfl/display/Stage.hx:1352
+
+--- Haxe Stack ---
+backend/CrashLogger.hx:25
+lime/app/Module.hx:0
+openfl/events/EventDispatcher.hx:465
+openfl/events/EventDispatcher.hx:463
+openfl/events/EventDispatcher.hx:257
+openfl/display/Stage.hx:1686
+openfl/display/Stage.hx:1358
+openfl/display/Stage.hx:2431
+lime/_internal/macros/EventMacro.hx:91
+lime/_internal/backend/native/NativeApplication.hx:418
+lime/_internal/backend/native/NativeApplication.hx:163
+lime/app/Application.hx:169
+openfl/display/Application.hx:138
+ApplicationMain.hx:137
+ApplicationMain.hx:26
