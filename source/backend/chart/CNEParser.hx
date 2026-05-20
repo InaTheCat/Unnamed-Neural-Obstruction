@@ -1,6 +1,12 @@
 package backend.chart;
 
 /*
+    when vas caminando bien trankis viendo el source de UNO,
+    but vez que el parser de cne está completamente comentado porque la IA hizo mal todo y ahora no entiendo una mrd:
+    then despues de daras a la tarea de reescribir y documentar todo:
+*/
+
+/*
 import haxe.Json;
 import sys.io.File;
 
