@@ -24,8 +24,21 @@ class CrashLogger {
         var message = buildReport(e.error);
         saveLog(message);
 
+		// var winLines:Array<Strinng> = [];
+
+		// for (item in CallStack.exceptionStack())
+		// winLines.push(stackItemToString(item));
+
+		// winLines.push("");
+		// winLines.push("--- Haxe Stack ---");
+		// for (item in CallStack.callStack())
+		// winLines.push(stackItemToString(item));
+
         lime.app.Application.current.window.alert(
-            'Game crashed YOOOOOOOOOOOOO WSPPPPPPPPPPPP\nThe log was saved in: $LOG_DIR/$LOG_FILE',
+		'${Date.now().toString()} | ${Std.string(e.error)}\n\n
+            Game crashed YOOOOOOOOOOOOO WSPPPPPPPPPPPP\n
+            The log was saved in: $LOG_DIR/$LOG_FILE\n\n
+            ',
             "Error"
         );
     }
