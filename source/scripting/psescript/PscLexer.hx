@@ -27,7 +27,7 @@ class PscLexer {
             var ch   = raw.charAt(i);
             var next = (i < raw.length - 1) ? raw.charAt(i + 1) : "";
 
-            // apertura / cierre de string
+			// Start and end of String
             if (ch == '"' && !inBlockComment) {
                 inString = !inString;
                 current.push(ch);
@@ -35,51 +35,51 @@ class PscLexer {
                 continue;
             }
 
-            // dentro de un string: copiar literalmente
+			// if in string, we copy it, like, fr
             if (inString) {
                 current.push(ch);
                 i++;
                 continue;
             }
 
-            // inicio /*
+			// Start of Block comment /*
             if (!inBlockComment && ch == '/' && next == '*') {
                 inBlockComment = true;
                 i += 2;
                 continue;
             }
 
-            // fin */
+			// End of Block comment */
             if (inBlockComment && ch == '*' && next == '/') {
                 inBlockComment = false;
                 i += 2;
                 continue;
             }
 
-            // dentro de bloque: ignorar
+			// We aint reading ts gng
             if (inBlockComment) { i++; continue; }
 
-            // comentario de línea //
+			// Single line comment //
             if (ch == '/' && next == '/') {
                 while (i < raw.length && raw.charAt(i) != '\n') i++;
                 continue;
             }
 
-            // separador ;
+			// Ion even remember if PSeInt has ';', but we do
             if (ch == ';') {
                 flush();
                 i++;
                 continue;
             }
 
-            // salto de línea
+			// Line jump
             if (ch == '\n') {
                 flush();
                 i++;
                 continue;
             }
 
-            // carácter normal
+			// Common char
             current.push(ch);
             i++;
         }

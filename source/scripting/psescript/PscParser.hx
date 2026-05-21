@@ -4,33 +4,48 @@ using StringTools;
 
 /**
  * PscParser
- * Recibe líneas limpias (del PscLexer) y las convierte en PscNode.
+ * Recibes clean lines from `PscLexer` and converts it into `PscNode`
  *
- * Gramática soportada (híbrido PSeInt / HScript):
+ * Supported Gram:
  *
  *   Declarations:
- *     definir  <name> como <Type>
- *     Definir  <name> como <Type>
- *     define   <name> como <Type>
- *     var      <name> como <Type>
+ *     definir  <name> como <Type> = value;
+ *     Definir  <name> como <Type> = value;
+ *     define   <name> como <Type> = value;
+ *     var      <name> como <Type> = value;
  *
- *   Asignación de propiedad con punto:
- *     <var>.sprite  = "ruta"
- *     <var>.<prop>  = <valor>
+ *     `como` can be writted as... `as`:
+ *     
+ *     definir <name> as <Type> = value;
+ *     Definir <name> as <Type> = value;
+ *     define  <name> as <Type> = value;
+ *     var     <name> as <Type> = value;
  *
- *   Llamadas a método con punto:
+ *     or you can just put nothing, it'll behaves as a Dynamic with this:
+ *
+ *     definir <name> = value;
+ *     Definir <name> = value;
+ *     define  <name> = value;
+ *     var     <name> = value;
+ *
+ *     like any other languages (like as hx or Lua), doing `= value;` is optional, u can do it later if you want to
+ *
+ *   Like as hx and many other big thangs, u can set properties and more with points:
+ *     <var>.sprite  = 'ruta' `This method will be rewritted`
+ *     <var>.<prop>  = <value> 
+ *
  *     <var>.pos(x, y)
  *     <var>.scale(x, y)
  *     <var>.alpha(v)
  *     <var>.visible(true|false)
  *
- *   Funciones del scope:
+ *   And also... right, adding:
  *     add(<var>)
  */
 class PscParser {
 
-    // Palabras clave que inician una declaración de variable
-    static final DECL_KEYWORDS = ["definir", "Definir", "define", "var"];
+    // Types of defining/making a var
+    static final DECL_KEYWORDS = ['definir', 'Definir', 'define', 'var'];
 
     public static function parse(lines:Array<String>):Array<PscNode> {
         var nodes:Array<PscNode> = [];
@@ -40,25 +55,23 @@ class PscParser {
         return nodes;
     }
 
-    // ── parser de una línea ──────────────────────────────────────────────────
-
     static function parseLine(line:String):PscNode {
 
-        // ── declaración de variable ──────────────────────────────────────────
+        // ── Var declaration ──────────────────────────────────────────
         for (kw in DECL_KEYWORDS) {
-            if (line.startsWith(kw + " ") || line == kw) {
+            if (line.startsWith(kw + ' ') || line == kw) {
                 return parseDeclaration(line);
             }
         }
 
         // ── add(<var>) ───────────────────────────────────────────────────────
-        if (line.startsWith("add(") && line.endsWith(")")) {
+        if (line.startsWith('add(') && line.endsWith(')')) {
             var varName = line.substring(4, line.length - 1).trim();
             return AddToScene(varName);
         }
 
-        // ── sentencias con punto  <var>.<algo> ──────────────────────────────
-        var dotIdx = line.indexOf(".");
+        // ── Sentences with point (<var>.<prop> = <value>) ──────────────────────────────
+        var dotIdx = line.indexOf('.');
         if (dotIdx > 0) {
             return parseDotStatement(line, dotIdx);
         }
@@ -66,36 +79,44 @@ class PscParser {
         return Unknown(line);
     }
 
-    // ── declaración  definir X como Tipo ────────────────────────────────────
+    // ── Declaration ────────────────────────────────────
 
     static function parseDeclaration(line:String):PscNode {
-        // normalizar a minúsculas solo la keyword, dejar el resto igual
+        // me when i normalize:
         var parts = ~/\s+/.split(line.trim());
-        // partes esperadas: ["definir", "nombre", "como", "Tipo"]
-        if (parts.length >= 4 && parts[2].toLowerCase() == "como") {
+
+        if (parts.length >= 4 && (parts[2].toLowerCase() == 'como' || parts[2].toLowerCase() == 'as')) {
             return DeclareVar(parts[1], parts[3]);
         }
-        // forma corta  var nombre Tipo
+
+        // Shorter type of declaration
         if (parts.length >= 3) {
             return DeclareVar(parts[1], parts[2]);
         }
+
+        /**
+            `ADD THE FUCKING DYNAMIC TYPE MAN`
+
+            Definir|definir|define|var <Name>;
+        **/
+
         return Unknown(line);
     }
 
-    // ── sentencia con punto ──────────────────────────────────────────────────
+    // ── Statement with a fucking point gng ──────────────────────────────────────────────────
 
     static function parseDotStatement(line:String, dotIdx:Int):PscNode {
         var varName = line.substring(0, dotIdx).trim();
-        var rest    = line.substring(dotIdx + 1).trim(); // todo después del primer punto
+        var rest = line.substring(dotIdx + 1).trim();
 
-        // asignación  <var>.<prop> = <valor>
-        if (rest.contains("=")) {
+        // <var>.<prop> = <value>
+        if (rest.contains('=')) {
             return parseAssignment(varName, rest);
         }
 
-        // llamada  <var>.<method>(args)
-        var parenOpen = rest.indexOf("(");
-        if (parenOpen > 0 && rest.endsWith(")")) {
+        // <var>.<method>(args)
+        var parenOpen = rest.indexOf('(');
+        if (parenOpen > 0 && rest.endsWith(')')) {
             var method = rest.substring(0, parenOpen).trim();
             var argsRaw = rest.substring(parenOpen + 1, rest.length - 1).trim();
             return parseMethodCall(varName, method, argsRaw);
@@ -104,26 +125,26 @@ class PscParser {
         return Unknown(line);
     }
 
-    // ── asignación de propiedad ──────────────────────────────────────────────
+    // ── Property asign ──────────────────────────────────────────────
 
     static function parseAssignment(varName:String, rest:String):PscNode {
-        var eqIdx   = rest.indexOf("=");
+        var eqIdx   = rest.indexOf('=');
         var prop    = rest.substring(0, eqIdx).trim();
-        var rawVal  = rest.substring(eqIdx + 1).trim().replace('"', "");
+        var rawVal  = rest.substring(eqIdx + 1).trim().replace('"', '');
 
         switch (prop.toLowerCase()) {
-            case "sprite":
+            case 'sprite':
                 return SetSprite(varName, rawVal);
             default:
                 return SetProperty(varName, prop, rawVal);
         }
     }
 
-    // ── llamada a método ─────────────────────────────────────────────────────
+    // ── Method call ─────────────────────────────────────────────────────
 
     static function parseMethodCall(varName:String, method:String, argsRaw:String):PscNode {
         switch (method.toLowerCase()) {
-            case "pos":
+            case 'pos':
                 var coords = splitArgs(argsRaw);
                 if (coords.length >= 2) {
                     return SetPos(varName,
@@ -131,7 +152,7 @@ class PscParser {
                         Std.parseFloat(coords[1]));
                 }
 
-            case "scale":
+            case 'scale':
                 var coords = splitArgs(argsRaw);
                 if (coords.length >= 2) {
                     return SetScale(varName,
@@ -139,28 +160,27 @@ class PscParser {
                         Std.parseFloat(coords[1]));
                 }
 
-            case "alpha":
+            case 'alpha':
                 var args = splitArgs(argsRaw);
                 if (args.length >= 1) {
                     return SetAlpha(varName, Std.parseFloat(args[0]));
                 }
 
-            case "visible":
+            case 'visible':
                 var val = argsRaw.trim().toLowerCase();
-                return SetVisible(varName, val == "true" || val == "1");
+                return SetVisible(varName, val == 'true' || val == '1');
         }
 
-        // método no reconocido → lo guardamos igual como SetProperty
-        // para que el intérprete pueda hacer fallback
-        return SetProperty(varName, method + "(" + argsRaw + ")", "");
+        // If the method wasnt recognized, it'll be saved as SetProperty for Fallback
+        return SetProperty(varName, method + '(' + argsRaw + ')', '');
     }
 
     // ── Utilities ───────────────────────────────────────────────────────────
 
-    /** Divide los argumentos de una llamada por comas, respetando strings. */
+    // we diving, kids, we getting strings, calls and shii with commas
     static function splitArgs(raw:String):Array<String> {
         var result:Array<String> = [];
-        var current = "";
+        var current = '';
         var inStr   = false;
 
         for (i in 0...raw.length) {
@@ -168,7 +188,7 @@ class PscParser {
             if (ch == '"') { inStr = !inStr; current += ch; continue; }
             if (!inStr && ch == ',') {
                 result.push(current.trim());
-                current = "";
+                current = '';
             } else {
                 current += ch;
             }

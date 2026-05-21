@@ -63,7 +63,7 @@ class PscInterpreter {
                 if (spr != null) spr.visible = value;
 
             case SetProperty(varName, prop, value):
-                // fallback genérico: asignar campo por nombre con Reflect
+				// Generic Fallback :sob:
                 var obj = vars.get(varName);
                 if (obj != null) {
                     try {

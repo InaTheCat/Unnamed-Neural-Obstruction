@@ -6,7 +6,7 @@ package scripting.psescript;
  * The interpreter reciebs an `Array<PscNode>` and it exec one-by-one.
 */
 enum PscNode {
-    /** Definir/definir/define/var <name> como <tipo> */
+	/** Definir/definir/define/var <name> como/Optional <tipo>/Optional */
     DeclareVar(name:String, type:String);
 
     /** <varName>.sprite = "path/image" */
