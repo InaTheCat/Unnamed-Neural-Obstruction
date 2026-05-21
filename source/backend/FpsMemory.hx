@@ -47,4 +47,3 @@ class FpsMemory extends TextField {
 		}
 	}
 }
-//
