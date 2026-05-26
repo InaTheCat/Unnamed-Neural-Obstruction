@@ -43,9 +43,6 @@ class PlayState extends UNOState {
 	override public function create() {
 		super.create();
 
-		// troubleShooter = new TroubleShooter(); // Ya no necesario
-		// add(troubleShooter);
-
 		FlxG.cameras.add(camGame);
 		FlxG.cameras.add(camHUD, false);
 		camHUD.bgColor = 0x00000000;
@@ -62,8 +59,8 @@ class PlayState extends UNOState {
 		strums.add(opponent);
 		opponent.camera = camHUD;
 
-		bf = new Character(850, 400, 'characters/bf', true);
-		dad = new Character(150, 50, 'characters/dad');
+		bf = new Character(850, 400, 'bf', true);
+		dad = new Character(150, 50, 'dad');
 
 		var floor:FlxSprite = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/default/floor'));
 		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/default/back'));

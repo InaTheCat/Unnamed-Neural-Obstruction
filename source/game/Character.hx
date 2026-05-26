@@ -1,20 +1,31 @@
 package game;
 
 import flixel.FlxSprite;
-import flixel.util.typeLimit.OneOfTwo;
+import utils.CoolUtil;
 import utils.Paths;
 
+typedef CharacterAnim =
+{
+	var name:String;
+	var anim:String;
+	@:optional var fps:Int;
+	@:optional var loop:Bool;
+	@:optional var offset:Array<Float>;
+}
+
+typedef CharacterJson =
+{
+	var path:String;
+	var anims:Array<CharacterAnim>;
+}
+
 class Character extends FlxSprite {
+	var charJson:CharacterJson;
+
     public var sprite:String = null;
     public var isPlayer:Bool = false;
 
-	public var bfOffsets:Map<String, Array<Float>>=[
-        'idle' => [-5, 0],
-        'singLEFT' => [6, -7],
-        'singDOWN' => [-17, -50],
-        'singUP' => [-36, 27],
-        'singRIGHT' => [-48, -6]
-    ];
+	public var offsets:Map<String, Array<Float>> = [];
 
     public var dadOffsets:Map<String, Array<Float>>=[
         'idle' => [0, 0],
@@ -24,31 +35,45 @@ class Character extends FlxSprite {
         'singRIGHT' => [-4, 26]
     ];
 
-    public function new(x:Float = 0, y:Float = 0, img:String = 'characters/bf', ?player:Bool = false) {
+	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false)
+	{
         super(x, y);
 
+		charJson = cast CoolUtil.parseJson('data/characters/$character');
+
+		if (charJson == null)
+		{
+			trace('Character JSON failed to load: $character');
+			return;
+		}
+
         isPlayer = player;
-        sprite = img;
+		sprite = charJson.path;
         prepareAnim();
     }
 
     private function prepareAnim():Void {
         frames = Paths.getSparrowAtlas(sprite);
         
-        animation.addByPrefix('idle', 'idle');
-        animation.addByPrefix('singLEFT', 'left', 24, false);
-        animation.addByPrefix('singDOWN', 'down', 24, false);
-        animation.addByPrefix('singUP', 'up', 24, false);
-        animation.addByPrefix('singRIGHT', 'right', 24, false);
+		for (e in charJson.anims)
+		{
+			animation.addByPrefix(e.name, e.anim, Reflect.hasField(e, 'fps') ? e.fps : 24, Reflect.hasField(e, 'loop') ? e.loop : false);
+
+			if (Reflect.hasField(e, 'offset'))
+				offsets.set(e.name, e.offset);
+		}
 
         playAnim('idle');
     }
 
-    public function playAnim(animName:String, ?force:Bool = false):Void {
-        force ?? false;
-
+	public function playAnim(animName:String, ?force:Bool = false):Void
+	{
         animation.play(animName, force);
+		var animOffsets = offsets.get(animName);
 
-        offset.set(isPlayer ? bfOffsets[animName][0] : dadOffsets[animName][0], isPlayer ? bfOffsets[animName][1] : dadOffsets[animName][1]);
+		if (animOffsets != null)
+			offset.set(animOffsets[0], animOffsets[1]);
+		else
+			offset.set();
     }
 }

@@ -35,12 +35,8 @@ class CrashLogger {
 		// winLines.push(stackItemToString(item));
 
         lime.app.Application.current.window.alert(
-		'${Date.now().toString()} | ${Std.string(e.error)}\n\n
-            Game crashed YOOOOOOOOOOOOO WSPPPPPPPPPPPP\n
-            The log was saved in: $LOG_DIR/$LOG_FILE\n\n
-            ',
-            "Error"
-        );
+		'${Date.now().toString()} | ${Std.string(e.error)}\n\nGame crashed YOOOOOOOOOOOOO WSPPPPPPPPPPPP\nThe log was saved in: $LOG_DIR/$LOG_FILE\n\n',
+			"Error");
     }
 
     static function buildReport(error:Dynamic):String {

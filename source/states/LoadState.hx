@@ -3,7 +3,6 @@ package states;
 import backend.TroubleShooter;
 import flixel.FlxG;
 import flixel.FlxState;
-import states.Tests;
 
 class LoadState extends FlxState {
     override function create():Void {
@@ -11,6 +10,6 @@ class LoadState extends FlxState {
 
         FlxG.plugins.addPlugin(new TroubleShooter());
 
-        FlxG.switchState(() -> new Tests());
+		FlxG.switchState(() -> new PlayState());
     }
 }
