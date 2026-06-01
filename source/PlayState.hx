@@ -1,5 +1,6 @@
 package;
 
+import backend.TroubleShooter;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -13,42 +14,39 @@ import game.notes.StrumLine;
 import states.UNOState;
 import utils.Paths;
 
-class PlayState extends UNOState {
-	// public static var troubleShooter:TroubleShooter; // Ya no necesario, está en UNOState
-
-	// Well... it's pretty self descriptive, isnt it? if not, js the strums group
+class PlayState extends UNOState
+{
 	var strums:FlxTypedGroup<FlxBasic> = new FlxTypedGroup<FlxBasic>();
 
-	// Opponent Strums, short of "strums.members[0]"
 	var opponent:StrumLine;
-
-	// Player Strums, short of "strums.members[1]"
 	var player:StrumLine;
 
 	var bfTimer:FlxTimer = new FlxTimer();
-	var directions:Map<Int, String>=[
-		0 => 'idle',
-		1 => 'singLEFT',
-		2 => 'singDOWN',
-		3 => 'singUP',
-		4 => 'singRIGHT'
-	];
+	var directions:Map<Int, String> = [0 => 'singLEFT', 1 => 'singDOWN', 2 => 'singUP', 3 => 'singRIGHT'];
 
 	var bf:Character;
 	var dad:Character;
 
-	var camGame:FlxCamera = new FlxCamera();
-	var camHUD:FlxCamera = new FlxCamera();
+	public var camGame:FlxCamera = new FlxCamera();
+	public var camHUD:FlxCamera = new FlxCamera();
+
+	private var _topCam:FlxCamera = new FlxCamera();
 
 	override public function create() {
 		super.create();
 
+		// --- Cameras ---
 		FlxG.cameras.add(camGame);
 		FlxG.cameras.add(camHUD, false);
+		FlxG.cameras.add(_topCam, false);
 		camHUD.bgColor = 0x00000000;
+		_topCam.bgColor = 0x00000000;
 		cameras = [camGame];
 		camGame.zoom = 0.9;
 
+		TroubleShooter.instance.setCam(_topCam);
+
+		// --- Strums ---
 		add(strums);
 
 		player = new StrumLine(true);
@@ -59,6 +57,7 @@ class PlayState extends UNOState {
 		strums.add(opponent);
 		opponent.camera = camHUD;
 
+		// --- Test stage n char ---
 		bf = new Character(850, 400, 'bf', true);
 		dad = new Character(150, 50, 'dad');
 
@@ -69,7 +68,8 @@ class PlayState extends UNOState {
 		back.scrollFactor.set(0.9, 0.9);
 		curtains.scrollFactor.set(1.3, 1.3);
 
-		for (e in [back, floor, dad, bf, curtains]){
+		for (e in [back, floor, dad, bf, curtains])
+		{
 			add(e);
 			e.camera = camGame;
 		}
@@ -79,24 +79,33 @@ class PlayState extends UNOState {
 		super.update(elapsed);
 
 		for (direction in 0...4) {
-		    if (Controls.getKeyPressed(direction)) {
-		        player.noteAnim(direction, 'pressed');
+			if (Controls.getKeyPressed(direction))
+			{
+				player.noteAnim(direction, 'pressed');
 
-		        bf.playAnim(directions[direction+1]);
+				bf.playAnim(directions[direction], true);
 
 				if (bfTimer != null) bfTimer.cancel();
-				bfTimer.start(0.5, (_:FlxTimer) -> bf.playAnim(directions[0]));
+				bfTimer.start(0.5, (_:FlxTimer) ->
+				{
+					if (!Controls.common_p)
+						bf.playAnim('idle');
+				});
+
 			} else if (Controls.getKeyReleased(direction)) {
-		        player.noteAnim(direction, 'static');
-		    }
+				player.noteAnim(direction, 'static');
+			}
 		}
 
 		if (FlxG.keys.pressed.Z) camGame.zoom -= 2 * elapsed;
 		if (FlxG.keys.pressed.X) camGame.zoom += 2 * elapsed;
 
 		if (FlxG.keys.pressed.J) camGame.scroll.x -= 25;
-		if (FlxG.keys.pressed.K) camGame.scroll.y += 25;
-		if (FlxG.keys.pressed.I) camGame.scroll.y -= 25;
-		if (FlxG.keys.pressed.L) camGame.scroll.x += 25;
+		if (FlxG.keys.pressed.L)
+			camGame.scroll.x += 25;
+		if (FlxG.keys.pressed.I)
+			camGame.scroll.y -= 25;
+		if (FlxG.keys.pressed.K)
+			camGame.scroll.y += 25;
 	}
 }

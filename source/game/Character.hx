@@ -1,5 +1,6 @@
 package game;
 
+import backend.TroubleShooter;
 import flixel.FlxSprite;
 import utils.CoolUtil;
 import utils.Paths;
@@ -43,8 +44,14 @@ class Character extends FlxSprite {
 
 		if (charJson == null)
 		{
-			trace('Character JSON failed to load: $character');
-			return;
+			TroubleShooter.instance.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Error');
+			charJson = cast CoolUtil.parseJson('data/characters/bf');
+
+			if (charJson == null)
+			{
+				TroubleShooter.instance.send('Not even bf, then it wont fucking gonna appear then', 'Error');
+				return;
+			}
 		}
 
         isPlayer = player;
@@ -57,10 +64,9 @@ class Character extends FlxSprite {
         
 		for (e in charJson.anims)
 		{
-			animation.addByPrefix(e.name, e.anim, Reflect.hasField(e, 'fps') ? e.fps : 24, Reflect.hasField(e, 'loop') ? e.loop : false);
+			animation.addByPrefix(e.name, e.anim, e.fps != null ? e.fps : 24, e.loop != null ? e.loop : false);
 
-			if (Reflect.hasField(e, 'offset'))
-				offsets.set(e.name, e.offset);
+			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
 
         playAnim('idle');

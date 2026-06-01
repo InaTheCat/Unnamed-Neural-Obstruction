@@ -1,0 +1,32 @@
+{
+    "anims": [
+        {
+            "offset":[-5, 0],
+            "anim": "idle",
+            "name": "idle"
+        },
+        {
+            "offset":[6, -7],
+            "anim": "singLEFT",
+            "name": "singLEFT"
+        },
+        {
+            "offset":[-17, -50],
+            "anim": "singDOWN",
+            "name": "singDOWN"
+        },
+        {
+            "offset":[-36, 27],
+            "anim": "singUP",
+            "name": "singUP"
+        },
+        {
+            "offset":[-48, -6],
+            "anim": "singRIGHT",
+            "name": "singRIGHT"
+        }
+    ],
+
+    "path": "characters/bf",
+    "color": "#FFFFFF"
+}

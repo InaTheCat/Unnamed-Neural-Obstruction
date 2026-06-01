@@ -12,7 +12,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 
 class UNOState extends FlxState {
-    // var shooter:TroubleShooter = null;
+	var shootNum = 0;
 
     override public function create() {
         super.create();
@@ -24,6 +24,11 @@ class UNOState extends FlxState {
         if (FlxG.keys.pressed.ALT){
             if (FlxG.keys.justPressed.R) FlxG.resetState();
         }
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			shootNum++;
+			shoot('Shoot test message ${Std.int(shootNum)}');
+		}
     }
 
     // TroubleShooter

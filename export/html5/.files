@@ -1,3 +1,4 @@
+export/html5/bin/assets/data/characters/bf.json
 export/html5/bin/assets/data/data-goes-here.txt
 export/html5/bin/assets/images/characters/bf.png
 export/html5/bin/assets/images/characters/bf.xml
@@ -22,6 +23,7 @@ export/html5/bin/assets/images/stages/default/curtains.png
 export/html5/bin/assets/images/stages/default/floor.png
 export/html5/bin/assets/images/stages/default/stage_light.png
 export/html5/bin/assets/music/music-goes-here.txt
+export/html5/bin/assets/songs/Premeditated/chart/cne.json
 export/html5/bin/assets/songs/Premeditated/chart/hard.json
 export/html5/bin/assets/sounds/sounds-go-here.txt
 export/html5/bin/flixel/sounds/beep.mp3
