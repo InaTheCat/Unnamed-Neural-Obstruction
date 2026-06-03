@@ -1,32 +1,31 @@
 {
     "anims": [
         {
-            "offset":[-5, 0],
             "anim": "idle",
             "name": "idle"
         },
         {
-            "offset":[6, -7],
-            "anim": "left",
+            "offset":[-10, 10],
+            "anim": "right",
             "name": "singLEFT"
         },
         {
-            "offset":[-17, -50],
+            "offset":[2, -31],
             "anim": "down",
             "name": "singDOWN"
         },
         {
-            "offset":[-36, 27],
+            "offset":[-10, 50],
             "anim": "up",
             "name": "singUP"
         },
         {
-            "offset":[-48, -6],
-            "anim": "right",
+            "offset":[-4, 26],
+            "anim": "left",
             "name": "singRIGHT"
         }
     ],
 
-    "path": "characters/bf",
+    "path": "characters/dad",
     "color": "#FFFFFF"
 }

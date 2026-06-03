@@ -27,24 +27,8 @@ class PlayState extends UNOState
 	var bf:Character;
 	var dad:Character;
 
-	public var camGame:FlxCamera = new FlxCamera();
-	public var camHUD:FlxCamera = new FlxCamera();
-
-	private var _topCam:FlxCamera = new FlxCamera();
-
 	override public function create() {
 		super.create();
-
-		// --- Cameras ---
-		FlxG.cameras.add(camGame);
-		FlxG.cameras.add(camHUD, false);
-		FlxG.cameras.add(_topCam, false);
-		camHUD.bgColor = 0x00000000;
-		_topCam.bgColor = 0x00000000;
-		cameras = [camGame];
-		camGame.zoom = 0.9;
-
-		TroubleShooter.instance.setCam(_topCam);
 
 		// --- Strums ---
 		add(strums);
@@ -82,18 +66,24 @@ class PlayState extends UNOState
 			if (Controls.getKeyPressed(direction))
 			{
 				player.noteAnim(direction, 'pressed');
+				opponent.noteAnim(direction, 'pressed');
 
 				bf.playAnim(directions[direction], true);
+				dad.playAnim(directions[direction], true);
 
 				if (bfTimer != null) bfTimer.cancel();
 				bfTimer.start(0.5, (_:FlxTimer) ->
 				{
 					if (!Controls.common_p)
+					{
 						bf.playAnim('idle');
+						dad.playAnim('idle');
+					}
 				});
 
 			} else if (Controls.getKeyReleased(direction)) {
 				player.noteAnim(direction, 'static');
+				opponent.noteAnim(direction, 'static');
 			}
 		}
 

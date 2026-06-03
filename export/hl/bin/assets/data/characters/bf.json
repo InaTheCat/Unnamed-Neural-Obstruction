@@ -7,22 +7,22 @@
         },
         {
             "offset":[6, -7],
-            "anim": "singLEFT",
+            "anim": "left",
             "name": "singLEFT"
         },
         {
             "offset":[-17, -50],
-            "anim": "singDOWN",
+            "anim": "down",
             "name": "singDOWN"
         },
         {
             "offset":[-36, 27],
-            "anim": "singUP",
+            "anim": "up",
             "name": "singUP"
         },
         {
             "offset":[-48, -6],
-            "anim": "singRIGHT",
+            "anim": "right",
             "name": "singRIGHT"
         }
     ],

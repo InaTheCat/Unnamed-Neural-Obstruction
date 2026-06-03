@@ -5,7 +5,6 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.math.FlxPoint;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
@@ -15,7 +14,7 @@ import flixel.util.FlxTimer;
 class TroubleShooter extends FlxBasic {
     public static var instance:TroubleShooter;
 
-    private static var iNum:Int = 0;
+	private static var iNum:Int = 0;
 
     public var troubleShooter:FlxTypedSpriteGroup<Dynamic>;
     public var troubleText:FlxText;
@@ -23,13 +22,14 @@ class TroubleShooter extends FlxBasic {
     private var hideTimer:FlxTimer = null;
 
     public var typeColors:Map<String, Int> = [
-        'Info'       => 0xFF4444FF,
-        'Warning'    => 0xFFFFDD00,
-        'Error'      => 0xFFFF4444,
-        'None'       => 0xFFFFFFFF,
-        'PSeScript'  => 0xFFAAAAAA,
-        'PSeWarning' => 0xFFFFFFAA,
-        'PSeError'   => 0xFFFF5555
+		'Info' => 0x0000FF,
+		'Warning' => 0xFFFF00,
+		'Error' => 0xFF0000,
+		'None' => 0xFFFFFFFF,
+		'Source Info' => 0xAA00FF,
+		'PSeScript' => 0xFFAAAAAA,
+		'PSeWarning' => 0xFFFFFFAA,
+		'PSeError' => 0xFFFF5555
     ];
 
     public function new() {
@@ -37,80 +37,89 @@ class TroubleShooter extends FlxBasic {
         instance = this;
 
         troubleShooter = new FlxTypedSpriteGroup<Dynamic>();
-        troubleShooter.scrollFactor.set(0, 0);
+		troubleShooter.scrollFactor.set();
         troubleShooter.alpha = 0;
 
-        troubleBg = new FlxSprite(0, 0).makeGraphic(1, 1, 0xFF222222);
-        troubleBg.alpha = 0.82;
+		troubleBg = new FlxSprite().makeGraphic(1, 1, 0xFFFFFFFF);
+		troubleBg.alpha = 0.75;
 
-        troubleText = new FlxText(10, 10, 0, '', 16);
+		troubleText = new FlxText(20, 10, 0, 'Initial Message', 16);
         troubleText.setFormat(null, 16, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
 
         troubleShooter.add(troubleBg);
-        troubleShooter.add(troubleText);
+		troubleShooter.add(troubleText);
     }
 
-    public inline function setCam(cam:FlxCamera):Void
+	public function setCam(cam:FlxCamera):Void
+	{
+		if (cam == troubleShooter.camera)
+		{
+			send('The TroubleShooter is in $cam at this moment', 'Source Info');
+			return;
+		}
+
         troubleShooter.cameras = [cam];
+	}
 
     override public function update(elapsed:Float):Void {
         super.update(elapsed);
         troubleShooter.update(elapsed);
     }
 
-    override public function draw():Void {
+	override public function draw():Void
+	{
         troubleShooter.draw();
     }
 
     public function send(message:String, ?shootType:String = 'Info', ?displayTime:Float = 2):Void {
-        iNum++;
-        trace('preShoot | P:[$message, $shootType, $displayTime] | $iNum');
+		iNum++;
+
+		trace('preShoot | P:[$message, $shootType, $displayTime] | $iNum');
 
         FlxTween.cancelTweensOf(troubleShooter);
-        if (hideTimer != null) {
-            hideTimer.cancel();
-            hideTimer = null;
-        }
+		if (hideTimer != null)
+			hideTimer.cancel();
+		displayTime ?? 2;
+		shootType ?? 'Info';
 
-        if (displayTime == null) displayTime = 2;
-        if (shootType == null) shootType = 'Info';
+		troubleShooter.alpha = 0;
+		troubleShooter.setPosition(-troubleShooter.width, FlxG.height - troubleBg.height);
 
-        troubleText.text = message + (shootType != 'None' ? '\n[$shootType]' : '');
+		troubleText.text = message + (shootType != 'None' ? '\n\n[$shootType]' : '');
+
         troubleText.color = typeColors.exists(shootType) ? typeColors[shootType] : 0xFFFFFFFF;
 
-        var textW:Int = Std.int(troubleText.textField.textWidth + 20);
-        var textH:Int = Std.int(troubleText.textField.textHeight + 20);
-        troubleBg.makeGraphic(textW + 20, textH + 20, 0xFF222222);
-        troubleBg.updateHitbox();
+		// Update shoot troubleBg
+		troubleBg.makeGraphic(Std.int(troubleText.textField.textWidth + 40), Std.int(troubleText.textField.textHeight + 40), 0xFFFFFFFF);
 
-        troubleBg.x = 0;
-        troubleBg.y = 0;
-        troubleText.x = 10;
-        troubleText.y = 10;
+		troubleText.y = FlxG.height - troubleBg.height;
 
-        troubleShooter.setPosition(-troubleBg.width - 20 , FlxG.height - troubleBg.height - 10);
-        troubleShooter.alpha = 1;
+		troubleBg.setPosition(troubleText.x - 20, troubleText.y - 20);
+		troubleBg.updateHitbox();
 
-        FlxTween.tween(troubleShooter, {x: 10}, 0.45, {
-            ease: FlxEase.quadOut,
-            onComplete: function(_) {
-                hideTimer = new FlxTimer().start(displayTime, function(_) {
-                    hide();
-                });
-            }
-        });
-
-        trace('postShoot | $iNum');
+		// Notification appears
+		FlxTween.tween(troubleShooter, {x: -10, alpha: 0.6}, 0.5, {
+			ease: FlxEase.quadOut,
+			onComplete: function(_)
+			{
+				hideTimer = new FlxTimer().start(displayTime, function(_)
+				{
+					hide();
+				});
+			}
+		});
+		trace('postShoot | $iNum');
     }
 
     private function hide():Void {
-        trace('hiding');
+		trace('hiding');
+
         FlxTween.cancelTweensOf(troubleShooter);
-        FlxTween.tween(troubleShooter, {x: -troubleBg.width - 20, alpha: 0}, 0.5, {
+		FlxTween.tween(troubleShooter, {x: -troubleBg.width, alpha: 0}, 0.7, {
             ease: FlxEase.quadIn,
             onComplete: (_) -> {
                 troubleShooter.alpha = 0;
-                trace('hidden');
+				trace('hidden');
             }
         });
     }

@@ -1,6 +1,7 @@
 package states;
 
 import backend.TroubleShooter;
+import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -12,10 +13,19 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 
 class UNOState extends FlxState {
+	public var camGame:FlxCamera = new FlxCamera();
+	public var camHUD:FlxCamera = new FlxCamera();
+	public var _topCam:FlxCamera = new FlxCamera();
+
 	var shootNum = 0;
 
     override public function create() {
         super.create();
+		FlxG.cameras.add(camGame);
+		FlxG.cameras.add(camHUD, false).bgColor = 0x00000000;
+		FlxG.cameras.add(_topCam, false).bgColor = 0x00000000;
+
+		TroubleShooter.instance.setCam(_topCam);
     }
 
     override function update(elapsed:Float) {

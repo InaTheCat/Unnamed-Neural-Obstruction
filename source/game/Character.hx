@@ -59,18 +59,35 @@ class Character extends FlxSprite {
         prepareAnim();
     }
 
-    private function prepareAnim():Void {
-        frames = Paths.getSparrowAtlas(sprite);
-        
+	private function prepareAnim():Void
+	{
+		frames = Paths.getSparrowAtlas(sprite);
+	
 		for (e in charJson.anims)
 		{
 			animation.addByPrefix(e.name, e.anim, e.fps != null ? e.fps : 24, e.loop != null ? e.loop : false);
 
+			var added = animation.getByName(e.name);
+			if (added == null || added.frames.length == 0)
+			{
+				TroubleShooter.instance.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML', 'Error');
+			}
+		
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
 
-        playAnim('idle');
-    }
+		playAnim('idle');
+	}
+
+	// private function prepareAnim():Void {
+	// frames = Paths.getSparrowAtlas(sprite);
+	// for (e in charJson.anims)
+	// {
+	// animation.addByPrefix(e.name, e.anim, e.fps != null ? e.fps : 24, e.loop != null ? e.loop : false);
+	// offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
+	// }
+	// playAnim('idle');
+	// }
 
 	public function playAnim(animName:String, ?force:Bool = false):Void
 	{
