@@ -2,6 +2,7 @@ package game;
 
 import backend.TroubleShooter;
 import flixel.FlxSprite;
+import flixel.util.FlxColor;
 import utils.CoolUtil;
 import utils.Paths;
 
@@ -17,11 +18,13 @@ typedef CharacterAnim =
 typedef CharacterJson =
 {
 	var path:String;
+	var color:String;
 	var anims:Array<CharacterAnim>;
 }
 
 class Character extends FlxSprite {
 	var charJson:CharacterJson;
+	public var iconColor:FlxColor = 0xFFFFFFFF;
 
     public var sprite:String = null;
     public var isPlayer:Bool = false;
@@ -44,7 +47,7 @@ class Character extends FlxSprite {
 
 		if (charJson == null)
 		{
-			TroubleShooter.instance.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Error');
+			TroubleShooter.instance.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Warning');
 			charJson = cast CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
@@ -54,6 +57,7 @@ class Character extends FlxSprite {
 			}
 		}
 
+		iconColor = charJson.color != null ? FlxColor.fromString(charJson.color) : 0xFFFFFFFF;
         isPlayer = player;
 		sprite = charJson.path;
         prepareAnim();
@@ -79,16 +83,6 @@ class Character extends FlxSprite {
 		playAnim('idle');
 	}
 
-	// private function prepareAnim():Void {
-	// frames = Paths.getSparrowAtlas(sprite);
-	// for (e in charJson.anims)
-	// {
-	// animation.addByPrefix(e.name, e.anim, e.fps != null ? e.fps : 24, e.loop != null ? e.loop : false);
-	// offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
-	// }
-	// playAnim('idle');
-	// }
-
 	public function playAnim(animName:String, ?force:Bool = false):Void
 	{
         animation.play(animName, force);
@@ -99,4 +93,21 @@ class Character extends FlxSprite {
 		else
 			offset.set();
     }
+	/**
+	 * @return well, whatcha think it'll going to return gng, fucking Icon Color
+	**/
+	public function getColor():FlxColor
+	{
+		if (charJson == null || charJson.color == null)
+		{
+			var shii:String = 'json';
+			if (charJson.color == null)
+				shii = 'Icon color';
+
+			TroubleShooter.instance.send('$shii is null gng', 'Error');
+			return 0xFFFFFFFF;
+		}
+
+		return iconColor;
+	}
 }

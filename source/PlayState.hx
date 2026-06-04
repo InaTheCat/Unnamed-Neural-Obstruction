@@ -7,9 +7,12 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import game.Character;
 import game.Controls;
+import game.HealthBar;
 import game.notes.StrumLine;
 import states.UNOState;
 import utils.Paths;
@@ -27,19 +30,13 @@ class PlayState extends UNOState
 	var bf:Character;
 	var dad:Character;
 
+	var healthBarBG:FlxSprite;
+	var healthBar:HealthBar;
+	var maxHealth:Float = 2;
+	var health:Float = 1;
+
 	override public function create() {
 		super.create();
-
-		// --- Strums ---
-		add(strums);
-
-		player = new StrumLine(true);
-		strums.add(player);
-		player.camera = camHUD;
-
-		opponent = new StrumLine();
-		strums.add(opponent);
-		opponent.camera = camHUD;
 
 		// --- Test stage n char ---
 		bf = new Character(850, 400, 'bf', true);
@@ -57,6 +54,28 @@ class PlayState extends UNOState
 			add(e);
 			e.camera = camGame;
 		}
+		// --- HUD ---
+		add(strums);
+
+		player = new StrumLine(true);
+		strums.add(player);
+		player.camera = camHUD;
+
+		opponent = new StrumLine();
+		strums.add(opponent);
+		opponent.camera = camHUD;
+
+		add(healthBarBG = new FlxSprite(0, FlxG.height - 70).loadGraphic(Paths.image('game/hud/healthBar')));
+		healthBarBG.screenCenter(X);
+		healthBarBG.camera = camHUD;
+
+		add(healthBar = new HealthBar(healthBarBG.x + 4, healthBarBG.y + 4, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), 0, maxHealth,
+			this, 'health', LEFT_TO_RIGHT, true));
+		healthBar.setColors(dad.getColor(), bf.getColor());
+		healthBar.camera = camHUD;
+		healthBar.screenCenter(X);
+
+		FlxTween.num(2, 0, 3, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> health = v);
 	}
 
 	override public function update(elapsed:Float) {
