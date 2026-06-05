@@ -2,10 +2,11 @@ package game.notes;
 
 import flixel.FlxG;
 import flixel.FlxSprite;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
 import utils.Paths;
 
-class StrumLine extends FlxTypedGroup<FlxSprite> {
+class StrumLine extends FlxSpriteGroup
+{
     var notes:Array<FlxSprite>=[];
     var receptors:Array<FlxSprite>=[];
 
@@ -15,11 +16,12 @@ class StrumLine extends FlxTypedGroup<FlxSprite> {
 	 * Creates a `StrumLine` already prepraded (isnt it like that how it should be?).
 	 * If is empty, it'll make an opponent strum.
 	 *
-	 * @param   x               Position that u can already tell what it does.
-	 * @param   y               Same as `x` gng.
-	 * @param   player          if `true`, will be a Player Strum, else, it'll be opponent.
+	 * @param x Position that u can already tell what it does.
+	 * @param y Same as `x` gng.
+	 * @param player if `true`, will be a Player Strum, else, it'll be opponent.
 	 */
-	public function new(?player:Bool = false, ?x:Float = 70, ?y:Float = 50) {
+	public function new(?player:Bool = false, ?x:Float = 70, ?y:Float = 50):Void
+	{
 		super();
 
 		isPlayer = player ?? false;
@@ -27,7 +29,8 @@ class StrumLine extends FlxTypedGroup<FlxSprite> {
 		prepareStrums(player ?? false, x ?? 70, y ?? 50);
     }
 
-	private function prepareStrums(?playable:Bool = false, ?x:Float, ?y:Float):Void {
+	private function prepareStrums(?playable:Bool = false, ?x:Float, y:Float):Void
+	{
         var playerOffset:Float = playable ? FlxG.width * 0.55 : 0;
 
 		for (i in 0...4){
@@ -73,7 +76,7 @@ class StrumLine extends FlxTypedGroup<FlxSprite> {
 
 			note.scale.set(0.7, 0.7);
 			note.updateHitbox();
-			note.setPosition((x + playerOffset) + (i * 110), y);
+			note.setPosition((x + playerOffset) + (i * 110));
 
 			add(note);
             notes.push(note);
@@ -82,7 +85,7 @@ class StrumLine extends FlxTypedGroup<FlxSprite> {
             
             receptor.setGraphicSize(note.width, note.height);
             receptor.updateHitbox();
-            receptor.setPosition(note.x, note.y);
+			receptor.setPosition(note.x);
 
             add(receptor);
             receptors.push(receptor);
@@ -95,7 +98,8 @@ class StrumLine extends FlxTypedGroup<FlxSprite> {
      *                  (its an `Int` from `0` to `3` normally).
 	 * @param anim The animation that will play the note, if empty, it wont do nothing.
 	 */
-	public function noteAnim(direction:Int = 0, ?anim:String = 'static'){
+	public function noteAnim(direction:Int = 0, ?anim:String = 'static'):Void
+	{
 		if (direction >= 0 && direction < members.length) {
 			notes[direction].animation.play(anim ?? 'static', true);
 			notes[direction].centerOffsets();

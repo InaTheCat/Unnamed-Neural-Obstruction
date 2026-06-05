@@ -9,6 +9,6 @@ class HealthBar extends FlxBar {
     }
 
     public function setColors(player:FlxColor = 0xFF000000, opponent:FlxColor = 0xFFFFFFFF) {
-        createFilledBar(player, opponent);
+		createFilledBar(opponent, player);
     }
 }

@@ -6,20 +6,25 @@ import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.group.FlxSpriteGroup;
+import flixel.math.FlxMath;
+import flixel.text.FlxText.FlxTextBorderStyle;
+import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
 import game.Character;
 import game.Controls;
 import game.HealthBar;
+import game.Icon;
 import game.notes.StrumLine;
 import states.UNOState;
+import utils.CoolUtil;
 import utils.Paths;
 
 class PlayState extends UNOState
 {
-	var strums:FlxTypedGroup<FlxBasic> = new FlxTypedGroup<FlxBasic>();
+	var strums:FlxSpriteGroup = new FlxSpriteGroup();
 
 	var opponent:StrumLine;
 	var player:StrumLine;
@@ -33,7 +38,22 @@ class PlayState extends UNOState
 	var healthBarBG:FlxSprite;
 	var healthBar:HealthBar;
 	var maxHealth:Float = 2;
-	var health:Float = 1;
+	public var health:Float = 1;
+
+	public var iconP1:Icon;
+	public var iconP2:Icon;
+
+	var accuracyTxt:FlxText;
+	var missesTxt:FlxText;
+	var scoreTxt:FlxText;
+
+	var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
+	var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
+
+	public var hudUpdating:Bool = true;
+
+	var alphaCenter:Float = 360;
+	var alphaRange:Float = 100;
 
 	override public function create() {
 		super.create();
@@ -55,31 +75,54 @@ class PlayState extends UNOState
 			e.camera = camGame;
 		}
 		// --- HUD ---
+		add(scoreTexts);
+		add(healthBarGrp);
 		add(strums);
 
-		player = new StrumLine(true);
-		strums.add(player);
-		player.camera = camHUD;
+		strums.camera = camHUD;
 
-		opponent = new StrumLine();
-		strums.add(opponent);
-		opponent.camera = camHUD;
+		strums.add(player = new StrumLine(true));
+		strums.add(opponent = new StrumLine());
 
-		add(healthBarBG = new FlxSprite(0, FlxG.height - 70).loadGraphic(Paths.image('game/hud/healthBar')));
-		healthBarBG.screenCenter(X);
-		healthBarBG.camera = camHUD;
+		healthBarGrp.add(healthBarBG = new FlxSprite().loadGraphic(Paths.image('game/hud/healthBar')));
 
-		add(healthBar = new HealthBar(healthBarBG.x + 4, healthBarBG.y + 4, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), 0, maxHealth,
-			this, 'health', LEFT_TO_RIGHT, true));
+		healthBarGrp.add(healthBar = new HealthBar(healthBarBG.x + 4, healthBarBG.y + 4, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), 0,
+			maxHealth, this, 'health', LEFT_TO_RIGHT, true));
 		healthBar.setColors(dad.getColor(), bf.getColor());
-		healthBar.camera = camHUD;
-		healthBar.screenCenter(X);
+		// -- //
+		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
+		scoreTexts.add(missesTxt = new FlxText(0, 0, 0, 'Misses: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'center', OUTLINE, 0xFF000000));
+		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
 
-		FlxTween.num(2, 0, 3, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> health = v);
+		for (i => e in [accuracyTxt, missesTxt, scoreTxt])
+		{
+			e.x = i * 250;
+			e.scale.set(0.5, 0.5);
+			e.updateHitbox();
+		}
+
+		healthBarGrp.add(iconP1 = new Icon('bf', false, 0.2, 0.8, bf));
+		healthBarGrp.add(iconP2 = new Icon('dad', true, 0.2, 0.8, dad));
+
+		for (e in [scoreTexts, healthBarGrp])
+		{
+			e.camera = camHUD;
+			e.screenCenter(X);
+		}
+
+		healthBarGrp.y = FlxG.height * 0.9;
+
+		FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
+		FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		updateHud();
+		updateIconPos();
+		for (e in [iconP1, iconP2])
+			e.updateIcon(health);
 
 		for (direction in 0...4) {
 			if (Controls.getKeyPressed(direction))
@@ -116,5 +159,38 @@ class PlayState extends UNOState
 			camGame.scroll.y -= 25;
 		if (FlxG.keys.pressed.K)
 			camGame.scroll.y += 25;
+	}
+	private function updateHud():Void
+	{
+		if (!hudUpdating)
+			return;
+
+		// var distY:Float = ;
+
+		for (e in [healthBarGrp, scoreTexts])
+		{
+			var dist:Float = Math.abs(e.y - alphaCenter);
+
+			var t:Float = Math.min(dist / alphaRange, 1);
+
+			e.alpha = t;
+		}
+
+		healthBarGrp.y = (-strums.y + FlxG.height) - 50;
+
+		scoreTexts.y = healthBarGrp.y * 1.025 + ((healthBarGrp.y * 0.15) - 72.5);
+	}
+
+	private function updateIconPos():Void
+	{
+		var healthBarPercent:Float = healthBar.percent;
+
+		var center:Float = healthBar.x + healthBar.width * FlxMath.remapToRange(healthBarPercent, 0, 100, 0, 1);
+
+		iconP1.x = center - 20;
+		iconP2.x = center - (iconP2.width - 20);
+
+		iconP1.y = healthBar.y + healthBar.height - (iconP1.height / 2);
+		iconP2.y = healthBar.y + healthBar.height - (iconP2.height / 2);
 	}
 }
