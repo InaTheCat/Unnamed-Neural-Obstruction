@@ -35,7 +35,6 @@ class PlayState extends UNOState
 	var bf:Character;
 	var dad:Character;
 
-	var healthBarBG:FlxSprite;
 	var healthBar:HealthBar;
 	var maxHealth:Float = 2;
 	public var health:Float = 1;
@@ -84,9 +83,7 @@ class PlayState extends UNOState
 		strums.add(player = new StrumLine(true));
 		strums.add(opponent = new StrumLine());
 
-		healthBarGrp.add(healthBarBG = new FlxSprite().loadGraphic(Paths.image('game/hud/healthBar')));
-
-		healthBarGrp.add(healthBar = new HealthBar(healthBarBG.x + 4, healthBarBG.y + 4, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), 0,
+		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0,
 			maxHealth, this, 'health', LEFT_TO_RIGHT, true));
 		healthBar.setColors(dad.getColor(), bf.getColor());
 		// -- //
@@ -183,7 +180,7 @@ class PlayState extends UNOState
 
 	private function updateIconPos():Void
 	{
-		var healthBarPercent:Float = healthBar.percent;
+		var healthBarPercent:Float = healthBar.bar.percent;
 
 		var center:Float = healthBar.x + healthBar.width * FlxMath.remapToRange(healthBarPercent, 0, 100, 0, 1);
 
