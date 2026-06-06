@@ -8,42 +8,38 @@ import utils.Paths;
 import utils.Paths;
 class Icon extends FlxSprite {
     public var parent:Character = null;
-    public var opp:Bool = false;
+	public var player:Bool = false;
 
-    public var minHealth:Float = 1.8;
-    public var maxHealth:Float = 0.5;
+	public var minHealth:Float = 0.2;
 
-    public function new(path:String = 'bf', isOpp:Bool = false, min:Float = 2.8, max:Float = 0.2, ?parentChar:Character = null) {
+	public function new(path:String = 'bf', isPlayer:Bool = false, min:Float = 0.2, ?parentChar:Character = null)
+	{
         super();
 
         parent = parentChar;
 
-        if (min != minHealth) minHealth = min;
-        if (max != maxHealth) maxHealth = max;
+		if (min != minHealth)
+			minHealth = min;
 
-        opp = isOpp;
+		player = isPlayer;
 
-        startIcon(path);
+		prepareIcon(path);
     }
 
-    private function startIcon(path:String) {
+	private function prepareIcon(path:String)
+	{
         loadGraphic(Paths.image('game/icons/$path'), true, 150, 150);
         animation.add('neutral', [0], 0, false);
         animation.add('loose', [1], 0, false);
         animation.play('neutral', true);
 
-        flipX = !opp;
+		flipX = player;
     }
 
     /**
     * Well, the update of the icon, exactly the animation
     * @param ref is mostly used with `health` from `PlayState`
     **/
-    public function updateIcon(ref:Float) {
-        var isDying:Bool = opp ? (ref <= minHealth) : (ref >= maxHealth);
-        var mode:String = isDying ? 'loose' : 'neutral';
-
-        if (animation.curAnim?.name != mode)
-            animation.play(mode);
-    }
+	public function updateIcon(ref:Float)
+		animation.play(player ? (ref < minHealth ? 'neutral' : 'loose') : (ref > minHealth ? 'neutral' : 'loose'));
 }

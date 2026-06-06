@@ -39,6 +39,12 @@ class Character extends FlxSprite {
         'singRIGHT' => [-4, 26]
     ];
 
+	/**
+	 * @param x why would i need to write this?
+	 * @param y same with `x`
+	 * @param character The json name, heh
+	 * @param player what do you think it does gng
+	**/
 	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false)
 	{
         super(x, y);

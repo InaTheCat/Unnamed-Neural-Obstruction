@@ -50,6 +50,7 @@ class PlayState extends UNOState
 	var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
 
 	public var hudUpdating:Bool = true;
+	public var switchScorePos:Bool = false;
 
 	var alphaCenter:Float = 360;
 	var alphaRange:Float = 100;
@@ -79,9 +80,9 @@ class PlayState extends UNOState
 		add(strums);
 
 		strums.camera = camHUD;
-
 		strums.add(player = new StrumLine(true));
 		strums.add(opponent = new StrumLine());
+		strums.y = 50;
 
 		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0,
 			maxHealth, this, 'health', LEFT_TO_RIGHT, true));
@@ -98,8 +99,8 @@ class PlayState extends UNOState
 			e.updateHitbox();
 		}
 
-		healthBarGrp.add(iconP1 = new Icon('bf', false, 0.2, 0.8, bf));
-		healthBarGrp.add(iconP2 = new Icon('dad', true, 0.2, 0.8, dad));
+		healthBarGrp.add(iconP1 = new Icon('bf', true, 1.8, bf));
+		healthBarGrp.add(iconP2 = new Icon('bf', false, 0.2, dad));
 
 		for (e in [scoreTexts, healthBarGrp])
 		{
@@ -110,7 +111,7 @@ class PlayState extends UNOState
 		healthBarGrp.y = FlxG.height * 0.9;
 
 		FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
-		FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
+		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
 	}
 
 	override public function update(elapsed:Float) {
@@ -175,7 +176,10 @@ class PlayState extends UNOState
 
 		healthBarGrp.y = (-strums.y + FlxG.height) - 50;
 
-		scoreTexts.y = healthBarGrp.y * 1.025 + ((healthBarGrp.y * 0.15) - 72.5);
+		if (switchScorePos)
+			scoreTexts.y = healthBarGrp.y * 1.025 + ((healthBarGrp.y * 0.15) - 72.5);
+		else
+			scoreTexts.y = healthBarGrp.y + 50;
 	}
 
 	private function updateIconPos():Void
