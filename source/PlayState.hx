@@ -17,6 +17,7 @@ import game.Character;
 import game.Controls;
 import game.HealthBar;
 import game.Icon;
+import game.notes.Note; // Note test
 import game.notes.StrumLine;
 import states.UNOState;
 import utils.CoolUtil;
@@ -83,6 +84,18 @@ class PlayState extends UNOState
 		strums.add(player = new StrumLine(true));
 		strums.add(opponent = new StrumLine());
 		strums.y = 50;
+
+		// test note
+
+		var dir:Int = 2; // up
+
+		var receptor = player.getReceptor(dir);
+
+		var testNote:Note = new Note(receptor.x, 600, dir);
+		testNote.camera = camHUD;
+		add(testNote);
+
+		//
 
 		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0,
 			maxHealth, this, 'health', LEFT_TO_RIGHT, true));

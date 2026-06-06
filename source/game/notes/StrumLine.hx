@@ -105,4 +105,10 @@ class StrumLine extends FlxSpriteGroup
 			notes[direction].centerOffsets();
 		}
 	}
+	public function getReceptor(dir:Int):FlxSprite // dir
+	{
+		return receptors[dir];
+	}
+
+	
 }
