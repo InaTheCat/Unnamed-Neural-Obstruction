@@ -44,4 +44,7 @@ class Paths {
 
     public static inline function songJson(songName:String, difficulty:String):String
         return 'assets/songs/$songName/chart/$difficulty.json';
+	public static inline function songInst(songName:String):String // tst
+		return 'assets/songs/$songName/audio/Inst.ogg';
+	/*public static inline functi*/
 }

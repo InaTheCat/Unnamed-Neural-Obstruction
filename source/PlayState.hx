@@ -1,6 +1,10 @@
 package;
 
 import backend.TroubleShooter;
+import backend.chart.NewTestChartparser.ParsedChart; // // //
+import backend.chart.NewTestChartparser.ParsedNote; //
+import backend.chart.NewTestChartparser; //
+import backend.game.Conductor;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -17,8 +21,10 @@ import game.Character;
 import game.Controls;
 import game.HealthBar;
 import game.Icon;
-import game.notes.Note; // Note test
+import game.notes.NoteHitResult;
+import game.notes.NoteManager;
 import game.notes.StrumLine;
+import game.score.ScoreManager;
 import states.UNOState;
 import utils.CoolUtil;
 import utils.Paths;
@@ -50,14 +56,23 @@ class PlayState extends UNOState
 	var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
 	var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
 
+	var songPosition:Float = 0;
+	var unspawnNotes:Array<ParsedNote> = [];
+	var noteManager:NoteManager;
+
+	var scoreManager:ScoreManager;
+
 	public var hudUpdating:Bool = true;
 	public var switchScorePos:Bool = false;
+
+	var opponentNoteManager:NoteManager;
 
 	var alphaCenter:Float = 360;
 	var alphaRange:Float = 100;
 
 	override public function create() {
 		super.create();
+
 
 		// --- Test stage n char ---
 		bf = new Character(850, 400, 'bf', true);
@@ -67,8 +82,34 @@ class PlayState extends UNOState
 		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/default/back'));
 		var curtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stages/default/curtains'));
 
+		var chart = NewTestChartparser.parseChart("bopeebo", "hard");
+
+		Conductor.reset();
+		Conductor.mapSong(chart.bpm, chart.speed);
+
+		unspawnNotes = chart.notes;
+
+		var playerNotes:Array<ParsedNote> = [];
+		var opponentNotes:Array<ParsedNote> = [];
+
+		for (note in chart.notes)
+		{
+			if (note.mustHit)
+				playerNotes.push(note);
+			else
+				opponentNotes.push(note);
+		}
+
+		FlxG.sound.playMusic(Paths.songInst("bopeebo"), 1, false);
+
 		back.scrollFactor.set(0.9, 0.9);
 		curtains.scrollFactor.set(1.3, 1.3);
+
+		if (chart.notes.length > 0)
+		{
+			trace(chart.notes[0].time);
+			trace(chart.notes[0].dir);
+		}
 
 		for (e in [back, floor, dad, bf, curtains])
 		{
@@ -85,17 +126,27 @@ class PlayState extends UNOState
 		strums.add(opponent = new StrumLine());
 		strums.y = 50;
 
-		// test note
+		opponentNoteManager = new NoteManager(opponent, opponentNotes);
+		opponentNoteManager.ayuwoki = true;
+		strums.add(opponentNoteManager);
 
-		var dir:Int = 2; // up
+		noteManager = new NoteManager(player, playerNotes);
+		strums.add(noteManager);
 
-		var receptor = player.getReceptor(dir);
+		trace("player receptor n g x=" + player.getReceptor(0).x);
 
-		var testNote:Note = new Note(receptor.x, 600, dir);
-		testNote.camera = camHUD;
-		add(testNote);
 
-		//
+		scoreManager = new ScoreManager();
+
+		noteManager.onHoldScore = function(points:Int)
+		{
+			scoreManager.addHoldScore(points);
+		};
+
+		noteManager.onMiss = function()
+		{
+			scoreManager.addMiss();
+		};
 
 		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0,
 			maxHealth, this, 'health', LEFT_TO_RIGHT, true));
@@ -138,7 +189,16 @@ class PlayState extends UNOState
 		for (direction in 0...4) {
 			if (Controls.getKeyPressed(direction))
 			{
-				player.noteAnim(direction, 'pressed');
+				switch (noteManager.press(direction))
+				{
+					case HIT(note, diff, rating):
+						scoreManager.addTapScore(rating);
+						player.noteAnim(direction, 'confirm');
+
+					case MISS:
+						player.noteAnim(direction, 'pressed');
+				}
+
 				opponent.noteAnim(direction, 'pressed');
 
 				bf.playAnim(directions[direction], true);
@@ -154,11 +214,27 @@ class PlayState extends UNOState
 					}
 				});
 
-			} else if (Controls.getKeyReleased(direction)) {
+			}
+			else if (Controls.getKeyReleased(direction))
+			{
+				noteManager.release(direction);
+
 				player.noteAnim(direction, 'static');
 				opponent.noteAnim(direction, 'static');
 			}
 		}
+		for (direction in 0...4)
+		{
+			noteManager.setHeld(direction, Controls.getKeyHeld(direction));
+		}
+
+		Conductor.update(FlxG.sound.music.time);
+		noteManager.updateNotes();
+		opponentNoteManager.updateNotes();
+
+		scoreTxt.text = "Score: " + scoreManager.score;
+		missesTxt.text = "Misses: " + scoreManager.misses;
+		accuracyTxt.text = "Accuracy: " + Std.int(scoreManager.getAccuracy()) + "%";
 
 		if (FlxG.keys.pressed.Z) camGame.zoom -= 2 * elapsed;
 		if (FlxG.keys.pressed.X) camGame.zoom += 2 * elapsed;

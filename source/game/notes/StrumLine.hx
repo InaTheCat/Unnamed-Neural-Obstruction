@@ -85,7 +85,7 @@ class StrumLine extends FlxSpriteGroup
             
             receptor.setGraphicSize(note.width, note.height);
             receptor.updateHitbox();
-			receptor.setPosition(note.x);
+			receptor.setPosition(note.x, note.y);
 
             add(receptor);
             receptors.push(receptor);
@@ -100,12 +100,23 @@ class StrumLine extends FlxSpriteGroup
 	 */
 	public function noteAnim(direction:Int = 0, ?anim:String = 'static'):Void
 	{
-		if (direction >= 0 && direction < members.length) {
-			notes[direction].animation.play(anim ?? 'static', true);
-			notes[direction].centerOffsets();
+		if (direction >= 0 && direction < notes.length)
+		{
+			var note = notes[direction];
+
+			var centerX:Float = note.x + note.width / 2;
+			var centerY:Float = note.y + note.height / 2;
+
+			note.animation.play(anim ?? 'static', true);
+			note.updateHitbox();
+
+			note.x = centerX - note.width / 2;
+			note.y = centerY - note.height / 2;
+
+			note.centerOffsets();
 		}
 	}
-	public function getReceptor(dir:Int):FlxSprite // dir
+	public function getReceptor(dir:Int):FlxSprite // a
 	{
 		return receptors[dir];
 	}

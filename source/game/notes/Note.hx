@@ -8,11 +8,23 @@ class Note extends FlxSprite
 	public var dir:Int = 0; // dir para que sea mas comodo
 	public var scrollSpeed:Float = 300;
 
-	public function new(x:Float, y:Float, dir:Int = 0)
+	public var strumTime:Float = 0;
+	public var sustain:Float = 0;
+	public var isHold:Bool = false;
+
+	public var whenhit:Bool = false;
+	public var holding:Bool = false;
+	public var rewardsustainnote:Float = 0;
+	public var holdScoreGiven:Int = 0; // who is this
+
+	public function new(x:Float, y:Float, dir:Int = 0, strumTime:Float = 0, sustain:Float = 0)
 	{
 		super(x, y);
 
 		this.dir = dir;
+		this.strumTime = strumTime;
+		this.sustain = sustain;
+		this.isHold = sustain > 0;
 
 		frames = Paths.getSparrowAtlas('game/notes/default');
 
@@ -38,7 +50,5 @@ class Note extends FlxSprite
 	{
 		super.update(elapsed);
 
-		// nota sube
-		y -= scrollSpeed * elapsed;
 	}
 }
