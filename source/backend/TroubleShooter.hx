@@ -10,6 +10,7 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxTimer;
+import options.Options;
 
 class TroubleShooter extends FlxBasic {
     public static var instance:TroubleShooter;

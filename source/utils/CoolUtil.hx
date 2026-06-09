@@ -1,6 +1,8 @@
 package utils;
 
 import backend.TroubleShooter;
+import flixel.FlxG;
+import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import haxe.Json;
 import openfl.utils.Assets;
@@ -26,6 +28,13 @@ class CoolUtil {
         // the word json was mentioned 8 + 1 times here btw
 	}
     // 21
+	public static inline function lerp(org:Float, dest:Float, ratio:Float):Float
+	{
+		return FlxMath.lerp(org, dest, fpsBasedRatio(ratio));
+	}
+
+	public static inline function fpsBasedRatio(ratio:Float, ?delta:Null<Float>):Float
+		return 1.0 - Math.pow(1.0 - ratio, (delta == null ? FlxG.elapsed : delta) * 60);
 }
 
 // you stupid

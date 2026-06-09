@@ -37,7 +37,7 @@ class UNOState extends FlxState {
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			shootNum++;
-			shoot('Shoot test message ${Std.int(shootNum)}');
+			// shoot('Shoot test message ${Std.int(shootNum)}');
 		}
     }
 

@@ -8,7 +8,15 @@ class Options {
 
     public static var playerKeys:Array<FlxKey>=[Q, W, O, P];
 
-    public function init():Void {
-        setKeys();
+	public static function init():Void
+	{
+		// setKeys();
+
+		setDown();
+	}
+
+	private static function setDown()
+	{
+		altShooterPosition = downscroll;
     }
 }
