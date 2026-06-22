@@ -1,10 +1,5 @@
 package game.notes;
 
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
-import utils.Paths;
-
 class StrumLine extends FlxSpriteGroup
 {
     var notes:Array<FlxSprite>=[];

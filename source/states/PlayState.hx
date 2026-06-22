@@ -1,22 +1,10 @@
-package;
+package states;
 
-import backend.TroubleShooter;
 import backend.chart.NewTestChartparser.ParsedChart; // // //
 import backend.chart.NewTestChartparser.ParsedNote; //
 import backend.chart.NewTestChartparser; //
-import backend.game.Conductor;
-import flixel.FlxBasic;
-import flixel.FlxCamera;
-import flixel.FlxG;
-import flixel.FlxSprite;
-import flixel.FlxState;
-import flixel.group.FlxSpriteGroup;
-import flixel.math.FlxMath;
 import flixel.text.FlxText.FlxTextBorderStyle;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
+import flixel.util.typeLimit.OneOfTwo;
 import game.Character;
 import game.Controls;
 import game.HealthBar;
@@ -25,9 +13,6 @@ import game.notes.NoteHitResult;
 import game.notes.NoteManager;
 import game.notes.StrumLine;
 import game.score.ScoreManager;
-import states.UNOState;
-import utils.CoolUtil;
-import utils.Paths;
 
 class PlayState extends UNOState
 {
@@ -35,6 +20,24 @@ class PlayState extends UNOState
 
 	var opponent:StrumLine;
 	var player:StrumLine;
+
+	public var inst:FlxSound;
+	public var voices:Array<FlxSound> = [];
+
+	private var singleVoice:Bool = false;
+
+	public static var chart:ParsedChart;
+
+	public var songPosition:Float = 0;
+	public var curSong:String = '';
+
+	var unspawnNotes:Array<ParsedNote> = [];
+	var playerNotes:Array<ParsedNote> = [];
+	var opponentNotes:Array<ParsedNote> = [];
+
+	var scoreManager:ScoreManager;
+	var opponentManager:NoteManager;
+	var playerManager:NoteManager;
 
 	var bfTimer:FlxTimer = new FlxTimer();
 	var directions:Map<Int, String> = [0 => 'singLEFT', 1 => 'singDOWN', 2 => 'singUP', 3 => 'singRIGHT'];
@@ -56,23 +59,14 @@ class PlayState extends UNOState
 	var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
 	var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
 
-	var songPosition:Float = 0;
-	var unspawnNotes:Array<ParsedNote> = [];
-	var noteManager:NoteManager;
-
-	var scoreManager:ScoreManager;
-
 	public var hudUpdating:Bool = true;
 	public var switchScorePos:Bool = false;
-
-	var opponentNoteManager:NoteManager;
 
 	var alphaCenter:Float = 360;
 	var alphaRange:Float = 100;
 
 	override public function create() {
 		super.create();
-
 
 		// --- Test stage n char ---
 		bf = new Character(850, 400, 'bf', true);
@@ -82,40 +76,6 @@ class PlayState extends UNOState
 		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/default/back'));
 		var curtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stages/default/curtains'));
 
-		var chart = NewTestChartparser.parseChart("bopeebo", "hard");
-
-		Conductor.reset();
-		Conductor.mapSong(chart.bpm, chart.speed);
-
-		unspawnNotes = chart.notes;
-
-		var playerNotes:Array<ParsedNote> = [];
-		var opponentNotes:Array<ParsedNote> = [];
-
-		for (note in chart.notes)
-		{
-			if (note.mustHit)
-				playerNotes.push(note);
-			else
-				opponentNotes.push(note);
-		}
-
-		FlxG.sound.playMusic(Paths.songInst("bopeebo"), 1, false);
-
-		back.scrollFactor.set(0.9, 0.9);
-		curtains.scrollFactor.set(1.3, 1.3);
-
-		if (chart.notes.length > 0)
-		{
-			trace(chart.notes[0].time);
-			trace(chart.notes[0].dir);
-		}
-
-		for (e in [back, floor, dad, bf, curtains])
-		{
-			add(e);
-			e.camera = camGame;
-		}
 		// --- HUD ---
 		add(scoreTexts);
 		add(healthBarGrp);
@@ -126,24 +86,33 @@ class PlayState extends UNOState
 		strums.add(opponent = new StrumLine());
 		strums.y = 50;
 
-		opponentNoteManager = new NoteManager(opponent, opponentNotes);
-		opponentNoteManager.ayuwoki = true;
-		strums.add(opponentNoteManager);
+		// --- Song ---
+		back.scrollFactor.set(0.9, 0.9);
+		curtains.scrollFactor.set(1.3, 1.3);
 
-		noteManager = new NoteManager(player, playerNotes);
-		strums.add(noteManager);
+		loadSong('Premeditated', ['boyfriend', 'smiley'], false);
+		startSong();
 
-		trace("player receptor n g x=" + player.getReceptor(0).x);
+		for (e in [back, floor, dad, bf, curtains])
+		{
+			add(e);
+			e.camera = camGame;
+		}
 
+		opponentManager = new NoteManager(opponent, opponentNotes);
+		opponentManager.ayuwoki = true;
+		strums.add(opponentManager);
 
+		playerManager = new NoteManager(player, playerNotes);
+		strums.add(playerManager);
 		scoreManager = new ScoreManager();
 
-		noteManager.onHoldScore = function(points:Int)
+		playerManager.onHoldScore = function(points:Int)
 		{
 			scoreManager.addHoldScore(points);
 		};
 
-		noteManager.onMiss = function()
+		playerManager.onMiss = function()
 		{
 			scoreManager.addMiss();
 		};
@@ -164,7 +133,7 @@ class PlayState extends UNOState
 		}
 
 		healthBarGrp.add(iconP1 = new Icon('bf', true, 1.8, bf));
-		healthBarGrp.add(iconP2 = new Icon('bf', false, 0.2, dad));
+		healthBarGrp.add(iconP2 = new Icon('dad', false, 0.2, dad));
 
 		for (e in [scoreTexts, healthBarGrp])
 		{
@@ -189,7 +158,7 @@ class PlayState extends UNOState
 		for (direction in 0...4) {
 			if (Controls.getKeyPressed(direction))
 			{
-				switch (noteManager.press(direction))
+				switch (playerManager.press(direction))
 				{
 					case HIT(note, diff, rating):
 						scoreManager.addTapScore(rating);
@@ -217,7 +186,7 @@ class PlayState extends UNOState
 			}
 			else if (Controls.getKeyReleased(direction))
 			{
-				noteManager.release(direction);
+				playerManager.release(direction);
 
 				player.noteAnim(direction, 'static');
 				opponent.noteAnim(direction, 'static');
@@ -225,12 +194,12 @@ class PlayState extends UNOState
 		}
 		for (direction in 0...4)
 		{
-			noteManager.setHeld(direction, Controls.getKeyHeld(direction));
+			playerManager.setHeld(direction, Controls.getKeyHeld(direction));
 		}
 
 		Conductor.update(FlxG.sound.music.time);
-		noteManager.updateNotes();
-		opponentNoteManager.updateNotes();
+		playerManager.updateNotes();
+		opponentManager.updateNotes();
 
 		scoreTxt.text = "Score: " + scoreManager.score;
 		missesTxt.text = "Misses: " + scoreManager.misses;
@@ -282,5 +251,67 @@ class PlayState extends UNOState
 
 		iconP1.y = healthBar.y + healthBar.height - (iconP1.height / 2);
 		iconP2.y = healthBar.y + healthBar.height - (iconP2.height / 2);
+	}
+	/**
+	 * @param 
+	 *
+	**/
+	public function loadSong(song:String, ?prefix:Any, bar:Bool = true)
+	{
+		chart = NewTestChartparser.parseChart("Premeditated", "hard");
+		curSong = song;
+
+		FlxG.sound.load(Paths.songInst(song), 1, false);
+
+		if (prefix is Array)
+		{
+			var arr:Array<String> = cast prefix;
+
+			for (e in arr)
+			{
+				var voice:FlxSound = FlxG.sound.load(Paths.songVoices(song, e, bar));
+				voices.push(voice);
+			}
+		}
+		else if (prefix is String)
+		{
+			var voice:FlxSound = FlxG.sound.load(Paths.songVoices(song, null, bar));
+			voices.push(voice);
+		}
+		else
+		{
+			shoot('prefix was null or not even a thing,\n voices will be replaced with "beep"', 'Error');
+			var beep:FlxSound = backend.system.SFXBank._beep;
+			voices.push(beep);
+		}
+	}
+
+	private function startSong()
+	{
+		Conductor.reset();
+		Conductor.mapSong(chart.bpm, chart.speed);
+
+		unspawnNotes = chart.notes;
+
+		for (note in chart.notes)
+		{
+			if (note.dir >= 4 && note.dir <= 7)
+				playerNotes.push(note);
+			else
+				opponentNotes.push(note);
+		}
+
+		if (chart.notes.length > 0)
+		{
+			trace(chart.notes[0].time);
+			trace(chart.notes[0].dir);
+		}
+
+		FlxG.sound.playMusic(Paths.songInst(curSong), 1, false);
+		inst = FlxG.sound.music;
+
+		if (voices != null || voices.length > 0)
+			for (e in voices)
+				e.play();
 	}
 }

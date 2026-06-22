@@ -1,7 +1,5 @@
 package states;
 
-import backend.TroubleShooter;
-import flixel.FlxG;
 import flixel.FlxState;
 import options.Options;
 
@@ -13,6 +11,6 @@ class LoadState extends FlxState {
 
         FlxG.plugins.addPlugin(new TroubleShooter());
 
-		FlxG.switchState(() -> new PlayState());
+		FlxG.switchState(() -> new states.PlayState());
     }
 }

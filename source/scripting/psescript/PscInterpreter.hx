@@ -1,8 +1,5 @@
 package scripting.psescript;
 
-import backend.TroubleShooter as Shooter;
-import flixel.FlxSprite;
-
 /**
  * PscInterpreter
  * 
@@ -69,19 +66,20 @@ class PscInterpreter {
                     try {
                         Reflect.setField(obj, prop, value);
                     } catch (e) {
-                        Shooter.instance.send('Could\'nt set $varName.$prop = $value [ERR: $e]', 'PSeError');
+						Logs.send('Could\'nt set $varName.$prop = $value [ERR: $e]', 'PSeError');
                     }
                 } else {
-                    Shooter.instance.send('Could\'nt find var: "$varName"', 'PSeError');
+					Logs.send('Could\'nt find var: "$varName"', 'PSeError');
                 }
 
             case AddToScene(varName):
                 var obj = vars.get(varName);
                 if (obj != null) addFn(obj);
-                else Shooter.instance.send('add(): Could\'nt find var: "$varName"', 'PSeError');
+				else
+					Logs.send('add(): Could\'nt find var: "$varName"', 'PSeError');
 
             case Unknown(raw):
-                Shooter.instance.send('Line not recognized: "$raw"', 'PSeError');
+				Logs.send('Line not recognized: "$raw"', 'PSeError');
         }
     }
 
@@ -91,7 +89,7 @@ class PscInterpreter {
         var obj:Dynamic = switch (type.toLowerCase()) {
             case "sprite": new FlxSprite();
             default:
-                Shooter.instance.send('Unknown type: "$type", will be replaced to "null"', 'PSeWarning');
+				Logs.send('Unknown type: "$type", will be replaced to "null"', 'PSeWarning');
                 null;
         }
         vars.set(name, obj);
@@ -101,11 +99,11 @@ class PscInterpreter {
     function getSprite(varName:String):FlxSprite {
         var obj = vars.get(varName);
         if (obj == null) {
-            Shooter.instance.send('Sprite not found: "$varName"', 'PseError');
+			Logs.send('Sprite not found: "$varName"', 'PseError');
             return null;
         }
         if (!Std.isOfType(obj, FlxSprite)) {
-            Shooter.instance.send('"$varName" is not an FlxSprite', 'PseError');
+			Logs.send('"$varName" is not an FlxSprite', 'PseError');
             return null;
         }
         return cast obj;

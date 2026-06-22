@@ -1,9 +1,7 @@
 package backend.chart;
 
-import backend.TroubleShooter;
 import haxe.Json;
 import sys.io.File;
-import utils.Paths;
 
 // Single note struct
 typedef Note = {
@@ -56,7 +54,7 @@ class PsychParser {
             var rawData = Json.parse(jsonContent);
             return parseChartData(rawData);
         } catch (e) {
-            trouble('Error while reading file. (ERR: ${e})');
+			Logs.send('Error while reading file. (ERR: ${e})', 'Error');
             return null;
         }
     }
@@ -64,16 +62,16 @@ class PsychParser {
     // Parsing time heh
     public static function parseChartData(data:Dynamic):ChartData {
         if (data == null || data.song == null) {
-            var troubleShoot:String;
+			var troubleshoot:String;
 
             if (data == null)
-                troubleShoot = 'Data is null. Check theres existing chart or if the file exists';
+				troubleshoot = 'Data is null. Check theres existing chart or if the file exists';
             else if (data.song == null)
-                troubleShoot = 'Missing "song" field.';
+				troubleshoot = 'Missing "song" field.';
             else
-                troubleShoot = 'Unexpected error. Check the JSON structure and replace it.';
+				troubleshoot = 'Unexpected error. Check the JSON structure and replace it.';
         
-            trouble(troubleShoot, 'warning');
+			Logs.send(troubleshoot, 'Error');
             return null;
         }
         
@@ -228,7 +226,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Json could not be exported. (ERR: ${e})');
+			Logs.send('Json could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
     }
@@ -240,7 +238,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Notes could not be exported. (ERR: ${e})');
+			Logs.send('Notes could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
     }
@@ -252,7 +250,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Events could not be exported. (ERR: ${e})');
+			Logs.send('Events could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
     }
@@ -264,7 +262,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Sections could not be exported. (ERR: ${e})');
+			Logs.send('Sections could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
     }
@@ -281,7 +279,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Notes by direction could not be exported. (ERR: ${e})');
+			Logs.send('Notes by direction could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
     }
@@ -297,13 +295,8 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-            trouble('Notes by time could not be exported. (ERR: ${e})');
+			Logs.send('Notes by time could not be exported. (ERR: ${e})', 'Error');
             return false;
         }
-    }
-
-    private static function trouble(msg:String, ?type:String = 'error') {
-        if (TroubleShooter.instance == null) return;
-        TroubleShooter.instance.send(msg, type);
-    }
+	}
 }

@@ -1,9 +1,5 @@
 package utils;
 
-import backend.TroubleShooter;
-import flixel.FlxG;
-import flixel.math.FlxMath;
-import flixel.util.FlxColor;
 import haxe.Json;
 import openfl.utils.Assets;
 
@@ -18,7 +14,7 @@ class CoolUtil {
 	**/
     public static function parseJson(path:String):Dynamic {
         if (!Assets.exists('assets/$path.json')) {
-            TroubleShooter.instance.send('JSON not found. [$path]', 'Error');
+			Logs.send('JSON not found. [$path]', 'Errro');
             return null;
         }
 

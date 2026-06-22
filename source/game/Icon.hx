@@ -1,11 +1,8 @@
 package game;
 
-import flixel.FlxSprite;
-import flixel.FlxSprite;
-import game.Character;
 import game.Character;
 import utils.Paths;
-import utils.Paths;
+
 class Icon extends FlxSprite {
     public var parent:Character = null;
 	public var player:Bool = false;

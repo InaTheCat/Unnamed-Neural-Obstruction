@@ -2,8 +2,6 @@ package game.notes;
 
 import backend.chart.NewTestChartparser.ParsedNote;
 import backend.game.Conductor;
-import flixel.FlxG;
-import flixel.group.FlxSpriteGroup;
 import game.Controls;
 
 class NoteManager extends FlxSpriteGroup
@@ -106,7 +104,7 @@ class NoteManager extends FlxSpriteGroup
 			if (note == null || !note.exists || !note.alive)
 				continue;
 
-			var receptor = playerStrum.getReceptor(note.dir);
+			var receptor = playerStrum.getReceptor(note.dir % 4);
 			var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
 
 			note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs;
@@ -119,7 +117,7 @@ class NoteManager extends FlxSpriteGroup
 
 			if (hold.origenNote != null)
 			{
-				var receptor = playerStrum.getReceptor(hold.dir);
+				var receptor = playerStrum.getReceptor(hold.dir % 4);
 				var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
 
 				if (!hold.cola)

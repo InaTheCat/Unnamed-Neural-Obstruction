@@ -122,8 +122,15 @@ import sys.FileSystem;
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_stages_default_floor_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_images_stages_default_stage_light_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_music_music_goes_here_txt extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_bopeebo_audio_inst_ogg extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_bopeebo_chart_hard_json extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_premeditated_chart_cne_json extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_premeditated_chart_hard_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_premeditated_song_inst_ogg extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_premeditated_song_voices_boyfriend_ogg extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_premeditated_song_voices_smiley_ogg extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_test_chart_hard_json extends null { }
+@:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_songs_test_chart_w_json extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__assets_sounds_sounds_go_here_txt extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__flixel_sounds_beep_ogg extends null { }
 @:keep @:bind @:noCompletion #if display private #end class __ASSET__flixel_sounds_flixel_ogg extends null { }

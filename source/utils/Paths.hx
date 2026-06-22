@@ -1,24 +1,94 @@
 package utils;
 
-import flixel.FlxG;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
+import openfl.utils.Assets;
+
+using StringTools;
+
+typedef SongVoicesOptions =
+{
+	?hasBar:Bool,
+	?spaced:Bool
+}
 
 class Paths {
-    public static var savedFrames:Map<String, FlxFramesCollection> = [];
+	public static var savedFrames:Map<String, FlxFramesCollection> = [];
+
+	private static function getPath(path:String, ?type:String = ''):String
+	{
+		if (!Assets.exists(path))
+		{
+			if (path.endsWith('.png'))
+			{
+				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', 'Error');
+				return 'assets/images/logo/logo.png';
+			}
+
+			if (path.endsWith('.xml'))
+			{
+				Logs.send('$path does\'nt exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', 'Error');
+
+				if (!Assets.exists('assets/images/characters/bf.xml'))
+				{
+					Logs.send('$path does\'nt exists,\nplease, don\'t delete that...');
+					return '';
+				}
+
+				return 'assets/images/characters/logo.xml';
+			}
+
+			if (path.endsWith('.ogg'))
+			{
+				Logs.send('$path does\'nt exists,\nsound will be replaced with uh,\nthe "beep" sound', 'Error');
+				return 'assets/sounds/beep.ogg';
+			}
+		}
+
+		return path;
+	}
+
+	// private static function check(p:String):String {
+	//     if (!A)
+	// }
 
 	public static function init():Void
 		FlxG.signals.preStateSwitch.add(() -> savedFrames.clear());
 
-    public static inline function image(path:String):String 
-        return 'assets/images/$path.png';
+	public static inline function image(path:String):String
+		return getPath('assets/images/$path.png');
 
     public static inline function xml(path:String):String
-        return 'assets/images/$path.xml';
+		return getPath('assets/images/$path.xml');
 
     public static inline function getSparrowAtlas(path:String)
         return FlxAtlasFrames.fromSparrow(image(path), xml(path));
+
+	public static inline function songJson(songName:String, difficulty:String):String
+		return getPath('assets/songs/$songName/chart/$difficulty.json');
+
+	public static inline function songInst(songName:String):String
+		return getPath('assets/songs/$songName/song/Inst.ogg');
+
+	/**
+	 * @param type Opponent, Player, bf, dad, uhm, ion know, chars??????
+	 * 
+	 * @param hasBar Well, the thang of `-opponent`, `-dih` and those thangs,
+	 * 				 if its `true`, the bar will appear automatically
+	**/
+	public static function songVoices(songName:String, ?type:String = '', hasBar:Bool = true)
+	{
+		var prefix:String = '';
+
+		if (hasBar && (type != null && type.trim() != ''))
+			prefix = '-$type';
+
+		if (!hasBar)
+			prefix = ' $type';
+
+		return getPath('assets/songs/$songName/song/Voices$prefix.ogg');
+	}
 
     public static function getFrames(key:String):FlxFramesCollection {
         if (savedFrames.exists(key)) {
@@ -40,11 +110,5 @@ class Paths {
         if (graph == null)
             return null;
         return graph.imageFrame;
-    }
-
-    public static inline function songJson(songName:String, difficulty:String):String
-        return 'assets/songs/$songName/chart/$difficulty.json';
-	public static inline function songInst(songName:String):String // tst
-		return 'assets/songs/$songName/audio/Inst.ogg';
-	/*public static inline functi*/
+	}
 }

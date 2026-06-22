@@ -1,11 +1,5 @@
 package game;
 
-import backend.TroubleShooter;
-import flixel.FlxSprite;
-import flixel.util.FlxColor;
-import utils.CoolUtil;
-import utils.Paths;
-
 typedef CharacterAnim =
 {
 	var name:String;
@@ -53,12 +47,12 @@ class Character extends FlxSprite {
 
 		if (charJson == null)
 		{
-			TroubleShooter.instance.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Warning');
+			Logs.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Warning');
 			charJson = cast CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
 			{
-				TroubleShooter.instance.send('Not even bf, then it wont fucking gonna appear then', 'Error');
+				Logs.send('Not even bf, then it wont fucking gonna appear then', 'Error');
 				return;
 			}
 		}
@@ -80,7 +74,7 @@ class Character extends FlxSprite {
 			var added = animation.getByName(e.name);
 			if (added == null || added.frames.length == 0)
 			{
-				TroubleShooter.instance.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML', 'Error');
+				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML', 'Error');
 			}
 		
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
@@ -110,7 +104,7 @@ class Character extends FlxSprite {
 			if (charJson.color == null)
 				shii = 'Icon color';
 
-			TroubleShooter.instance.send('$shii is null gng', 'Error');
+			Logs.send('$shii is null gng', 'Error');
 			return 0xFFFFFFFF;
 		}
 
