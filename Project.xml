@@ -37,6 +37,8 @@
 
 	<haxelib name="flixel" />
 
+	<haxelib name="sl-windows-api"/>
+
 	<!--In case you want to use the addons package-->
 	<!--<haxelib name="flixel-addons" />-->
 
@@ -85,7 +87,10 @@
 	<!-- pretty (haxeflixel default), indent, classic (haxe compiler default) -->
 	<haxedef name="message.reporting" value="pretty" />
 
-	<!-- _________________________________ Custom _______________________________ -->
+	<!-- _________________________________ Icons ________________________________ -->
 
-	<!--Place custom nodes like icons here-->
+	<icon path="art/icon16.png" size='16'/>
+	<icon path="art/icon32.png" size='32'/>
+	<icon path="art/icon64.png" size='64'/>
+	<icon path="art/iconOG.png"/>
 </project>
