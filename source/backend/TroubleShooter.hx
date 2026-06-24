@@ -68,8 +68,6 @@ class TroubleShooter extends FlxBasic {
     public function send(message:String, ?shootType:String = 'Info', ?displayTime:Float = 2):Void {
 		iNum++;
 
-		trace('preShoot | P:[$message, $shootType, $displayTime] | $iNum');
-
         FlxTween.cancelTweensOf(troubleShooter);
 		if (hideTimer != null)
 			hideTimer.cancel();
@@ -102,19 +100,15 @@ class TroubleShooter extends FlxBasic {
 				});
 			}
 		});
-		trace('postShoot | $iNum');
     }
 
-    private function hide():Void {
-		trace('hiding');
+	private function hide():Void
+	{
 
         FlxTween.cancelTweensOf(troubleShooter);
 		FlxTween.tween(troubleShooter, {x: -troubleBg.width, alpha: 0}, 0.7, {
             ease: FlxEase.quadIn,
-            onComplete: (_) -> {
-                troubleShooter.alpha = 0;
-				trace('hidden');
-            }
+			onComplete: (_) -> troubleShooter.alpha = 0
         });
     }
 }

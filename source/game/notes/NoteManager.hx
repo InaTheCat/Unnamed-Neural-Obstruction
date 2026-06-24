@@ -28,12 +28,11 @@ class NoteManager extends FlxSpriteGroup
 
 	public var onHoldScore:Int->Void;
 	public var onMiss:Void->Void;
+	public var onNoteHit:Note->Void;
 
 	public var holdClipOffsetY:Float = 35;
 
-	public var ayuwoki:Bool = false;
-
-	
+	public var cpu:Bool = false;
 
 	public function new(playerStrum:StrumLine, notes:Array<ParsedNote>)
 	{
@@ -161,7 +160,7 @@ class NoteManager extends FlxSpriteGroup
 				}
 			}
 		}
-		if (ayuwoki)
+		if (cpu)
 			updatenoNotes(); //kade engine
 	}
 
@@ -181,11 +180,14 @@ class NoteManager extends FlxSpriteGroup
 	{
 		for (note in activeNotes.copy())
 		{
-			if (note == null || !note.exists || !note.alive)
+			if (note == null || !note.exists || !note.alive || note.whenhit)
 				continue;
 
 			if (Conductor.songPosition >= note.strumTime)
 			{
+				if (onNoteHit != null)
+					onNoteHit(note);
+
 				if (note.isHold)
 				{
 					note.whenhit = true;
@@ -301,6 +303,9 @@ class NoteManager extends FlxSpriteGroup
 			return MISS;
 
 		note.whenhit = true;
+
+		if (onNoteHit != null)
+			onNoteHit(note);
 
 		if (note.isHold)
 		{

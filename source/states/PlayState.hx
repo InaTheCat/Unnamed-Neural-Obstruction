@@ -23,6 +23,7 @@ class PlayState extends UNOState
 
 	public var inst:FlxSound;
 	public var voices:Array<FlxSound> = [];
+	private var nullVoices:Bool = false;
 
 	private var singleVoice:Bool = false;
 
@@ -100,10 +101,20 @@ class PlayState extends UNOState
 		}
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
-		opponentManager.ayuwoki = true;
+		opponentManager.cpu = true;
+		opponentManager.onNoteHit = function(note:game.notes.Note)
+		{
+			if (dad != null && note != null)
+				dad.playAnim(directions[note.dir], true);
+		};
 		strums.add(opponentManager);
 
 		playerManager = new NoteManager(player, playerNotes);
+		playerManager.onNoteHit = function(note:game.notes.Note)
+		{
+			if (bf != null && note != null)
+				playerAnim(note.dir);
+		};
 		strums.add(playerManager);
 		scoreManager = new ScoreManager();
 
@@ -143,8 +154,25 @@ class PlayState extends UNOState
 
 		healthBarGrp.y = FlxG.height * 0.9;
 
-		FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
+		// FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
 		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
+	}
+
+	private function playerAnim(direction:Int):Void
+	{
+		if (bf == null)
+			return;
+
+		bf.playAnim(directions[direction], true);
+
+		if (bfTimer != null)
+			bfTimer.cancel();
+
+		bfTimer.start(0.5, (_:FlxTimer) ->
+		{
+			if (!Controls.common_p)
+				bf.playAnim('idle');
+		});
 	}
 
 	override public function update(elapsed:Float) {
@@ -163,25 +191,12 @@ class PlayState extends UNOState
 					case HIT(note, diff, rating):
 						scoreManager.addTapScore(rating);
 						player.noteAnim(direction, 'confirm');
+						health -= 0.015;
 
 					case MISS:
 						player.noteAnim(direction, 'pressed');
+						health += 0.05;
 				}
-
-				opponent.noteAnim(direction, 'pressed');
-
-				bf.playAnim(directions[direction], true);
-				dad.playAnim(directions[direction], true);
-
-				if (bfTimer != null) bfTimer.cancel();
-				bfTimer.start(0.5, (_:FlxTimer) ->
-				{
-					if (!Controls.common_p)
-					{
-						bf.playAnim('idle');
-						dad.playAnim('idle');
-					}
-				});
 
 			}
 			else if (Controls.getKeyReleased(direction))
@@ -189,7 +204,6 @@ class PlayState extends UNOState
 				playerManager.release(direction);
 
 				player.noteAnim(direction, 'static');
-				opponent.noteAnim(direction, 'static');
 			}
 		}
 		for (direction in 0...4)
@@ -197,9 +211,24 @@ class PlayState extends UNOState
 			playerManager.setHeld(direction, Controls.getKeyHeld(direction));
 		}
 
+		health = FlxMath.bound(health, 0, maxHealth);
+
 		Conductor.update(FlxG.sound.music.time);
 		playerManager.updateNotes();
 		opponentManager.updateNotes();
+
+		for (e in voices)
+		{
+			if (!nullVoices)
+			{
+				var diff:Float = Math.abs(e.time - FlxG.sound.music.time);
+
+				if (diff > 50)
+				{
+					e.time = FlxG.sound.music.time;
+				}
+			}
+		}
 
 		scoreTxt.text = "Score: " + scoreManager.score;
 		missesTxt.text = "Misses: " + scoreManager.misses;
@@ -220,8 +249,6 @@ class PlayState extends UNOState
 	{
 		if (!hudUpdating)
 			return;
-
-		// var distY:Float = ;
 
 		for (e in [healthBarGrp, scoreTexts])
 		{
@@ -280,7 +307,7 @@ class PlayState extends UNOState
 		}
 		else
 		{
-			shoot('prefix was null or not even a thing,\n voices will be replaced with "beep"', 'Error');
+			Logs.send('prefix was null or not even a thing,\n voices will be replaced with "beep"', 'Error');
 			var beep:FlxSound = backend.system.SFXBank._beep;
 			voices.push(beep);
 		}
@@ -295,7 +322,7 @@ class PlayState extends UNOState
 
 		for (note in chart.notes)
 		{
-			if (note.dir >= 4 && note.dir <= 7)
+			if (note.mustHit)
 				playerNotes.push(note);
 			else
 				opponentNotes.push(note);
@@ -303,8 +330,8 @@ class PlayState extends UNOState
 
 		if (chart.notes.length > 0)
 		{
-			trace(chart.notes[0].time);
-			trace(chart.notes[0].dir);
+			Logs.send(chart.notes[0].time, 'Info');
+			Logs.send(chart.notes[0].dir, 'Info');
 		}
 
 		FlxG.sound.playMusic(Paths.songInst(curSong), 1, false);

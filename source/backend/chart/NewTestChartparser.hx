@@ -50,15 +50,13 @@ class NewTestChartparser
 				for (noteData in sectionNotes)
 				{
 					var rawDir:Int = noteData[1];
-					var sectionMustHit:Bool = section.mustHitSection == true;
-
-					var isPlayerNotelol:Bool = sectionMustHit;
+					var isPlayerNote:Bool = rawDir >= 4 && rawDir <= 7;
 
 					result.push({
 						time: noteData[0],
 						dir: rawDir % 4,
 						sustain: noteData[2],
-						mustHit: isPlayerNotelol
+						mustHit: isPlayerNote
 					});
 				}
 			}

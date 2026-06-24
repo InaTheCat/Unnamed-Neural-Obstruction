@@ -31,6 +31,7 @@ class CoolUtil {
 
 	public static inline function fpsBasedRatio(ratio:Float, ?delta:Null<Float>):Float
 		return 1.0 - Math.pow(1.0 - ratio, (delta == null ? FlxG.elapsed : delta) * 60);
+	// public static function windowName
 }
 
 // you stupid

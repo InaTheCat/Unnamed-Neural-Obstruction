@@ -1,16 +1,8 @@
 package states;
 
-import backend.TroubleShooter;
-import flixel.FlxCamera;
-import flixel.FlxG;
-import flixel.FlxSprite;
+import backend.system.Logs;
 import flixel.FlxState;
-import flixel.group.FlxGroup;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
-import flixel.text.FlxText;
-import flixel.tweens.FlxEase;
-import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
 
 class UNOState extends FlxState {
 	public var camGame:FlxCamera = new FlxCamera();
@@ -42,6 +34,6 @@ class UNOState extends FlxState {
     }
 
     // TroubleShooter
-    public inline function shoot(msg:String, ?type:String = 'Info', ?time:Float = 2)
-        TroubleShooter.instance.send(msg, type, time);
+	// public inline function shoot(msg:String, ?type:String = 'Info', ?time:Float = 2)
+	// TroubleShooter.instance.send(msg, type, time);
 }
