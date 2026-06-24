@@ -9,6 +9,9 @@ class Conductor
 	public static var curStep:Int = 0;
 	public static var curBeat:Int = 0;
 
+	static var lastStep:Int = -1;
+	static var lastBeat:Int = -1;
+
 	public static var curDecStep:Float = 0;
 	public static var curDecBeat:Float = 0;
 
@@ -48,5 +51,24 @@ class Conductor
 
 		curDecBeat = curDecStep / 4;
 		curBeat = Math.floor(curDecBeat);
+		if (curBeat != lastBeat)
+		{
+			lastBeat = curBeat;
+
+			var state = Std.downcast(FlxG.state, BeatState);
+
+			if (state != null)
+				state.beatHit(curBeat);
+		}
+
+		if (curStep != lastStep)
+		{
+			lastStep = curStep;
+
+			var state = Std.downcast(FlxG.state, BeatState);
+
+			if (state != null)
+				state.beatHit(curStep);
+		}
 	}
 }

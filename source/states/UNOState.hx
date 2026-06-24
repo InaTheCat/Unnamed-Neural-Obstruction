@@ -1,10 +1,11 @@
 package states;
 
+import backend.game.BeatState;
 import backend.system.Logs;
-import flixel.FlxState;
 import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
-class UNOState extends FlxState {
+class UNOState extends BeatState
+{
 	public var camGame:FlxCamera = new FlxCamera();
 	public var camHUD:FlxCamera = new FlxCamera();
 	public var _topCam:FlxCamera = new FlxCamera();
@@ -16,7 +17,6 @@ class UNOState extends FlxState {
 		FlxG.cameras.add(camGame);
 		FlxG.cameras.add(camHUD, false).bgColor = 0x00000000;
 		FlxG.cameras.add(_topCam, false).bgColor = 0x00000000;
-
 		TroubleShooter.instance.setCam(_topCam);
     }
 
@@ -33,7 +33,7 @@ class UNOState extends FlxState {
 		}
     }
 
-    // TroubleShooter
-	// public inline function shoot(msg:String, ?type:String = 'Info', ?time:Float = 2)
-	// TroubleShooter.instance.send(msg, type, time);
+	override function beatHit(curBeat:Int):Void {}
+
+	override function stepHit(curStep:Int):Void {}
 }

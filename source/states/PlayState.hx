@@ -41,7 +41,7 @@ class PlayState extends UNOState
 	var playerManager:NoteManager;
 
 	var bfTimer:FlxTimer = new FlxTimer();
-	var directions:Map<Int, String> = [0 => 'singLEFT', 1 => 'singDOWN', 2 => 'singUP', 3 => 'singRIGHT'];
+	var directions:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
 	var bf:Character;
 	var dad:Character;
@@ -70,12 +70,22 @@ class PlayState extends UNOState
 		super.create();
 
 		// --- Test stage n char ---
-		bf = new Character(850, 400, 'bf', true);
-		dad = new Character(150, 50, 'dad');
-
 		var floor:FlxSprite = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/default/floor'));
 		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/default/back'));
 		var curtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stages/default/curtains'));
+
+		back.scrollFactor.set(0.9, 0.9);
+		curtains.scrollFactor.set(1.3, 1.3);
+
+		add(back);
+		add(floor);
+
+		add(dad = new Character(150, 50, 'dad'));
+		add(bf = new Character(850, 400, 'bf', true));
+
+		add(curtains);
+		for (e in [back, floor, dad, bf, curtains])
+			e.camera = camGame;
 
 		// --- HUD ---
 		add(scoreTexts);
@@ -87,49 +97,7 @@ class PlayState extends UNOState
 		strums.add(opponent = new StrumLine());
 		strums.y = 50;
 
-		// --- Song ---
-		back.scrollFactor.set(0.9, 0.9);
-		curtains.scrollFactor.set(1.3, 1.3);
-
-		loadSong('Premeditated', ['boyfriend', 'smiley'], false);
-		startSong();
-
-		for (e in [back, floor, dad, bf, curtains])
-		{
-			add(e);
-			e.camera = camGame;
-		}
-
-		opponentManager = new NoteManager(opponent, opponentNotes);
-		opponentManager.cpu = true;
-		opponentManager.onNoteHit = function(note:game.notes.Note)
-		{
-			if (dad != null && note != null)
-				dad.playAnim(directions[note.dir], true);
-		};
-		strums.add(opponentManager);
-
-		playerManager = new NoteManager(player, playerNotes);
-		playerManager.onNoteHit = function(note:game.notes.Note)
-		{
-			if (bf != null && note != null)
-				playerAnim(note.dir);
-		};
-		strums.add(playerManager);
-		scoreManager = new ScoreManager();
-
-		playerManager.onHoldScore = function(points:Int)
-		{
-			scoreManager.addHoldScore(points);
-		};
-
-		playerManager.onMiss = function()
-		{
-			scoreManager.addMiss();
-		};
-
-		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0,
-			maxHealth, this, 'health', LEFT_TO_RIGHT, true));
+		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0, maxHealth, this, 'health', LEFT_TO_RIGHT, true));
 		healthBar.setColors(dad.getColor(), bf.getColor());
 		// -- //
 		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
@@ -154,25 +122,40 @@ class PlayState extends UNOState
 
 		healthBarGrp.y = FlxG.height * 0.9;
 
+		// --- Song ---
+		loadSong('Premeditated', ['boyfriend', 'smiley'], false);
+		startSong();
+
+		opponentManager = new NoteManager(opponent, opponentNotes);
+		opponentManager.cpu = true;
+		opponentManager.onNoteHit = function(note:game.notes.Note)
+		{
+			if (dad != null && note != null)
+				dad.playAnim(directions[note.dir], true);
+		};
+		strums.add(opponentManager);
+
+		playerManager = new NoteManager(player, playerNotes);
+		playerManager.onNoteHit = function(note:game.notes.Note)
+		{
+			if (bf != null && note != null)
+				bf.playAnim(directions[note.dir], true);
+		};
+		strums.add(playerManager);
+		scoreManager = new ScoreManager();
+
+		playerManager.onHoldScore = function(points:Int)
+		{
+			scoreManager.addHoldScore(points);
+		};
+
+		playerManager.onMiss = function()
+		{
+			scoreManager.addMiss();
+		};
+
 		// FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
 		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
-	}
-
-	private function playerAnim(direction:Int):Void
-	{
-		if (bf == null)
-			return;
-
-		bf.playAnim(directions[direction], true);
-
-		if (bfTimer != null)
-			bfTimer.cancel();
-
-		bfTimer.start(0.5, (_:FlxTimer) ->
-		{
-			if (!Controls.common_p)
-				bf.playAnim('idle');
-		});
 	}
 
 	override public function update(elapsed:Float) {
@@ -224,9 +207,7 @@ class PlayState extends UNOState
 				var diff:Float = Math.abs(e.time - FlxG.sound.music.time);
 
 				if (diff > 50)
-				{
 					e.time = FlxG.sound.music.time;
-				}
 			}
 		}
 
@@ -245,6 +226,15 @@ class PlayState extends UNOState
 		if (FlxG.keys.pressed.K)
 			camGame.scroll.y += 25;
 	}
+	override function beatHit(b:Int)
+	{
+		super.beatHit(b);
+
+		if (b % 8 == 0)
+			for (e in [dad, bf])
+				e.dance();
+	}
+
 	private function updateHud():Void
 	{
 		if (!hudUpdating)

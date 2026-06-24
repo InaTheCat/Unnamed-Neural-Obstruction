@@ -11,8 +11,9 @@ typedef CharacterAnim =
 
 typedef CharacterJson =
 {
+	@:optional var holdTime:Float;
 	var path:String;
-	var color:String;
+	@:optional var color:String;
 	var anims:Array<CharacterAnim>;
 }
 
@@ -23,15 +24,10 @@ class Character extends FlxSprite {
     public var sprite:String = null;
     public var isPlayer:Bool = false;
 
-	public var offsets:Map<String, Array<Float>> = [];
+	public var holdTime:Float = 4;
+	public var charTimer:FlxTimer = null;
 
-    public var dadOffsets:Map<String, Array<Float>>=[
-        'idle' => [0, 0],
-        'singLEFT' => [-4, 26],
-        'singDOWN' => [2, -31],
-        'singUP' => [-10, 50],
-        'singRIGHT' => [-4, 26]
-    ];
+	public var offsets:Map<String, Array<Float>> = [];
 
 	/**
 	 * @param x why would i need to write this?
@@ -57,6 +53,9 @@ class Character extends FlxSprite {
 			}
 		}
 
+		holdTime = charJson.holdTime ?? 4;
+		charTimer = new FlxTimer();
+
 		iconColor = charJson.color != null ? FlxColor.fromString(charJson.color) : 0xFFFFFFFF;
         isPlayer = player;
 		sprite = charJson.path;
@@ -80,18 +79,29 @@ class Character extends FlxSprite {
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
 
-		playAnim('idle');
+		dance(true);
 	}
 
-	public function playAnim(animName:String, ?force:Bool = false):Void
+	/**
+	 * plays the uhm, anim of the char, and thats it
+	 * @param animName self descreptive cuh
+	 * @param force also self descreptive
+	 * @param lock if true, the char wont gonna return to idle
+	**/
+	public function playAnim(animName:String, ?force:Bool = false, ?lock:Bool = false):Void
 	{
         animation.play(animName, force);
 		var animOffsets = offsets.get(animName);
 
-		if (animOffsets != null)
-			offset.set(animOffsets[0], animOffsets[1]);
-		else
-			offset.set();
+		offset.set(animOffsets != null ? animOffsets[0] : 0, animOffsets != null ? animOffsets[1] : 0);
+
+		if (!lock && animName != 'idle')
+		{
+			if (charTimer != null)
+				charTimer.cancel();
+
+			charTimer.start(holdTime / 7, (_:FlxTimer) -> dance(true));
+		}
     }
 	/**
 	 * @return well, whatcha think it'll going to return gng, fucking Icon Color
@@ -109,5 +119,15 @@ class Character extends FlxSprite {
 		}
 
 		return iconColor;
+	}
+	public function dance(?force:Bool = false)
+	{
+		if (force)
+			playAnim('idle', true)
+		else
+		{
+			if (this.animation?.curAnim?.name == 'idle')
+				playAnim('idle');
+		}
 	}
 }
