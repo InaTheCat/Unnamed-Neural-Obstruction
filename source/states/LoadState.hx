@@ -18,6 +18,10 @@ class LoadState extends FlxState {
 
 		FlxG.plugins.addPlugin(new TroubleShooter());
 
+		#if !FLX_NO_DEBUG FlxG.debugger.visible = true; #end
+
+		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, 'Trace');
+
 		FlxG.switchState(() -> new states.PlayState());
     }
 }

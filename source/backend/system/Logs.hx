@@ -1,20 +1,35 @@
 package backend.system;
 
+import backend.system.ANSI;
+
 using StringTools;
 
 class Logs {
-    public static function send(msg:Dynamic, ?type:String = 'Info', ?shooterTime:Float = 2) {
-        switch(type){
-            case 'Info':
-				FlxG.log.notice('[${type.replace('\n', ' ')}] | ${Std.string(msg)}');
-            case 'Warning':
-				FlxG.log.warn('[${type.replace('\n', ' ')}] | ${Std.string(msg)}');
-            case 'Error':
-				FlxG.log.warn('[${type.replace('\n', ' ')}] | ${Std.string(msg)}');
-            default:
-				trace('[${type.replace('\n', ' ')}] | ${Std.string(msg)}');
-        }
+	public static function send(msg:Any, ?type:String = "Info", ?shooterTime:Float = 2)
+	{
+		var cleanMsg:String = Std.string(msg).replace("\n", " ");
 
-        TroubleShooter.instance.send(msg, type ?? 'Info', shooterTime ?? 2);
+		#if sys
+		Sys.println(type.trim() == 'None' ? '${Std.string(cleanMsg)}' : '${ANSI.coloredType(type)} | ${Std.string(cleanMsg)}');
+		#end
+
+		#if !FLX_NO_DEBUG
+		switch (type)
+		{
+			case "Info":
+				FlxG.log.notice(cleanMsg);
+
+			case "Warning":
+				FlxG.log.warn(cleanMsg);
+
+			case "Error":
+				FlxG.log.error(cleanMsg);
+
+            default:
+				FlxG.log.add(cleanMsg);
+        }
+		#end
+
+		TroubleShooter.instance.send(msg, type, shooterTime);
     }
 }

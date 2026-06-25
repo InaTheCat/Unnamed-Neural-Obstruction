@@ -20,6 +20,7 @@ class TroubleShooter extends FlxBasic {
 		'Warning' => 0xFFFF00,
 		'Error' => 0xFF0000,
 		'None' => 0xFFFFFFFF,
+		'Trace' => 0xFF000055,
 		'Source Info' => 0xAA00FF,
 		'PSeScript' => 0xFFAAAAAA,
 		'PSeWarning' => 0xFFFFFFAA,
@@ -48,7 +49,7 @@ class TroubleShooter extends FlxBasic {
 	{
 		if (cam == troubleShooter.camera)
 		{
-			send('The TroubleShooter is in $cam at this moment', 'Source Info');
+			Logs.send('The TroubleShooter is in $cam at this moment', 'Source Info');
 			return;
 		}
 
@@ -79,7 +80,7 @@ class TroubleShooter extends FlxBasic {
 
 		troubleText.text = message + (shootType != 'None' ? '\n\n[$shootType]' : '');
 
-        troubleText.color = typeColors.exists(shootType) ? typeColors[shootType] : 0xFFFFFFFF;
+		troubleText.setFormat(null, 16, typeColors.exists(shootType) ? typeColors[shootType] : 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
 
 		// Update shoot troubleBg
 		troubleBg.makeGraphic(Std.int(troubleText.textField.textWidth + 40), Std.int(troubleText.textField.textHeight + 40), 0xFFFFFFFF);

@@ -10,7 +10,7 @@ class UNOState extends BeatState
 	public var camHUD:FlxCamera = new FlxCamera();
 	public var _topCam:FlxCamera = new FlxCamera();
 
-	var shootNum = 0;
+	var shootNum = -1;
 
     override public function create() {
         super.create();
@@ -29,7 +29,29 @@ class UNOState extends BeatState
 		if (FlxG.keys.justPressed.SPACE)
 		{
 			shootNum++;
-			// shoot('Shoot test message ${Std.int(shootNum)}');
+			shootNum = (shootNum % 9);
+
+			switch (shootNum)
+			{
+				case 0:
+					Logs.send('Shoot test Info $shootNum', 'Info');
+				case 1:
+					Logs.send('Shoot test Warning $shootNum', 'Warning');
+				case 2:
+					Logs.send('Shoot test Error $shootNum', 'Error');
+				case 3:
+					Logs.send('Shoot test None $shootNum', 'None');
+				case 4:
+					trace('Shoot test Trace $shootNum');
+				case 5:
+					Logs.send('Shoot test Source Info $shootNum', 'Source Info');
+				case 6:
+					Logs.send('Shoot test PSeScript $shootNum', 'PSeScript');
+				case 7:
+					Logs.send('Shoot test PSeWarning $shootNum', 'PSeWarning');
+				case 8:
+					Logs.send('Shoot test PSeError $shootNum', 'PSeError');
+			}
 		}
     }
 

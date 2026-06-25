@@ -320,8 +320,8 @@ class PlayState extends UNOState
 
 		if (chart.notes.length > 0)
 		{
-			Logs.send(chart.notes[0].time, 'Info');
-			Logs.send(chart.notes[0].dir, 'Info');
+			// Logs.send(chart.notes[0].time, 'Info');
+			// Logs.send(chart.notes[0].dir, 'Info');
 		}
 
 		FlxG.sound.playMusic(Paths.songInst(curSong), 1, false);

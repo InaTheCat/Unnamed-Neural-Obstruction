@@ -4,16 +4,17 @@ typedef CharacterAnim =
 {
 	var name:String;
 	var anim:String;
-	@:optional var fps:Int;
-	@:optional var loop:Bool;
-	@:optional var offset:Array<Float>;
+	var fps:Null<Int>;
+	var loop:Null<Bool>;
+	var offset:Null<Array<Float>>;
 }
 
 typedef CharacterJson =
 {
-	@:optional var holdTime:Float;
-	var path:String;
-	@:optional var color:String;
+	var holdTime:Null<Float>;
+	var path:Null<String>;
+	var color:Null<String>;
+	var icon:Null<String>;
 	var anims:Array<CharacterAnim>;
 }
 
