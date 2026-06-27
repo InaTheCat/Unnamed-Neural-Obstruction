@@ -27,5 +27,6 @@
     ],
 
     "path": "characters/dad",
-    "color": "#AF66CE"
+    "color": "#AF66CE",
+    "icon": "dad"
 }

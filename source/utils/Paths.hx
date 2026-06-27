@@ -30,13 +30,13 @@ class Paths {
 			{
 				Logs.send('$path does\'nt exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', 'Error');
 
-				if (!Assets.exists('assets/images/characters/bf.xml'))
+				if (!exists('assets/images/characters/bf.xml'))
 				{
 					Logs.send('$path does\'nt exists,\nplease, don\'t delete that...');
 					return '';
 				}
 
-				return 'assets/images/characters/logo.xml';
+				return 'assets/images/characters/bf.xml';
 			}
 
 			if (path.endsWith('.ogg'))
@@ -48,10 +48,6 @@ class Paths {
 
 		return path;
 	}
-
-	// private static function check(p:String):String {
-	//     if (!A)
-	// }
 
 	public static function init():Void
 		FlxG.signals.preStateSwitch.add(() -> savedFrames.clear());
@@ -70,6 +66,9 @@ class Paths {
 
 	public static inline function songInst(songName:String):String
 		return getPath('assets/songs/$songName/song/Inst.ogg');
+
+	public static inline function exists(path:String):Bool
+		return Assets.exists('assets/$path');
 
 	/**
 	 * @param type Opponent, Player, bf, dad, uhm, ion know, chars??????

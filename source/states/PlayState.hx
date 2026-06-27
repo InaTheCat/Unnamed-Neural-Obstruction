@@ -111,8 +111,8 @@ class PlayState extends UNOState
 			e.updateHitbox();
 		}
 
-		healthBarGrp.add(iconP1 = new Icon('bf', true, 1.8, bf));
-		healthBarGrp.add(iconP2 = new Icon('dad', false, 0.2, dad));
+		healthBarGrp.add(iconP1 = new Icon(bf, true, 1.8));
+		healthBarGrp.add(iconP2 = new Icon(dad, false, 0.2));
 
 		for (e in [scoreTexts, healthBarGrp])
 		{

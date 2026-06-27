@@ -1,5 +1,7 @@
 package game;
 
+using StringTools;
+
 typedef CharacterAnim =
 {
 	var name:String;
@@ -11,6 +13,7 @@ typedef CharacterAnim =
 
 typedef CharacterJson =
 {
+	var name:Null<String>;
 	var holdTime:Null<Float>;
 	var path:Null<String>;
 	var color:Null<String>;
@@ -19,10 +22,12 @@ typedef CharacterJson =
 }
 
 class Character extends FlxSprite {
-	var charJson:CharacterJson;
+	final charJson:CharacterJson;
 	public var iconColor:FlxColor = 0xFFFFFFFF;
 
-    public var sprite:String = null;
+	public var name:String = 'Undefined Character';
+	public var icon:String = 'face';
+	public var sprite:String = null;
     public var isPlayer:Bool = false;
 
 	public var holdTime:Float = 4;
@@ -32,11 +37,11 @@ class Character extends FlxSprite {
 
 	/**
 	 * @param x why would i need to write this?
-	 * @param y same with `x`
+	 * @param y same with `x` gng
 	 * @param character The json name, heh
 	 * @param player what do you think it does gng
 	**/
-	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false)
+	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false, ?icon:String = 'face')
 	{
         super(x, y);
 
@@ -53,6 +58,11 @@ class Character extends FlxSprite {
 				return;
 			}
 		}
+
+		name = charJson.name ?? character;
+
+		var iconName:String = charJson.icon != null && charJson.icon.trim() != '' ? charJson.icon : 'face';
+		icon = Paths.exists('images/game/icons/$iconName') ? iconName : 'face';
 
 		holdTime = charJson.holdTime ?? 4;
 		charTimer = new FlxTimer();

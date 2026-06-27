@@ -28,5 +28,6 @@
     ],
 
     "path": "characters/bf",
-    "color": "#31B0D1"
+    "color": "#31B0D1",
+    "icon": "bf"
 }
