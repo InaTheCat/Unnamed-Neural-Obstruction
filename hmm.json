@@ -1,0 +1,33 @@
+{
+	"dependencies": [
+		{
+			"name": "hxcpp",
+			"type": "git",
+			"dir": null,
+			"ref": null,
+			"url": "https://github.com/ALE-Psych-Crew/hxcpp"
+		},
+		{
+			"name": "lime",
+			"type": "haxelib",
+			"version": "8.3.2"
+		},
+		{
+			"name": "openfl",
+			"type": "haxelib",
+			"version": "9.5.2"
+		},
+		{
+			"name": "flixel",
+			"type": "haxelib",
+			"version": "6.1.2"
+		},
+		{
+			"name": "sl-windows-api",
+			"type": "git",
+			"dir": null,
+			"ref": "2deeb71a07801fcedd55712356f0044c7cfbf2a0",
+			"url": "https://github.com/Slushi-Github/SL-Windows-API"
+		}
+	]
+}

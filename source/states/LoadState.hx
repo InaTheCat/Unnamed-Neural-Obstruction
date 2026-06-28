@@ -6,8 +6,9 @@ import utils.WinUtils;
 import winapi.WindowsAPI;
 
 class LoadState extends FlxState {
-    override function create():Void {
-		winapi.WindowsCPP.reDefineMainWindowTitle(lime.app.Application.current.window.title);
+    override function create():Void
+	{
+		WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
 		WindowsAPI.windowDarkMode(true);
 		WindowsAPI.setWindowTextColor(200, 200, 200);
 		WindowsAPI.centerWindow();

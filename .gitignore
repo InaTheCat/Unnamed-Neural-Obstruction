@@ -1,7 +1,8 @@
-export/
-bin/
-dist/
-build/
+export/*
+bin/*
+dist/*
+build/*
+.haxelib/*
 
 *.log
 *.tmp
