@@ -1,5 +1,25 @@
 package backend.game;
 
+// Shoutout to Riconuts 
+enum abstract SyncType(String) to String
+{
+	var PSYCH_1 = 'psych1';
+	var LAST_MIX = 'lastMix';
+	var LEGACY = 'legacy';
+	var DIRECT = 'direct';
+	public static function getSync(str:String):SyncType
+	{
+		switch (str)
+		{
+			case 'psych1', 'psych_1', 'psych 1', 'psych 1.0': return PSYCH_1;
+			case 'legacy': return LEGACY;
+			case 'direct': return DIRECT;
+			case 'lastmix', 'last_mix', 'last mix': return LAST_MIX;
+			default: return LEGACY;
+		}
+	}
+}
+
 class Conductor
 {
 	public static var songPosition:Float = 0;
@@ -17,6 +37,9 @@ class Conductor
 
 	public static var crochet(get, never):Float;
 	public static var stepCrochet(get, never):Float;
+	public var syncType(get, set):SyncType = SyncType.LAST_MIX;
+	private var LM_LAST_POS:Float = 0.0;
+
 
 	static function get_crochet():Float
 		return (60 / bpm) * 1000;
@@ -44,10 +67,12 @@ class Conductor
 
 	public static function update(pos:Float):Void
 	{
-		songPosition += FlxG.elapsed * 1000;
+		/*songPosition += FlxG.elapsed * 1000;
 
 		if (Math.abs(songPosition - pos) > 20)
-			songPosition = pos;
+			songPosition = pos;*/
+
+		updatePosition(pos);
 
 		curDecStep = songPosition / stepCrochet;
 		curStep = Math.floor(curDecStep);
@@ -72,6 +97,35 @@ class Conductor
 
 			if (state != null)
 				state.beatHit(curStep);
+		}
+	}
+
+	function updatePosition(pos:Float):Void
+	{
+		var music = FlxG.sound.music;
+		if (music == null) return;
+		var elapsedMS:Float = elapsed * 1000;
+		var rawTime:Float = music.time;
+		#if FLX_PITCH elapsedMS *= music?.pitch; #end
+		switch (syncType)
+		{
+			case SyncType.PSYCH_1:	
+				songPosition += elapsedMS;
+				songPosition = FlxMath.lerp(rawTime, songPosition, Math.exp(-elapsedMS * 0.005));
+				var delta:Float = rawTime - songPosition;
+				if (Math.abs(delta) > 1000) songPosition += 1000 * FlxMath.signOf(delta);
+			case SyncType.LEGACY:
+				songPosition += elapsedMS;
+			case SyncType.DIRECT:
+				songPosition = rawTime;
+			case SyncType.LAST_MIX:
+				if (LM_LAST_POS == rawTime) songPosition += elapsedMS;
+				else
+				{
+					if (Math.abs(rawTime - songPosition) >= elapsedMS) songPosition = rawTime;
+					else songPosition += elapsedMS;
+					LM_LAST_POS = rawTime;
+				}
 		}
 	}
 }
