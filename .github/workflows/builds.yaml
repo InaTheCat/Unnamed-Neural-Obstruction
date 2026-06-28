@@ -1,0 +1,49 @@
+name: Builds
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    permissions: write-all
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        include:
+          - platform: Windows
+            os: windows-latest
+            build_cmd: haxelib run lime build windows
+            artifact_path: export/windows/bin
+
+          - platform: Linux
+            os: ubuntu-22.04
+            build_cmd: haxelib run lime build linux
+            artifact_path: export/linux/bin
+
+    steps:
+      - name: Pull the New Commit
+        uses: actions/checkout@v4.1.7
+
+      - name: Setup Haxe
+        uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.7
+
+      - name: Install Main Libraries
+        run: |
+          haxelib --global git hmm https://github.com/ALE-Psych-Crew/hmm
+          haxelib --global run hmm setup
+          haxelib --global run hmm install
+
+      - name: Build for ${{ matrix.platform }}
+        run: ${{ matrix.build_cmd }}
+
+      - name: Upload Game
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }} Build
+          path: ${{ matrix.artifact_path }}
+          if-no-files-found: error
