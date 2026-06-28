@@ -23,6 +23,8 @@ enum abstract SyncType(String) to String
 
 class Conductor
 {
+	private static var LM_LAST_POS:Float = 0.0;
+
 	public static var songPosition:Float = 0;
 	public static var bpm:Float = 100;
 	public static var speed:Float = 1;
@@ -38,8 +40,13 @@ class Conductor
 
 	public static var crochet(get, never):Float;
 	public static var stepCrochet(get, never):Float;
-	public var syncType(get, set):SyncType = SyncType.LAST_MIX;
-	private var LM_LAST_POS:Float = 0.0;
+	public static var syncType(default, set):SyncType = SyncType.LAST_MIX;
+
+	private static function set_syncType(value:SyncType):SyncType
+	{
+		syncType = value;
+		return value;
+	}
 
 
 	static function get_crochet():Float
@@ -68,11 +75,6 @@ class Conductor
 
 	public static function update(pos:Float):Void
 	{
-		/*songPosition += FlxG.elapsed * 1000;
-
-		if (Math.abs(songPosition - pos) > 20)
-			songPosition = pos;*/
-
 		updatePosition(pos);
 
 		curDecStep = songPosition / stepCrochet;
@@ -101,7 +103,7 @@ class Conductor
 		}
 	}
 
-	function updatePosition(pos:Float):Void
+	public static function updatePosition(elapsed:Float):Void
 	{
 		var music = FlxG.sound.music;
 		if (music == null) return;
