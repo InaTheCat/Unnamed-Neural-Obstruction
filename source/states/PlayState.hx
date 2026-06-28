@@ -197,6 +197,7 @@ class PlayState extends UNOState
 		health = FlxMath.bound(health, 0, maxHealth);
 
 		Conductor.update(FlxG.sound.music.time);
+		
 		playerManager.updateNotes();
 		opponentManager.updateNotes();
 
@@ -206,7 +207,7 @@ class PlayState extends UNOState
 			{
 				var diff:Float = Math.abs(e.time - FlxG.sound.music.time);
 
-				if (diff > 50)
+				if (diff > 20)
 					e.time = FlxG.sound.music.time;
 			}
 		}

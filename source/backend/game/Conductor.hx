@@ -44,7 +44,10 @@ class Conductor
 
 	public static function update(pos:Float):Void
 	{
-		songPosition = pos;
+		songPosition += FlxG.elapsed * 1000;
+
+		if (Math.abs(songPosition - pos) > 20)
+			songPosition = pos;
 
 		curDecStep = songPosition / stepCrochet;
 		curStep = Math.floor(curDecStep);
