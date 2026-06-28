@@ -1,6 +1,7 @@
 package backend.game;
 
 // Shoutout to Riconuts 
+// https://github.com/troll-slaiyers/FNF-Troll-Engine/blob/facaa076140d1cff8f60498169b0b6774b7904e7/source/funkin/states/base/MusicBeatState.hx
 enum abstract SyncType(String) to String
 {
 	var PSYCH_1 = 'psych1';
