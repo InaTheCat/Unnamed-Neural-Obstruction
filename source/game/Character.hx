@@ -41,7 +41,7 @@ class Character extends FlxSprite {
 	 * @param character The json name, heh
 	 * @param player what do you think it does gng
 	**/
-	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false, ?icon:String = 'face')
+	public function new(x:Float = 0, y:Float = 0, character:String = 'bf', ?player:Bool = false, ?iconName:String = 'face')
 	{
         super(x, y);
 
@@ -49,7 +49,8 @@ class Character extends FlxSprite {
 
 		if (charJson == null)
 		{
-			Logs.send('charJson failed to load. [$character] | The Character will be\nreplaced for bf', 'Warning');
+			Logs.send('charJson failed to load ${backend.system.ANSI.coloredType('[$character]', 0xFFFFFF00)}, The Character will be\nreplaced for bf',
+				'Warning');
 			charJson = cast CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
@@ -61,8 +62,10 @@ class Character extends FlxSprite {
 
 		name = charJson.name ?? character;
 
-		var iconName:String = charJson.icon != null && charJson.icon.trim() != '' ? charJson.icon : 'face';
-		icon = Paths.exists('images/game/icons/$iconName') ? iconName : 'face';
+		var requestedIcon:String = charJson.icon != null
+			&& charJson.icon.trim() != '' ? charJson.icon : (iconName != null && iconName.trim() != '' ? iconName : 'face');
+		var iconName:String = requestedIcon.trim() != '' ? requestedIcon : 'face';
+		this.icon = Paths.exists('images/game/icons/$iconName.png') ? iconName : 'face';
 
 		holdTime = charJson.holdTime ?? 4;
 		charTimer = new FlxTimer();

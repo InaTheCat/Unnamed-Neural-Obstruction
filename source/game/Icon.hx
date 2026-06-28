@@ -9,6 +9,8 @@ class Icon extends FlxSprite {
     public var parent:Character = null;
 	public var player:Bool = false;
 
+	public var curIconName:String = 'face';
+
 	/**
 	 * single not like relation, like, it only has one icon heh
 	**/
@@ -26,6 +28,9 @@ class Icon extends FlxSprite {
 			minHealth = min;
 
 		player = isPlayer;
+
+		if (parentChar != null)
+			trace(parentChar.name, parentChar.icon);
 
 		prepareIcon((parentChar != null && parentChar.icon != null && parentChar.icon.trim() != '') ? parentChar.icon : 'face');
     }
@@ -48,7 +53,7 @@ class Icon extends FlxSprite {
 			Logs.send('Icon got changed as ${backend.system.ANSI.coloredType('isSingle', 0xFF0055FF)}', 'Source Info');
 		}
 
-		loadGraphic(Paths.image('game/icons/$name'), true, 150, 150);
+		loadGraphic(Paths.image('game/icons/$iconName'), true, 150, 150);
 
         animation.add('neutral', [0], 0, false);
 		if (!isSingle)
@@ -57,6 +62,7 @@ class Icon extends FlxSprite {
         animation.play('neutral', true);
 
 		flipX = player;
+		curIconName = iconName;
     }
 
     /**
@@ -73,4 +79,10 @@ class Icon extends FlxSprite {
 
 		animation.play(player ? (ref < minHealth ? 'neutral' : 'loose') : (ref > minHealth ? 'neutral' : 'loose'));
 	}
+	/**
+	 * change character but icon heh
+	 * @param name literally the name of the img
+	**/
+	public function change(name)
+		prepareIcon(name);
 }
