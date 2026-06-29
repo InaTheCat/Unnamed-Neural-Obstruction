@@ -5,9 +5,9 @@ import backend.system.ANSI;
 using StringTools;
 
 class Logs {
-	public static function send(msg:Any, ?type:String = "Info", ?shooterTime:Float = 2)
+	public static function send(msg:Dynamic, ?type:String = "Info", ?shooterTime:Float = 2)
 	{
-		var cleanMsg:String = Std.string(msg).replace("\n", " ");
+		var cleanMsg:String = Std.string(msg);
 
 		#if sys
 		Sys.println(type.trim() == 'None' ? '${Std.string(cleanMsg)}' : '${ANSI.coloredType(type)} | ${Std.string(cleanMsg)}');

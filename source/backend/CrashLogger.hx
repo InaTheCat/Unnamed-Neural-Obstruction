@@ -1,88 +1,65 @@
 package backend;
 
+import lime.app.Application;
 
 import haxe.CallStack;
 import haxe.io.Path;
-import lime.app.Application;
+
+import openfl.Lib;
 import openfl.events.UncaughtErrorEvent;
+
 #if sys
 import sys.FileSystem;
 import sys.io.File;
 #end
 
-class CrashLogger {
-    static final LOG_DIR = "logs";
-    static final LOG_FILE = 'crash-${Date.now().toString()}.log';
+class CrashLogger
+{
+    /**
+     * alejo estuvo aqui asdjladks
+     * 
+     * saludos ina
+     */
 
-    public static function init():Void {
+    public static function init():Void
+    {
         #if sys
-        openfl.Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(
-            UncaughtErrorEvent.UNCAUGHT_ERROR,
-            onCrash
-        );
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, (error) -> {
+			final title:String = 'UNO Crash Handler';
+
+			var printMessage:String = '';
+
+			var consoleMessage:String = '\n' + title + '\n';
+
+			for (stackItem in CallStack.exceptionStack(true))
+			{
+				switch (stackItem)
+				{
+					case FilePos(item, file, line, _):
+						switch (item)
+						{
+							case Method(className, func):
+								printMessage += className + '.' + func + ' - Line ' + line;
+							default:
+								printMessage += file + ':' + line;
+						}
+
+						printMessage += '\n';
+
+						consoleMessage += file + '#' + line + '\n';
+					default:
+						Sys.println(stackItem);
+				}
+			}
+
+			final errorMessage:String = '\n' + error.error;
+
+			trace(consoleMessage + errorMessage, 'error');
+			
+			Application.current.window.alert(printMessage + errorMessage, title);
+
+			Sys.exit(1);
+		});
         #end
-    }
-
-    static function onCrash(e:UncaughtErrorEvent):Void {
-        var message = buildReport(e.error);
-        saveLog(message);
-
-		// var winLines:Array<Strinng> = [];
-
-		// for (item in CallStack.exceptionStack())
-		// winLines.push(stackItemToString(item));
-
-		// winLines.push("");
-		// winLines.push("--- Haxe Stack ---");
-		// for (item in CallStack.callStack())
-		// winLines.push(stackItemToString(item));
-
-        lime.app.Application.current.window.alert(
-		'${Date.now().toString()} | ${Std.string(e.error)}\n\nGame crashed YOOOOOOOOOOOOO WSPPPPPPPPPPPP\nThe log was saved in: $LOG_DIR/$LOG_FILE\n\n',
-			"Error");
-    }
-
-    static function buildReport(error:Dynamic):String {
-        var lines = [];
-        lines.push("=== CRASH REPORT ===");
-        lines.push("Date: " + Date.now().toString());
-        lines.push("Error: " + Std.string(error));
-        lines.push("");
-        lines.push("--- Call Stack ---");
-        
-        for (item in CallStack.exceptionStack()) {
-            lines.push(stackItemToString(item));
-        }
-
-        lines.push("");
-        lines.push("--- Haxe Stack ---");
-        for (item in CallStack.callStack()) {
-            lines.push(stackItemToString(item));
-        }
-
-        return lines.join("\n");
-    }
-
-    static function stackItemToString(item:StackItem):String {
-        return switch (item) {
-            case FilePos(s, file, line, col): '$file:$line';
-            case CFunction: "C Function";
-            case Module(m): 'Module($m)';
-            case Method(cls, method): '$cls.$method';
-            case LocalFunction(n): 'LocalFunction($n)';
-        }
-    }
-
-    static function saveLog(content:String):Void {
-		#if sys
-        try {
-            if (!FileSystem.exists(LOG_DIR))
-                FileSystem.createDirectory(LOG_DIR);
-
-            File.saveContent(LOG_DIR + "/" + LOG_FILE, content);
-        } catch (e:Dynamic) {
-            trace('Couldn\'t save crash log: $e');
-        }
-		#end
     }
 }

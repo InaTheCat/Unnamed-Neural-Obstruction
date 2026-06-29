@@ -85,6 +85,8 @@ class Stage {
 
     var stageObjects:Map<String, FlxSprite> = [];
 
+    public function new() {}
+
     public function startStage(jsonPath:String) {
         if (!Paths.exists('data/stages/$jsonPath.json')){
             Logs.send('${ANSI.coloredType('$jsonPath', 0xFF0055FF)} was\'nt found', 'Error');
