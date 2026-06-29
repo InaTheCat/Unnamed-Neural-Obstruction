@@ -203,8 +203,8 @@ class PlayState extends UNOState
 
 		health = FlxMath.bound(health, 0, maxHealth);
 
-		Conductor.update(FlxG.sound.music.time);
-		
+		Conductor.update(elapsed);
+
 		playerManager.updateNotes();
 		opponentManager.updateNotes();
 
@@ -333,7 +333,13 @@ class PlayState extends UNOState
 		}
 
 		FlxG.sound.playMusic(Paths.songInst(curSong), 1, false);
+
 		inst = FlxG.sound.music;
+
+		/**
+		 * FOR TESTING!!!
+		 */
+		FlxG.sound.music.time = 18 * 1000;
 
 		if (voices != null || voices.length > 0)
 			for (e in voices)

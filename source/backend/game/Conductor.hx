@@ -105,11 +105,17 @@ class Conductor
 
 	public static function updatePosition(elapsed:Float):Void
 	{
-		var music = FlxG.sound.music;
-		if (music == null) return;
-		var elapsedMS:Float = elapsed * 1000;
-		var rawTime:Float = music.time;
-		#if FLX_PITCH elapsedMS *= music?.pitch; #end
+		final music = FlxG.sound.music;
+
+		if (music == null)
+			return;
+
+		songPosition += elapsed * 1000;
+
+		if (Math.abs(songPosition - music.time) > 20)
+			songPosition = music.time;
+
+		/*
 		switch (syncType)
 		{
 			case SyncType.PSYCH_1:	
@@ -130,5 +136,6 @@ class Conductor
 					LM_LAST_POS = rawTime;
 				}
 		}
+		*/
 	}
 }
