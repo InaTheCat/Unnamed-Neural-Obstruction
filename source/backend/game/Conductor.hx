@@ -1,30 +1,7 @@
 package backend.game;
 
-// Shoutout to Riconuts 
-// https://github.com/troll-slaiyers/FNF-Troll-Engine/blob/facaa076140d1cff8f60498169b0b6774b7904e7/source/funkin/states/base/MusicBeatState.hx
-enum abstract SyncType(String) to String
-{
-	var PSYCH_1 = 'psych1';
-	var LAST_MIX = 'lastMix';
-	var LEGACY = 'legacy';
-	var DIRECT = 'direct';
-	public static function getSync(str:String):SyncType
-	{
-		switch (str)
-		{
-			case 'psych1', 'psych_1', 'psych 1', 'psych 1.0': return PSYCH_1;
-			case 'legacy': return LEGACY;
-			case 'direct': return DIRECT;
-			case 'lastmix', 'last_mix', 'last mix': return LAST_MIX;
-			default: return LEGACY;
-		}
-	}
-}
-
 class Conductor
 {
-	private static var LM_LAST_POS:Float = 0.0;
-
 	public static var songPosition:Float = 0;
 	public static var bpm:Float = 100;
 	public static var speed:Float = 1;
@@ -40,14 +17,6 @@ class Conductor
 
 	public static var crochet(get, never):Float;
 	public static var stepCrochet(get, never):Float;
-	public static var syncType(default, set):SyncType = SyncType.LAST_MIX;
-
-	private static function set_syncType(value:SyncType):SyncType
-	{
-		syncType = value;
-		return value;
-	}
-
 
 	static function get_crochet():Float
 		return (60 / bpm) * 1000;
@@ -114,28 +83,5 @@ class Conductor
 
 		if (Math.abs(songPosition - music.time) > 20)
 			songPosition = music.time;
-
-		/*
-		switch (syncType)
-		{
-			case SyncType.PSYCH_1:	
-				songPosition += elapsedMS;
-				songPosition = FlxMath.lerp(rawTime, songPosition, Math.exp(-elapsedMS * 0.005));
-				var delta:Float = rawTime - songPosition;
-				if (Math.abs(delta) > 1000) songPosition += 1000 * FlxMath.signOf(delta);
-			case SyncType.LEGACY:
-				songPosition += elapsedMS;
-			case SyncType.DIRECT:
-				songPosition = rawTime;
-			case SyncType.LAST_MIX:
-				if (LM_LAST_POS == rawTime) songPosition += elapsedMS;
-				else
-				{
-					if (Math.abs(rawTime - songPosition) >= elapsedMS) songPosition = rawTime;
-					else songPosition += elapsedMS;
-					LM_LAST_POS = rawTime;
-				}
-		}
-		*/
 	}
 }

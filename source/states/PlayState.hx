@@ -47,7 +47,7 @@ class PlayState extends UNOState
 	var bfTimer:FlxTimer = new FlxTimer();
 	var directions:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
-	public var stage:Stage;
+	public var stage:Stage = new Stage();
 
 	var healthBar:HealthBar;
 	var maxHealth:Float = 2;
@@ -89,8 +89,6 @@ class PlayState extends UNOState
 		add(curtains);
 		for (e in [back, floor, dad, bf, curtains])
 			e.camera = camGame;
-
-		stage = new Stage();
 
 		stage.startStage('stage');
 
@@ -209,7 +207,6 @@ class PlayState extends UNOState
 		opponentManager.updateNotes();
 
 		for (e in voices)
-		{
 			if (!nullVoices)
 			{
 				var diff:Float = Math.abs(e.time - FlxG.sound.music.time);
@@ -217,7 +214,6 @@ class PlayState extends UNOState
 				if (diff > 20)
 					e.time = FlxG.sound.music.time;
 			}
-		}
 
 		scoreTxt.text = "Score: " + scoreManager.score;
 		missesTxt.text = "Misses: " + scoreManager.misses;

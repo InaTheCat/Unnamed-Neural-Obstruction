@@ -29,9 +29,6 @@ class Icon extends FlxSprite {
 
 		player = isPlayer;
 
-		if (parentChar != null)
-			trace(parentChar.name, parentChar.icon);
-
 		prepareIcon((parentChar != null && parentChar.icon != null && parentChar.icon.trim() != '') ? parentChar.icon : 'face');
     }
 

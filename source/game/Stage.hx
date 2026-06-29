@@ -81,9 +81,9 @@ typedef StageJson = {
 }
 
 class Stage {
-    var JSON:StageJson;
+	public var JSON:StageJson;
 
-    var stageObjects:Map<String, FlxSprite> = [];
+	public var stageObjects:Map<String, FlxSprite> = [];
 
     public function new() {}
 
@@ -96,12 +96,19 @@ class Stage {
 
         JSON = CoolUtil.parseJson('data/stages/$jsonPath');
 
-        // trace(JSON);
+		setStage();
+	}
 
-        // setStage(JSON);
-    }
+	private function setStage()
+	{
+		if (JSON == null)
+		{
+			Logs.send('Json is null, please check if you writted the stage correctly');
+			return;
+		}
 
-    private function setStage(daJson:StageJson) {
-        // if (daJson != null) trace(daJson);
+		var sprite:FlxSprite;
+
+		//
     }
 }
