@@ -1,11 +1,14 @@
 package backend;
 
+
 import haxe.CallStack;
 import haxe.io.Path;
 import lime.app.Application;
 import openfl.events.UncaughtErrorEvent;
+#if sys
 import sys.FileSystem;
 import sys.io.File;
+#end
 
 class CrashLogger {
     static final LOG_DIR = "logs";
@@ -71,6 +74,7 @@ class CrashLogger {
     }
 
     static function saveLog(content:String):Void {
+		#if sys
         try {
             if (!FileSystem.exists(LOG_DIR))
                 FileSystem.createDirectory(LOG_DIR);
@@ -79,5 +83,6 @@ class CrashLogger {
         } catch (e:Dynamic) {
             trace('Couldn\'t save crash log: $e');
         }
+		#end
     }
 }

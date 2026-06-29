@@ -10,5 +10,15 @@
 			"source.sortImports": "explicit"
 		}
 	},
-	"haxe.enableExtendedIndentation": true
+	"haxe.enableExtendedIndentation": true,
+    "editor.semanticHighlighting.enabled": true,
+    "editor.inlayHints.enabled": "on",
+    "editor.parameterHints.enabled": true,
+    "editor.quickSuggestions": {
+        "other": true,
+        "comments": false,
+        "strings": true
+    },
+    "haxe.enableServerView": true,
+    "haxe.enableCompilationServer": true
 }

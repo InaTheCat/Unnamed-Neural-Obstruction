@@ -9,6 +9,7 @@ import game.Character;
 import game.Controls;
 import game.HealthBar;
 import game.Icon;
+import game.Stage;
 import game.notes.NoteHitResult;
 import game.notes.NoteManager;
 import game.notes.StrumLine;
@@ -18,8 +19,11 @@ class PlayState extends UNOState
 {
 	var strums:FlxSpriteGroup = new FlxSpriteGroup();
 
-	var opponent:StrumLine;
-	var player:StrumLine;
+	public var opponent:StrumLine;
+	public var player:StrumLine;
+
+	public var bf:Character;
+	public var dad:Character;
 
 	public var inst:FlxSound;
 	public var voices:Array<FlxSound> = [];
@@ -43,8 +47,7 @@ class PlayState extends UNOState
 	var bfTimer:FlxTimer = new FlxTimer();
 	var directions:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
-	var bf:Character;
-	var dad:Character;
+	public var stage:Stage;
 
 	var healthBar:HealthBar;
 	var maxHealth:Float = 2;
@@ -70,9 +73,9 @@ class PlayState extends UNOState
 		super.create();
 
 		// --- Test stage n char ---
-		var floor:FlxSprite = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/default/floor'));
-		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/default/back'));
-		var curtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stages/default/curtains'));
+		var floor:FlxSprite = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/stage/floor'));
+		var back:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/stage/back'));
+		var curtains:FlxSprite = new FlxSprite(-500, -300).loadGraphic(Paths.image('stages/stage/curtains'));
 
 		back.scrollFactor.set(0.9, 0.9);
 		curtains.scrollFactor.set(1.3, 1.3);
@@ -86,6 +89,8 @@ class PlayState extends UNOState
 		add(curtains);
 		for (e in [back, floor, dad, bf, curtains])
 			e.camera = camGame;
+
+		stage.startStage('stage');
 
 		// --- HUD ---
 		add(scoreTexts);

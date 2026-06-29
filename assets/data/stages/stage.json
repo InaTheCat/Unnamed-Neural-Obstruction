@@ -1,0 +1,14 @@
+{
+    "objects": [
+        {
+            "sprite": "floor",
+            "properties": {
+                "pos": [-600, 600]
+            },
+            "addBehind": "dad"
+        }
+    ],
+
+    "path": "stages/stage/",
+    "name": "stage"
+}

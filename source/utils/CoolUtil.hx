@@ -12,7 +12,8 @@ class CoolUtil {
 	 * Self descreptive, but it parses a json and returns a json...
 	 * @return a full ass json gng (if it doesnt exists... well, returns null)
 	**/
-    public static function parseJson(path:String):Dynamic {
+	public static function parseJson(path:String):Null<Any>
+	{
         if (!Assets.exists('assets/$path.json')) {
 			Logs.send('JSON not found. [$path]', 'Errro');
             return null;

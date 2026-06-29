@@ -17,11 +17,30 @@ typedef ParsedChart =
 	var speed:Float;
 }
 
+typedef ParsedChartSectionNoteData = Array<Dynamic>;
+
+typedef ParsedChartSection =
+{
+	var sectionNotes:Array<ParsedChartSectionNoteData>;
+}
+
+typedef ParsedChartSongData =
+{
+	var notes:Array<ParsedChartSection>;
+	var bpm:Null<Float>;
+	var speed:Null<Float>;
+}
+
+typedef ParsedChartFile =
+{
+	var song:ParsedChartSongData;
+}
+
 class NewTestChartparser
 {
 	public static function parseChart(songName:String, difficulty:String):ParsedChart
 	{
-		var chart:Dynamic = CoolUtil.parseJson('songs/$songName/chart/$difficulty');
+		var chart:Null<ParsedChartFile> = CoolUtil.parseJson('songs/$songName/chart/$difficulty');
 
 		var result:Array<ParsedNote> = [];
 
@@ -34,28 +53,28 @@ class NewTestChartparser
 			};
 		}
 
-		var songData:Dynamic = chart.song;
+		var songData:ParsedChartSongData = chart.song;
 
 		if (songData.notes != null)
 		{
-			var sections:Array<Dynamic> = cast songData.notes;
+			var sections:Array<ParsedChartSection> = songData.notes;
 
 			for (section in sections)
 			{
 				if (section == null || section.sectionNotes == null)
 					continue;
 
-				var sectionNotes:Array<Dynamic> = cast section.sectionNotes;
+				var sectionNotes:Array<ParsedChartSectionNoteData> = section.sectionNotes;
 
 				for (noteData in sectionNotes)
 				{
-					var rawDir:Int = noteData[1];
+					var rawDir:Int = Std.int(noteData[1]);
 					var isPlayerNote:Bool = rawDir >= 4 && rawDir <= 7;
 
 					result.push({
-						time: noteData[0],
+						time: Std.parseFloat(Std.string(noteData[0])),
 						dir: rawDir % 4,
-						sustain: noteData[2],
+						sustain: Std.parseFloat(Std.string(noteData[2])),
 						mustHit: isPlayerNote
 					});
 				}

@@ -2,7 +2,6 @@ package states;
 
 import flixel.FlxState;
 import options.Options;
-import utils.WinUtils;
 import winapi.WindowsAPI;
 
 class LoadState extends FlxState {

@@ -22,7 +22,7 @@ typedef CharacterJson =
 }
 
 class Character extends FlxSprite {
-	final charJson:CharacterJson;
+	var charJson:Null<CharacterJson>;
 	public var iconColor:FlxColor = 0xFFFFFFFF;
 
 	public var name:String = 'Undefined Character';
@@ -45,13 +45,13 @@ class Character extends FlxSprite {
 	{
         super(x, y);
 
-		charJson = cast CoolUtil.parseJson('data/characters/$character');
+		charJson = CoolUtil.parseJson('data/characters/$character');
 
 		if (charJson == null)
 		{
 			Logs.send('charJson failed to load ${backend.system.ANSI.coloredType('[$character]', 0xFFFFFF00)}, The Character will be\nreplaced for bf',
 				'Warning');
-			charJson = cast CoolUtil.parseJson('data/characters/bf');
+			charJson = CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
 			{
