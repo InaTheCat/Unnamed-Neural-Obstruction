@@ -90,7 +90,7 @@ class PlayState extends UNOState
 		for (e in [back, floor, dad, bf, curtains])
 			e.camera = camGame;
 
-		stage.startStage('stage');
+		// stage.startStage('stage');
 
 		// --- HUD ---
 		add(scoreTexts);

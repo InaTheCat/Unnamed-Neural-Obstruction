@@ -4,7 +4,7 @@ import Sys;
 import backend.system.ANSI;
 import flixel.addons.display.FlxBackdrop;
 import flixel.util.FlxAxes;
-// import flixel.util.typeLimit.OneOfFour;
+import flixel.util.typeLimit.OneOfFour;
 import flixel.util.typeLimit.OneOfTwo;
 import openfl.display.BlendMode;
 
@@ -39,7 +39,7 @@ typedef ObjectProperties = {
 
     var scaleX:Null<Float>;
     var scaleY:Null<Float>;
-    var scale:Null<Float>;
+	var scale:Null<Array<Float>>;
 
     var updateHitbox:Null<Bool>;
 
@@ -132,7 +132,9 @@ class Stage {
 
 		for (e in JSON.objects)
 		{
-			var sprite:OneOfTwo<FlxSprite, FlxBackdrop>;
+			var sprite:Dynamic;
+
+			// var sprite:OneOfTwo<OneOfFour<Int, Float, Bool, Array<OneOfTwo<Int, Float>>>, OneOfFour<FlxSprite, FlxBackdrop, FlxText, FlxPieDial>>;
 
 			var type:String = '';
 
@@ -140,15 +142,17 @@ class Stage {
 			{
 				case Sprite, null:
 					sprite = new FlxSprite(e.properties.pos[0] ?? 0, e.properties.pos[1] ?? 0).loadGraphic(Paths.image(e.sprite));
+
 					type = 'sprite';
 
 				case Backdrop:
-					var repeats:FlxAxes = XY;
-
-					if (e.properties.repeatX)
-						repeats = X;
-					if (e.properties.repeatY)
-						repeats = Y;
+					var repeats = switch ([e.properties.repeatX, e.properties.repeatY])
+					{
+						case [true, true]: XY;
+						case [true, false]: X;
+						case [false, true]: Y;
+						default: NONE;
+					}
 
 					sprite = new FlxBackdrop(Paths.image(e.sprite), repeats ?? XY, e.properties.spacingX ?? 0, e.properties.spacingY ?? 0);
 					type = 'backdrop';
@@ -176,10 +180,10 @@ class Stage {
 		}
 	}
 
-	private function setColor(sprite:OneOfTwo<FlxSprite, FlxBackdrop>, requested:String):Void
+	private function setColor(sprite:Dynamic, requested:String):Void
 	{
 		for (e in JSON.objects)
-			if (e.color == null)
+			if (e.properties.color == null)
 				return;
 
 		final REG = ~/^(#|0[xX])([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
@@ -198,7 +202,7 @@ class Stage {
 		sprite.color = Std.parseInt(color);
 	}
 
-	private function graphicSize(sprite:OneOfTwo<FlxSprite, FlxBackdrop>)
+	private function graphicSize(sprite:Dynamic)
 	{
 		for (e in JSON.objects)
 		{
@@ -212,7 +216,7 @@ class Stage {
 		}
 	}
 
-	private function setAcceleration(sprite:OneOfTwo<FlxSprite, FlxBackdrop>):Void
+	private function setAcceleration(sprite:Dynamic):Void
 	{
 		for (e in JSON.objects)
 		{
@@ -229,7 +233,7 @@ class Stage {
 		}
 	}
 
-	private function setVelocity(sprite:OneOfTwo<FlxSprite, FlxBackdrop>):Void
+	private function setVelocity(sprite:Dynamic):Void
 	{
 		for (e in JSON.objects)
 		{
@@ -246,11 +250,11 @@ class Stage {
 		}
 	}
 
-	private function setScale(sprite:OneOfTwo<FlxSprite, FlxBackdrop>, updateHitbox:Null<Bool>):Void
+	private function setScale(sprite:Dynamic, updateHitbox:Null<Bool>):Void
 	{
 		for (e in JSON.objects)
 		{
-			if (e.properties.scale == null && e.properties.scaleyX == null && e.properties.scaleY == null)
+			if (e.properties.scale == null && e.properties.scaleX == null && e.properties.scaleY == null)
 				return;
 
 			if (e.properties.scale == null && (e.properties.scaleX != null || e.properties.scaleY != null))
@@ -261,7 +265,7 @@ class Stage {
 			else
 				sprite.scale.set(e.properties.scale[0] ?? 0, e.properties.scale[1] ?? 0);
 
-			if (updateHitbox)
+			if (updateHitbox && sprite is FlxSprite)
 				sprite.updateHitbox();
 		}
     }
