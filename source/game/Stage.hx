@@ -2,11 +2,14 @@ package game;
 
 import Sys;
 import backend.system.ANSI;
+import flixel.FlxObject;
 import flixel.addons.display.FlxBackdrop;
 import flixel.util.FlxAxes;
 import flixel.util.typeLimit.OneOfFour;
 import flixel.util.typeLimit.OneOfTwo;
+import game.Character;
 import openfl.display.BlendMode;
+import states.PlayState;
 
 using StringTools;
 
@@ -98,7 +101,11 @@ typedef StageJson = {
 class Stage {
 	public var JSON:StageJson;
 
-	public var stageObjects:Map<String, FlxSprite> = [];
+	public var stageObjects:Map<String, FlxObject> = [];
+	public var objectsLength:Int = 0;
+
+	private var _fObjs:Array<{sprite:FlxObject, data:StageObjects}> = [];
+	private var _actualObj:Int = 0;
 
 	public var path:String = '';
 	public var name:String = '';
@@ -130,6 +137,8 @@ class Stage {
 		path = JSON.path ?? '';
 		name = JSON.name ?? '';
 
+		objectsLength = JSON.objects.length ?? 0;
+
 		for (e in JSON.objects)
 		{
 			var sprite:Dynamic;
@@ -159,7 +168,7 @@ class Stage {
 
 				case Solid:
 					sprite = new FlxSprite(e.properties.pos[0] ?? 0, e.properties.pos[1] ?? 0);
-					graphicSize(sprite);
+					graphicSize(sprite, e);
 					type = 'solid';
 
 				default:
@@ -167,24 +176,56 @@ class Stage {
 					type = 'sprite';
 			}
 
+			stageObjects.set(e.name ?? e.sprite, sprite);
+
+			if (stageObjects.exists(e.name ?? e.sprite))
+				Logs.send('Duplicated object "${e.name ?? e.sprite}"', "Warning");
+
 			sprite.alpha = e.properties.alpha ?? 1;
 			sprite.angle = e.properties.angle ?? 0;
 			sprite.flipX = e.properties.flipX ?? false;
 			sprite.flipY = e.properties.flipY ?? false;
 			sprite.antialiasing = e.properties.antialiasing ?? false; // Options.antialiasing depois
 
-			setColor(sprite, e.properties.color ?? '0xFFFFFFFF');
-			setAcceleration(sprite);
-			setVelocity(sprite);
-			setScale(sprite, e.properties.updateHitbox ?? false);
+			setColor(sprite, e, e.properties.color ?? '0xFFFFFFFF');
+			setAcceleration(sprite, e);
+			setVelocity(sprite, e);
+			setScale(sprite, e, e.properties.updateHitbox ?? false);
+
+			_fObjs.push({sprite: sprite, data: e});
+			_actualObj++;
+
+			if (_actualObj == objectsLength)
+				addSprs();
 		}
 	}
 
-	private function setColor(sprite:Dynamic, requested:String):Void
+	private function addSprs()
 	{
-		for (e in JSON.objects)
-			if (e.properties.color == null)
+		for (e in _fObjs)
+		{
+			if (e.data.addBehind == null && e.data.addAbove == null)
+			{
+				insert(0, e.sprite);
 				return;
+			}
+
+			if (e.data.addBehind != null && e.data.addAbove == null)
+			{
+				//
+			}
+
+			if (e.data.addAbove != null && e.data.addBehind == null)
+			{
+				//
+			}
+		}
+	}
+
+	private function setColor(sprite:Dynamic, data:StageObjects, requested:String):Void
+	{
+		if (data.properties?.color == null)
+			return;
 
 		final REG = ~/^(#|0[xX])([0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})$/;
 
@@ -202,71 +243,59 @@ class Stage {
 		sprite.color = Std.parseInt(color);
 	}
 
-	private function graphicSize(sprite:Dynamic)
+	private function graphicSize(sprite:Dynamic, data:StageObjects)
 	{
-		for (e in JSON.objects)
-		{
-			if (e.properties.size == null && e.properties.sizeX == null && e.properties.sizeY == null)
-				return;
+		if (data.properties?.size == null && data.properties?.sizeX == null && data.properties?.sizeY == null)
+			return;
 
-			if (e.properties.size == null && (e.properties.sizeX != null || e.properties.sizeY != null))
-				sprite.makeGraphic(e.properties.sizeX ?? 25, e.properties.sizeY ?? 25);
-			else
-				sprite.makeGraphic(e.properties.size[0] ?? 25, e.properties.size[1] ?? 25);
-		}
+		if (data.properties?.size == null && (data.properties?.sizeX != null || data.properties?.sizeY != null))
+			sprite.makeGraphic(data.properties?.sizeX ?? 25, data.properties?.sizeY ?? 25);
+		else
+			sprite.makeGraphic(data.properties?.size[0] ?? 25, data.properties?.size[1] ?? 25);
 	}
 
-	private function setAcceleration(sprite:Dynamic):Void
+	private function setAcceleration(sprite:Dynamic, data:StageObjects):Void
 	{
-		for (e in JSON.objects)
-		{
-			if (e.properties.acceleration == null && e.properties.accelerationX == null && e.properties.accelerationY == null)
-				return;
+		if (data.properties?.acceleration == null && data.properties?.accelerationX == null && data.properties?.accelerationY == null)
+			return;
 
-			if (e.properties.acceleration == null && (e.properties.accelerationX != null || e.properties.accelerationY != null))
-			{
-				sprite.acceleration.x = e.properties.accelerationX ?? 0;
-				sprite.acceleration.y = e.properties.accelerationY ?? 0;
-			}
-			else
-				sprite.acceleration.set(e.properties.acceleration[0] ?? 0, e.properties.acceleration[1] ?? 0);
+		if (data.properties?.acceleration == null && (data.properties?.accelerationX != null || data.properties?.accelerationY != null))
+		{
+			sprite.acceleration.x = data.properties?.accelerationX ?? 0;
+			sprite.acceleration.y = data.properties?.accelerationY ?? 0;
 		}
+		else
+			sprite.acceleration.set(data.properties?.acceleration[0] ?? 0, data.properties?.acceleration[1] ?? 0);
 	}
 
-	private function setVelocity(sprite:Dynamic):Void
+	private function setVelocity(sprite:Dynamic, data:StageObjects):Void
 	{
-		for (e in JSON.objects)
-		{
-			if (e.properties.velocity == null && e.properties.velocityX == null && e.properties.velocityY == null)
-				return;
+		if (data.properties?.velocity == null && data.properties?.velocityX == null && data.properties?.velocityY == null)
+			return;
 
-			if (e.properties.velocity == null && (e.properties.velocityX != null || e.properties.velocityY != null))
-			{
-				sprite.velocity.x = e.properties.velocityX ?? 0;
-				sprite.velocity.y = e.properties.velocityY ?? 0;
-			}
-			else
-				sprite.velocity.set(e.properties.velocity[0] ?? 0, e.properties.velocity[1] ?? 0);
+		if (data.properties?.velocity == null && (data.properties?.velocityX != null || data.properties?.velocityY != null))
+		{
+			sprite.velocity.x = data.properties?.velocityX ?? 0;
+			sprite.velocity.y = data.properties?.velocityY ?? 0;
 		}
+		else
+			sprite.velocity.set(data.properties?.velocity[0] ?? 0, data.properties?.velocity[1] ?? 0);
 	}
 
-	private function setScale(sprite:Dynamic, updateHitbox:Null<Bool>):Void
+	private function setScale(sprite:Dynamic, data:StageObjects, updateHitbox:Null<Bool>):Void
 	{
-		for (e in JSON.objects)
+		if (data.properties?.scale == null && data.properties?.scaleX == null && data.properties?.scaleY == null)
+			return;
+
+		if (data.properties?.scale == null && (data.properties?.scaleX != null || data.properties?.scaleY != null))
 		{
-			if (e.properties.scale == null && e.properties.scaleX == null && e.properties.scaleY == null)
-				return;
-
-			if (e.properties.scale == null && (e.properties.scaleX != null || e.properties.scaleY != null))
-			{
-				sprite.scale.x = e.properties.scaleX ?? 0;
-				sprite.scale.y = e.properties.scaleY ?? 0;
-			}
-			else
-				sprite.scale.set(e.properties.scale[0] ?? 0, e.properties.scale[1] ?? 0);
-
-			if (updateHitbox && sprite is FlxSprite)
-				sprite.updateHitbox();
+			sprite.scale.x = data.properties?.scaleX ?? 0;
+			sprite.scale.y = data.properties?.scaleY ?? 0;
 		}
+		else
+			sprite.scale.set(data.properties?.scale[0] ?? 0, data.properties?.scale[1] ?? 0);
+
+		if (updateHitbox && sprite is FlxSprite)
+			sprite.updateHitbox();
     }
 }
