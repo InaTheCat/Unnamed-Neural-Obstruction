@@ -206,7 +206,7 @@ class Stage {
 		{
 			if (e.data.addBehind == null && e.data.addAbove == null)
 			{
-				insert(0, e.sprite);
+				FlxG.state.insert(0, e.sprite);
 				return;
 			}
 

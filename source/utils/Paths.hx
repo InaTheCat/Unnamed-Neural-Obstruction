@@ -80,11 +80,10 @@ class Paths {
 	{
 		var prefix:String = '';
 
-		if (hasBar && (type != null && type.trim() != ''))
-			prefix = '-$type';
-
-		if (!hasBar)
-			prefix = ' $type';
+		var hasType = type != null && type.trim() != '';
+			
+		if (hasType)
+			prefix = hasBar ? '-$type' : ' $type';
 
 		return getPath('assets/songs/$songName/song/Voices$prefix.ogg');
 	}

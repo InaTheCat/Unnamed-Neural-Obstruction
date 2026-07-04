@@ -128,7 +128,7 @@ class PlayState extends UNOState
 		healthBarGrp.y = FlxG.height * 0.9;
 
 		// --- Song ---
-		loadSong('Premeditated', ['boyfriend', 'smiley'], false);
+		loadSong('Ectospasm', '', false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -158,6 +158,8 @@ class PlayState extends UNOState
 		{
 			scoreManager.addMiss();
 		};
+
+		FlxG.camera.followLerp = 0.05;
 
 		// FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
 		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
@@ -219,6 +221,8 @@ class PlayState extends UNOState
 		missesTxt.text = "Misses: " + scoreManager.misses;
 		accuracyTxt.text = "Accuracy: " + Std.int(scoreManager.getAccuracy()) + "%";
 
+		// FlxG.camera.follow(chart.notes.mustHit ? bf : dad);
+
 		if (FlxG.keys.pressed.Z) camGame.zoom -= 2 * elapsed;
 		if (FlxG.keys.pressed.X) camGame.zoom += 2 * elapsed;
 
@@ -274,12 +278,16 @@ class PlayState extends UNOState
 		iconP2.y = healthBar.y + healthBar.height - (iconP2.height / 2);
 	}
 	/**
-	 * @param 
+	 * @param song da name of da song gng hehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhheheheh
+	 * @param prefix can be an Array with all the voices (placeholder) or a string... but the string needs to be `''`, yea, its still a placeholder cuz i suck at this
+	 * @param bar is if the voices has the `-Prefix`, ye, exactly the "-"
 	 *
+	 * `Please, don't try to "play" with this rn, its still on WIP and its horribly bad coded`
 	**/
+	@:deprecated("WIP Func, be aware with ts pls")
 	public function loadSong(song:String, ?prefix:Any, bar:Bool = true)
 	{
-		chart = NewTestChartparser.parseChart("Premeditated", "hard");
+		chart = NewTestChartparser.parseChart(song, "hard");
 		curSong = song;
 
 		FlxG.sound.load(Paths.songInst(song), 1, false);
@@ -335,7 +343,8 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 18 * 1000;
+		// FlxG.sound.music.time = 18 * 1000;
+		// my dih
 
 		if (voices != null || voices.length > 0)
 			for (e in voices)
