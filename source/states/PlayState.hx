@@ -128,7 +128,7 @@ class PlayState extends UNOState
 		healthBarGrp.y = FlxG.height * 0.9;
 
 		// --- Song ---
-		loadSong('Ectospasm', '', false);
+		loadSong('red-3', null, false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -141,6 +141,7 @@ class PlayState extends UNOState
 		strums.add(opponentManager);
 
 		playerManager = new NoteManager(player, playerNotes);
+		playerManager.cpu = true;
 		playerManager.onNoteHit = function(note:game.notes.Note)
 		{
 			if (bf != null && note != null)
@@ -158,8 +159,6 @@ class PlayState extends UNOState
 		{
 			scoreManager.addMiss();
 		};
-
-		FlxG.camera.followLerp = 0.05;
 
 		// FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
 		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
@@ -221,7 +220,12 @@ class PlayState extends UNOState
 		missesTxt.text = "Misses: " + scoreManager.misses;
 		accuracyTxt.text = "Accuracy: " + Std.int(scoreManager.getAccuracy()) + "%";
 
-		// FlxG.camera.follow(chart.notes.mustHit ? bf : dad);
+		// for (e in chart.notes)
+		// {
+		// FlxG.camera.scroll.x = CoolUtil.lerp(FlxG.camera.scroll.x, e.mustHitSection ? bf.x : dad.x, 0.1);
+		// FlxG.camera.scroll.y = CoolUtil.lerp(FlxG.camera.scroll.y, e.mustHitSection ? bf.y : dad.y, 0.1);
+		// }
+		// FlxG.camera.follow(e.mustHitSection ? bf : dad);
 
 		if (FlxG.keys.pressed.Z) camGame.zoom -= 2 * elapsed;
 		if (FlxG.keys.pressed.X) camGame.zoom += 2 * elapsed;
@@ -292,6 +296,12 @@ class PlayState extends UNOState
 
 		FlxG.sound.load(Paths.songInst(song), 1, false);
 
+		if (prefix == null)
+		{
+			nullVoices = true;
+			return;
+		}
+
 		if (prefix is Array)
 		{
 			var arr:Array<String> = cast prefix;
@@ -346,7 +356,7 @@ class PlayState extends UNOState
 		// FlxG.sound.music.time = 18 * 1000;
 		// my dih
 
-		if (voices != null || voices.length > 0)
+		if (voices != null || voices.length > 0 || !nullVoices)
 			for (e in voices)
 				e.play();
 	}

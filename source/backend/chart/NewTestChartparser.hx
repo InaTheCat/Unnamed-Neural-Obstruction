@@ -8,6 +8,7 @@ typedef ParsedNote =
 	var dir:Int;
 	var sustain:Float; //dur
 	var mustHit:Bool; // player - opp
+	var mustHitSection:Bool;
 }
 
 typedef ParsedChart =
@@ -22,6 +23,7 @@ typedef ParsedChartSectionNoteData = Array<Dynamic>;
 typedef ParsedChartSection =
 {
 	var sectionNotes:Array<ParsedChartSectionNoteData>;
+	var mustHitSection:Bool;
 }
 
 typedef ParsedChartSongData =
@@ -64,18 +66,25 @@ class NewTestChartparser
 				if (section == null || section.sectionNotes == null)
 					continue;
 
+				var mustHitSection:Bool = section.mustHitSection;
 				var sectionNotes:Array<ParsedChartSectionNoteData> = section.sectionNotes;
 
 				for (noteData in sectionNotes)
 				{
 					var rawDir:Int = Std.int(noteData[1]);
-					var isPlayerNote:Bool = rawDir >= 4 && rawDir <= 7;
+					var mustHit:Bool;
 
+					if (mustHitSection)
+						mustHit = rawDir < 4;
+					else
+						mustHit = rawDir >= 4;
+				
 					result.push({
 						time: Std.parseFloat(Std.string(noteData[0])),
 						dir: rawDir % 4,
 						sustain: Std.parseFloat(Std.string(noteData[2])),
-						mustHit: isPlayerNote
+						mustHit: mustHit,
+						mustHitSection: mustHitSection
 					});
 				}
 			}
