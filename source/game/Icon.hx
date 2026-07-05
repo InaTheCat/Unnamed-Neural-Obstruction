@@ -18,6 +18,10 @@ class Icon extends FlxSprite {
 
 	public var minHealth:Float = 0.2;
 
+	public var iconScale:Float = 1;
+
+	public var canBump:Bool = true;
+
 	public function new(parentChar:Character = null, isPlayer:Bool = false, min:Float = 0.2)
 	{
         super();
@@ -58,9 +62,17 @@ class Icon extends FlxSprite {
 
         animation.play('neutral', true);
 
+		antialiasing = Options.antialiasing ?? true;
 		flipX = player;
 		curIconName = iconName;
     }
+
+	public function updateScale()
+		if (canBump)
+		{
+			iconScale = CoolUtil.lerp(iconScale, 1, 0.25);
+			this.scale.set(iconScale, iconScale);
+		}
 
     /**
     * Well, the update of the icon, exactly the animation

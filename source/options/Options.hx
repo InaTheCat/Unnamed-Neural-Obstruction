@@ -8,6 +8,8 @@ class Options {
 
     public static var playerKeys:Array<FlxKey>=[Q, W, O, P];
 
+	public static var antialiasing:Bool = true;
+
 	public static function init():Void
 	{
 		// setKeys();

@@ -44,6 +44,7 @@ class Note extends FlxSprite
 
 		scale.set(0.7, 0.7);
 		updateHitbox();
+		antialiasing = Options.antialiasing ?? true;
 	}
 
 	override public function update(elapsed:Float):Void

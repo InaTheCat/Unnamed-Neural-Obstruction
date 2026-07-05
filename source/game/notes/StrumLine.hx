@@ -1,5 +1,7 @@
 package game.notes;
 
+import flixel.math.FlxPoint;
+
 class StrumLine extends FlxSpriteGroup
 {
     var notes:Array<FlxSprite>=[];
@@ -73,6 +75,8 @@ class StrumLine extends FlxSpriteGroup
 			note.updateHitbox();
 			note.setPosition((x + playerOffset) + (i * 110));
 
+			note.antialiasing = Options.antialiasing ?? true;
+
 			add(note);
             notes.push(note);
 
@@ -93,28 +97,27 @@ class StrumLine extends FlxSpriteGroup
      *                  (its an `Int` from `0` to `3` normally).
 	 * @param anim The animation that will play the note, if empty, it wont do nothing.
 	 */
-	public function noteAnim(direction:Int = 0, ?anim:String = 'static'):Void
+	public function noteAnim(direction:Int = 0, ?anim:String = 'static', ?isCpu:Bool = false):Void
 	{
 		if (direction >= 0 && direction < notes.length)
 		{
 			var note = notes[direction];
 
-			var centerX:Float = note.x + note.width / 2;
-			var centerY:Float = note.y + note.height / 2;
+			var center:FlxPoint = FlxPoint.get(note.x + note.width / 2, note.y + note.height / 2);
 
 			note.animation.play(anim ?? 'static', true);
+			if (isCpu)
+				note.animation.onFinish.add((n:String) -> noteAnim(direction, 'static'));
 			note.updateHitbox();
 
-			note.x = centerX - note.width / 2;
-			note.y = centerY - note.height / 2;
+			note.setPosition(center.x - note.width / 2, center.y - note.height / 2);
 
 			note.centerOffsets();
 		}
 	}
+
 	public function getReceptor(dir:Int):FlxSprite // a
-	{
 		return receptors[dir];
-	}
 
 	
 }

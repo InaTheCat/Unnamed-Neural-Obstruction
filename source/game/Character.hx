@@ -82,18 +82,17 @@ class Character extends FlxSprite {
 	
 		for (e in charJson.anims)
 		{
-			animation.addByPrefix(e.name, e.anim, e.fps != null ? e.fps : 24, e.loop != null ? e.loop : false);
+			animation.addByPrefix(e.name, e.anim, e.fps ?? 24, e.loop ?? false);
 
 			var added = animation.getByName(e.name);
 			if (added == null || added.frames.length == 0)
-			{
-				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML', 'Error');
-			}
+				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML gng', 'Error');
 		
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
 
 		dance(true);
+		antialiasing = Options.antialiasing ?? true;
 	}
 
 	/**

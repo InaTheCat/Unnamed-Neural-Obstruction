@@ -136,7 +136,11 @@ class PlayState extends UNOState
 		opponentManager.onNoteHit = function(note:game.notes.Note)
 		{
 			if (dad != null && note != null)
+			{
 				dad.playAnim(directions[note.dir], true);
+				if (opponentManager.cpu)
+					opponent.noteAnim(note.dir, 'confirm', true);
+			}
 		};
 		strums.add(opponentManager);
 
@@ -145,7 +149,16 @@ class PlayState extends UNOState
 		playerManager.onNoteHit = function(note:game.notes.Note)
 		{
 			if (bf != null && note != null)
+			{
 				bf.playAnim(directions[note.dir], true);
+				if (playerManager.cpu)
+				{
+					player.noteAnim(note.dir, 'confirm', true);
+					scoreManager.addTapScore('sick');
+				}
+
+				addHealth(0.015);
+			}
 		};
 		strums.add(playerManager);
 		scoreManager = new ScoreManager();
@@ -180,10 +193,11 @@ class PlayState extends UNOState
 					case HIT(note, diff, rating):
 						scoreManager.addTapScore(rating);
 						player.noteAnim(direction, 'confirm');
-						health -= 0.015;
+						addHealth(0.015);
 
 					case MISS:
 						player.noteAnim(direction, 'pressed');
+						addHealth(-0.05);
 						health += 0.05;
 				}
 
@@ -206,6 +220,8 @@ class PlayState extends UNOState
 
 		playerManager.updateNotes();
 		opponentManager.updateNotes();
+		for (e in [iconP1, iconP2])
+			e.updateScale();
 
 		for (e in voices)
 			if (!nullVoices)
@@ -242,6 +258,10 @@ class PlayState extends UNOState
 	{
 		super.beatHit(b);
 
+		if (b % 4 == 0)
+			for (e in [iconP1, iconP2])
+				e.iconScale = 1.2;
+
 		if (b % 8 == 0)
 			for (e in [dad, bf])
 				e.dance();
@@ -249,6 +269,8 @@ class PlayState extends UNOState
 
 	private function updateHud():Void
 	{
+		// scoreTxt.x = healthBar.bg.width - (scoreTxt.textField.textWidth / scoreTxt.width); putos todos todos putos
+
 		if (!hudUpdating)
 			return;
 
@@ -281,6 +303,9 @@ class PlayState extends UNOState
 		iconP1.y = healthBar.y + healthBar.height - (iconP1.height / 2);
 		iconP2.y = healthBar.y + healthBar.height - (iconP2.height / 2);
 	}
+	public function addHealth(am:Float = 0)
+		health -= am ?? 0;
+
 	/**
 	 * @param song da name of da song gng hehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhhehehehhehheehhehheeehhhehehhhhhhhheheheh
 	 * @param prefix can be an Array with all the voices (placeholder) or a string... but the string needs to be `''`, yea, its still a placeholder cuz i suck at this
@@ -353,7 +378,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		// FlxG.sound.music.time = 18 * 1000;
+		FlxG.sound.music.time = 18 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)

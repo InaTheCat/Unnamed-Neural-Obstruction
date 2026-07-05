@@ -53,7 +53,7 @@ class SustainNote extends FlxSprite
 
 		animation.play('hold');
 
-		
+		antialiasing = Options.antialiasing ?? true;
 
 		scale.set(0.7, 0.7);
 		updateHitbox();
