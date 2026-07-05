@@ -31,6 +31,8 @@ class Conductor
 		curBeat = 0;
 		curDecStep = 0;
 		curDecBeat = 0;
+		lastStep = -1;
+		lastBeat = -1;
 	}
 
 	public static function mapSong(?newBpm:Float, ?newSpeed:Float):Void
@@ -68,7 +70,7 @@ class Conductor
 			var state = Std.downcast(FlxG.state, BeatState);
 
 			if (state != null)
-				state.beatHit(curStep);
+				state.stepHit(curStep);
 		}
 	}
 

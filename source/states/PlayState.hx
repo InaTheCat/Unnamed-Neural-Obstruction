@@ -258,11 +258,11 @@ class PlayState extends UNOState
 	{
 		super.beatHit(b);
 
-		if (b % 4 == 0)
+		if (b % 2 == 0)
 			for (e in [iconP1, iconP2])
 				e.iconScale = 1.2;
 
-		if (b % 8 == 0)
+		if (b % 4 == 0)
 			for (e in [dad, bf])
 				e.dance();
 	}
