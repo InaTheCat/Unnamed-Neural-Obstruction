@@ -58,8 +58,11 @@ class Paths {
     public static inline function xml(path:String):String
 		return getPath('assets/images/$path.xml');
 
-    public static inline function getSparrowAtlas(path:String)
+	public static inline function getSparrowAtlas(path:String):flixel.graphics.frames.FlxFramesCollection
         return FlxAtlasFrames.fromSparrow(image(path), xml(path));
+
+	public static inline function json(path:String):String
+		return getPath('assets/$path.json');
 
 	public static inline function songJson(songName:String, difficulty:String):String
 		return getPath('assets/songs/$songName/chart/$difficulty.json');

@@ -6,11 +6,13 @@ class Conductor
 	public static var bpm:Float = 100;
 	public static var speed:Float = 1;
 
+	public static var curSection:Int = 0;
 	public static var curStep:Int = 0;
 	public static var curBeat:Int = 0;
 
 	static var lastStep:Int = -1;
 	static var lastBeat:Int = -1;
+	static var lastSection:Int = -1;
 
 	public static var curDecStep:Float = 0;
 	public static var curDecBeat:Float = 0;
@@ -33,6 +35,7 @@ class Conductor
 		curDecBeat = 0;
 		lastStep = -1;
 		lastBeat = -1;
+		lastSection = -1;
 	}
 
 	public static function mapSong(?newBpm:Float, ?newSpeed:Float):Void
@@ -53,6 +56,20 @@ class Conductor
 
 		curDecBeat = curDecStep / 4;
 		curBeat = Math.floor(curDecBeat);
+		curSection = Math.floor(curStep / 16);
+
+		curSection = Math.floor(curStep / 16);
+
+		if (curSection != lastSection)
+		{
+			lastSection = curSection;
+
+			var state = Std.downcast(FlxG.state, BeatState);
+
+			if (state != null)
+				state.sectionHit(curSection);
+		}
+
 		if (curBeat != lastBeat)
 		{
 			lastBeat = curBeat;

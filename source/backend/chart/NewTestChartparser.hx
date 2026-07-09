@@ -1,7 +1,5 @@
 package backend.chart;
 
-import utils.CoolUtil;
-
 typedef ParsedNote =
 {
 	var time:Float;
@@ -14,6 +12,7 @@ typedef ParsedNote =
 typedef ParsedChart =
 {
 	var notes:Array<ParsedNote>;
+	var sections:Array<ParsedChartSection>;
 	var bpm:Float;
 	var speed:Float;
 }
@@ -45,11 +44,13 @@ class NewTestChartparser
 		var chart:Null<ParsedChartFile> = CoolUtil.parseJson('songs/$songName/chart/$difficulty');
 
 		var result:Array<ParsedNote> = [];
+		var sections:Array<ParsedChartSection> = [];
 
 		if (chart == null || chart.song == null) //vr g
 		{
 			return {
 				notes: result,
+				sections: sections,
 				bpm: 100,
 				speed: 1
 			};
@@ -59,7 +60,7 @@ class NewTestChartparser
 
 		if (songData.notes != null)
 		{
-			var sections:Array<ParsedChartSection> = songData.notes;
+			sections = songData.notes;
 
 			for (section in sections)
 			{
@@ -94,8 +95,9 @@ class NewTestChartparser
 
 		return {
 			notes: result,
-			bpm: songData.bpm != null ? songData.bpm : 100,
-			speed: songData.speed != null ? songData.speed : 1
+			sections: sections,
+			bpm: songData.bpm ?? 100,
+			speed: songData.speed ?? 1
 		};
 	}
 }

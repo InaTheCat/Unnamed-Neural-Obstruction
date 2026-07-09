@@ -3,6 +3,7 @@ package states;
 import backend.chart.NewTestChartparser.ParsedChart; // // //
 import backend.chart.NewTestChartparser.ParsedNote; //
 import backend.chart.NewTestChartparser; //
+import flixel.math.FlxPoint;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.util.typeLimit.OneOfTwo;
 import game.Character;
@@ -29,22 +30,20 @@ class PlayState extends UNOState
 	public var voices:Array<FlxSound> = [];
 	private var nullVoices:Bool = false;
 
-	private var singleVoice:Bool = false;
-
+	public static var mustHitSection:Bool = false;
 	public static var chart:ParsedChart;
 
 	public var songPosition:Float = 0;
 	public var curSong:String = '';
 
-	var unspawnNotes:Array<ParsedNote> = [];
-	var playerNotes:Array<ParsedNote> = [];
-	var opponentNotes:Array<ParsedNote> = [];
+	public var unspawnNotes:Array<ParsedNote> = [];
+	public var playerNotes:Array<ParsedNote> = [];
+	public var opponentNotes:Array<ParsedNote> = [];
 
 	var scoreManager:ScoreManager;
 	var opponentManager:NoteManager;
 	var playerManager:NoteManager;
 
-	var bfTimer:FlxTimer = new FlxTimer();
 	var directions:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
 	public var stage:Stage = new Stage();
@@ -55,19 +54,23 @@ class PlayState extends UNOState
 
 	public var iconP1:Icon;
 	public var iconP2:Icon;
+	public var updateIcons:Bool = true;
 
-	var accuracyTxt:FlxText;
-	var missesTxt:FlxText;
-	var scoreTxt:FlxText;
+	public var accuracyTxt:FlxText;
+	public var missesTxt:FlxText;
+	public var scoreTxt:FlxText;
 
-	var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
-	var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
+	public var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
+	public var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
 
 	public var hudUpdating:Bool = true;
 	public var switchScorePos:Bool = false;
 
-	var alphaCenter:Float = 360;
-	var alphaRange:Float = 100;
+	public var alphaCenter:Float = 360;
+	public var alphaRange:Float = 100;
+
+	public final BF_BASE:FlxPoint = FlxPoint.get(850, 400);
+	public final DAD_BASE:FlxPoint = FlxPoint.get(150, 50);
 
 	override public function create() {
 		super.create();
@@ -83,8 +86,8 @@ class PlayState extends UNOState
 		add(back);
 		add(floor);
 
-		add(dad = new Character(150, 50, 'dad'));
-		add(bf = new Character(850, 400, 'bf', true));
+		add(dad = new Character(DAD_BASE.x, DAD_BASE.y, 'dad'));
+		add(bf = new Character(BF_BASE.x, BF_BASE.y, 'bf', true));
 
 		add(curtains);
 		for (e in [back, floor, dad, bf, curtains])
@@ -104,7 +107,10 @@ class PlayState extends UNOState
 
 		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0, maxHealth, this, 'health', LEFT_TO_RIGHT, true));
 		healthBar.setColors(dad.getColor(), bf.getColor());
-		// -- //
+		for (e in [healthBarGrp, healthBar, healthBar.bar, healthBar.bg])
+			e.updateHitbox();
+		healthBarGrp.screenCenter(X);
+
 		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
 		scoreTexts.add(missesTxt = new FlxText(0, 0, 0, 'Misses: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'center', OUTLINE, 0xFF000000));
 		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
@@ -116,19 +122,16 @@ class PlayState extends UNOState
 			e.updateHitbox();
 		}
 
+		scoreTexts.camera = camHUD;
+		scoreTexts.screenCenter(X);
+
 		healthBarGrp.add(iconP1 = new Icon(bf, true, 1.8));
 		healthBarGrp.add(iconP2 = new Icon(dad, false, 0.2));
-
-		for (e in [scoreTexts, healthBarGrp])
-		{
-			e.camera = camHUD;
-			e.screenCenter(X);
-		}
-
 		healthBarGrp.y = FlxG.height * 0.9;
+		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('red-3', null, false);
+		loadSong('test', '', false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -151,13 +154,13 @@ class PlayState extends UNOState
 			if (bf != null && note != null)
 			{
 				bf.playAnim(directions[note.dir], true);
+
 				if (playerManager.cpu)
 				{
 					player.noteAnim(note.dir, 'confirm', true);
 					scoreManager.addTapScore('sick');
+					addHealth(0.015);
 				}
-
-				addHealth(0.015);
 			}
 		};
 		strums.add(playerManager);
@@ -254,6 +257,7 @@ class PlayState extends UNOState
 		if (FlxG.keys.pressed.K)
 			camGame.scroll.y += 25;
 	}
+
 	override function beatHit(b:Int)
 	{
 		super.beatHit(b);
@@ -261,19 +265,26 @@ class PlayState extends UNOState
 		if (b % 2 == 0)
 			for (e in [iconP1, iconP2])
 				e.iconScale = 1.2;
+	}
 
-		if (b % 4 == 0)
-			for (e in [dad, bf])
-				e.dance();
+	override function sectionHit(s:Int)
+	{
+		super.sectionHit(s);
+
+		mustHitSection = chart.sections[s].mustHitSection ?? false;
+		Sys.println(mustHitSection);
+
+		for (e in [dad, bf])
+			e.dance();
 	}
 
 	private function updateHud():Void
 	{
-		// scoreTxt.x = healthBar.bg.width - (scoreTxt.textField.textWidth / scoreTxt.width); putos todos todos putos
-
 		if (!hudUpdating)
 			return;
 
+		scoreTxt.x = healthBar.bar.width - (scoreTxt.width - 300);
+		
 		for (e in [healthBarGrp, scoreTexts])
 		{
 			var dist:Float = Math.abs(e.y - alphaCenter);
@@ -293,15 +304,15 @@ class PlayState extends UNOState
 
 	private function updateIconPos():Void
 	{
+		if (!updateIcons)
+			return;
+
 		var healthBarPercent:Float = healthBar.bar.percent;
 
 		var center:Float = healthBar.x + healthBar.width * FlxMath.remapToRange(healthBarPercent, 0, 100, 0, 1);
 
-		iconP1.x = center - 20;
-		iconP2.x = center - (iconP2.width - 20);
-
-		iconP1.y = healthBar.y + healthBar.height - (iconP1.height / 2);
-		iconP2.y = healthBar.y + healthBar.height - (iconP2.height / 2);
+		iconP1.setPosition(center - 20, healthBar.y + healthBar.height - (iconP1.height / 2));
+		iconP2.setPosition(center - (iconP2.width - 20), healthBar.y + healthBar.height - (iconP2.height / 2));
 	}
 	public function addHealth(am:Float = 0)
 		health -= am ?? 0;
@@ -378,7 +389,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 18 * 1000;
+		FlxG.sound.music.time = 13 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)
