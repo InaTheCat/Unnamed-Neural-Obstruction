@@ -66,7 +66,7 @@ class PscInterpreter {
                     try {
                         Reflect.setField(obj, prop, value);
                     } catch (e) {
-						Logs.send('Could\'nt set $varName.$prop = $value [ERR: $e]', 'PSeError');
+						// Logs.send('Could\'nt set $varName.$prop = $value [ERR: $e]', 'PSeError');
                     }
                 } else {
 					Logs.send('Could\'nt find var: "$varName"', 'PSeError');
@@ -76,10 +76,10 @@ class PscInterpreter {
                 var obj = vars.get(varName);
                 if (obj != null) addFn(obj);
 				else
-					Logs.send('add(): Could\'nt find var: "$varName"', 'PSeError');
+					// Logs.send('add(): Could\'nt find var: "$varName"', 'PSeError');
 
             case Unknown(raw):
-				Logs.send('Line not recognized: "$raw"', 'PSeError');
+				// Logs.send('Line not recognized: "$raw"', 'PSeError');
         }
     }
 
@@ -89,7 +89,7 @@ class PscInterpreter {
         var obj:Dynamic = switch (type.toLowerCase()) {
             case "sprite": new FlxSprite();
             default:
-				Logs.send('Unknown type: "$type", will be replaced to "null"', 'PSeWarning');
+				// Logs.send('Unknown type: "$type", will be replaced to "null"', 'PSeWarning');
                 null;
         }
         vars.set(name, obj);
@@ -99,11 +99,11 @@ class PscInterpreter {
     function getSprite(varName:String):FlxSprite {
         var obj = vars.get(varName);
         if (obj == null) {
-			Logs.send('Sprite not found: "$varName"', 'PseError');
+			// Logs.send('Sprite not found: "$varName"', 'PseError');
             return null;
         }
         if (!Std.isOfType(obj, FlxSprite)) {
-			Logs.send('"$varName" is not an FlxSprite', 'PseError');
+			// Logs.send('"$varName" is not an FlxSprite', 'PseError');
             return null;
         }
         return cast obj;

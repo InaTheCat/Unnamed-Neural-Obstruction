@@ -26,6 +26,7 @@
         }
     ],
 
+    "camOffset": [120, -60],
     "path": "characters/dad",
     "color": "#AF66CE",
     "icon": "dad"

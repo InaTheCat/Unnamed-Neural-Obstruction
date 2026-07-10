@@ -1,23 +1,26 @@
 package game;
 
+import flixel.math.FlxPoint;
+
 using StringTools;
 
 typedef CharacterAnim =
 {
 	var name:String;
 	var anim:String;
-	var fps:Null<Int>;
-	var loop:Null<Bool>;
-	var offset:Null<Array<Float>>;
+	@:optional var fps:Null<Int>;
+	@:optional var loop:Null<Bool>;
+	@:optional var offset:Null<Array<Float>>;
 }
 
 typedef CharacterJson =
 {
-	var name:Null<String>;
-	var holdTime:Null<Float>;
-	var path:Null<String>;
-	var color:Null<String>;
-	var icon:Null<String>;
+	@:optional var name:Null<String>;
+	@:optional var holdTime:Null<Float>;
+	@:optional var path:Null<String>;
+	@:optional var color:Null<String>;
+	@:optional var icon:Null<String>;
+	@:optional var camOffset:Null<Array<Float>>;
 	var anims:Array<CharacterAnim>;
 }
 
@@ -29,6 +32,8 @@ class Character extends FlxSprite {
 	public var icon:String = 'face';
 	public var sprite:String = null;
     public var isPlayer:Bool = false;
+
+	public var camOffset:FlxPoint = FlxPoint.get(0, 0);
 
 	public var holdTime:Float = 4;
 	public var charTimer:FlxTimer = null;
@@ -49,13 +54,13 @@ class Character extends FlxSprite {
 
 		if (charJson == null)
 		{
-			Logs.send('charJson failed to load ${backend.system.ANSI.coloredType('[$character]', 0xFFFFFF00)}, The Character will be\nreplaced for bf',
-				'Warning');
+			Logs.send('charJson failed to load ${backend.system.ANSI.coloredType('[$character]', 0xFFFFFF00)}, The Character will be\nreplaced with bf',
+				{type: 'Warning'});
 			charJson = CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
 			{
-				Logs.send('Not even bf, then it wont fucking gonna appear then', 'Error');
+				Logs.send('Not even bf, then it wont fucking gonna appear then', {type: 'Error'});
 				return;
 			}
 		}
@@ -70,9 +75,14 @@ class Character extends FlxSprite {
 		holdTime = charJson.holdTime ?? 4;
 		charTimer = new FlxTimer();
 
+		if (charJson.camOffset != null)
+			camOffset.set(charJson.camOffset[0], charJson.camOffset[1]);
+		else
+			camOffset.set(0, 0);
+
 		iconColor = charJson.color != null ? FlxColor.fromString(charJson.color) : 0xFFFFFFFF;
         isPlayer = player;
-		sprite = charJson.path;
+		sprite = charJson.path ?? 'characters/bf';
         prepareAnim();
     }
 
@@ -86,7 +96,7 @@ class Character extends FlxSprite {
 
 			var added = animation.getByName(e.name);
 			if (added == null || added.frames.length == 0)
-				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML gng', 'Error');
+				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML gng', {type: 'Error'});
 		
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
@@ -127,7 +137,7 @@ class Character extends FlxSprite {
 			if (charJson.color == null)
 				shii = 'Icon color';
 
-			Logs.send('$shii is null gng', 'Error');
+			Logs.send('$shii is null gng', {type: 'Error'});
 			return 0xFFFFFFFF;
 		}
 

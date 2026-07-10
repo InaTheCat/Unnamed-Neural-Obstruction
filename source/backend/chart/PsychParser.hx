@@ -54,7 +54,7 @@ class PsychParser {
             var rawData = Json.parse(jsonContent);
             return parseChartData(rawData);
         } catch (e) {
-			Logs.send('Error while reading file. (ERR: ${e})', 'Error');
+			Logs.send('Error while reading file. (ERR: ${e})', {type: 'Error'});
             return null;
         }
     }
@@ -71,7 +71,7 @@ class PsychParser {
             else
 				troubleshoot = 'Unexpected error. Check the JSON structure and replace it.';
         
-			Logs.send(troubleshoot, 'Error');
+			Logs.send(troubleshoot, {type: 'Error'});
             return null;
         }
         
@@ -226,7 +226,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Json could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Json could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
     }
@@ -238,7 +238,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Notes could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Notes could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
     }
@@ -250,7 +250,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Events could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Events could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
     }
@@ -262,7 +262,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Sections could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Sections could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
     }
@@ -279,7 +279,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Notes by direction could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Notes by direction could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
     }
@@ -295,7 +295,7 @@ class PsychParser {
             File.saveContent(filePath, jsonStr);
             return true;
         } catch (e:Dynamic) {
-			Logs.send('Notes by time could not be exported. (ERR: ${e})', 'Error');
+			Logs.send('Notes by time could not be exported. (ERR: ${e})', {type: 'Error'});
             return false;
         }
 	}

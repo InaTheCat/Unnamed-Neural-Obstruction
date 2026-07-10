@@ -16,7 +16,7 @@ class CoolUtil {
 	{
 		if (!Paths.exists('$path.json'))
 		{
-			Logs.send('JSON not found. [$path]', 'Error');
+			Logs.send('JSON not found. [$path]', {type: 'Error'});
             return null;
         }
 

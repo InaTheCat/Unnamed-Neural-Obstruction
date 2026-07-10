@@ -27,6 +27,7 @@
         }
     ],
 
+    "camOffset": [-70, -100],
     "path": "characters/bf",
     "color": "#31B0D1",
     "icon": "bf"

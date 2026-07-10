@@ -6,6 +6,7 @@ import backend.chart.NewTestChartparser; //
 import flixel.math.FlxPoint;
 import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.util.typeLimit.OneOfTwo;
+import game.CamPointer;
 import game.Character;
 import game.Controls;
 import game.HealthBar;
@@ -18,6 +19,9 @@ import game.score.ScoreManager;
 
 class PlayState extends UNOState
 {
+	public var camPointer:CamPointer = new CamPointer();
+	public var camUpdating:Bool = true;
+
 	var strums:FlxSpriteGroup = new FlxSpriteGroup();
 
 	public var opponent:StrumLine;
@@ -125,6 +129,8 @@ class PlayState extends UNOState
 		scoreTexts.camera = camHUD;
 		scoreTexts.screenCenter(X);
 
+		scoreTxt.x -= 50;
+
 		healthBarGrp.add(iconP1 = new Icon(bf, true, 1.8));
 		healthBarGrp.add(iconP2 = new Icon(dad, false, 0.2));
 		healthBarGrp.y = FlxG.height * 0.9;
@@ -175,6 +181,11 @@ class PlayState extends UNOState
 		{
 			scoreManager.addMiss();
 		};
+
+		add(camPointer);
+		camPointer.updatePos(bf);
+
+		camGame.follow(camPointer, LOCKON, 0.045);
 
 		// FlxTween.num(2, 0, 3, {ease: FlxEase.smootherStepInOut, type: PINGPONG}, (v:Float) -> health = v);
 		// FlxTween.num(50, FlxG.height * 0.8, 4, {ease: FlxEase.quartInOut, type: PINGPONG}, (v:Float) -> strums.y = v);
@@ -238,24 +249,6 @@ class PlayState extends UNOState
 		scoreTxt.text = "Score: " + scoreManager.score;
 		missesTxt.text = "Misses: " + scoreManager.misses;
 		accuracyTxt.text = "Accuracy: " + Std.int(scoreManager.getAccuracy()) + "%";
-
-		// for (e in chart.notes)
-		// {
-		// FlxG.camera.scroll.x = CoolUtil.lerp(FlxG.camera.scroll.x, e.mustHitSection ? bf.x : dad.x, 0.1);
-		// FlxG.camera.scroll.y = CoolUtil.lerp(FlxG.camera.scroll.y, e.mustHitSection ? bf.y : dad.y, 0.1);
-		// }
-		// FlxG.camera.follow(e.mustHitSection ? bf : dad);
-
-		if (FlxG.keys.pressed.Z) camGame.zoom -= 2 * elapsed;
-		if (FlxG.keys.pressed.X) camGame.zoom += 2 * elapsed;
-
-		if (FlxG.keys.pressed.J) camGame.scroll.x -= 25;
-		if (FlxG.keys.pressed.L)
-			camGame.scroll.x += 25;
-		if (FlxG.keys.pressed.I)
-			camGame.scroll.y -= 25;
-		if (FlxG.keys.pressed.K)
-			camGame.scroll.y += 25;
 	}
 
 	override function beatHit(b:Int)
@@ -272,7 +265,8 @@ class PlayState extends UNOState
 		super.sectionHit(s);
 
 		mustHitSection = chart.sections[s].mustHitSection ?? false;
-		Sys.println(mustHitSection);
+		if (camUpdating)
+			camPointer.updatePos(mustHitSection ? bf : dad);
 
 		for (e in [dad, bf])
 			e.dance();
@@ -283,7 +277,8 @@ class PlayState extends UNOState
 		if (!hudUpdating)
 			return;
 
-		scoreTxt.x = healthBar.bar.width - (scoreTxt.width - 300);
+		for (e in scoreTexts.members)
+			e.updateHitbox();
 		
 		for (e in [healthBarGrp, scoreTexts])
 		{
@@ -355,7 +350,7 @@ class PlayState extends UNOState
 		}
 		else
 		{
-			Logs.send('prefix was null or not even a thing,\n voices will be replaced with "beep"', 'Error');
+			Logs.send('prefix was null or not even a thing,\n voices will be replaced with "beep"', {type: 'Error'});
 			var beep:FlxSound = backend.system.SFXBank._beep;
 			voices.push(beep);
 		}

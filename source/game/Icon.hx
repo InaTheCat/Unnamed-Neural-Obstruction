@@ -41,7 +41,7 @@ class Icon extends FlxSprite {
 		var iconName:String = name != null && name.trim() != '' ? name : 'face';
 		if (!Paths.exists('images/game/icons/$iconName.png'))
 		{
-			Logs.send('Icon "$iconName" not found, using face', 'Warning');
+			Logs.send('Icon "$iconName" not found, using face', {type: 'Warning'});
 			iconName = 'face';
 		}
 
@@ -51,7 +51,7 @@ class Icon extends FlxSprite {
 		{
 			isSingle = true;
 
-			Logs.send('Icon got changed as ${backend.system.ANSI.coloredType('isSingle', 0xFF0055FF)}', 'Source Info');
+			Logs.send('Icon got changed as ${backend.system.ANSI.coloredType('isSingle', 0xFF0055FF)}', {type: 'Source Info'});
 		}
 
 		loadGraphic(Paths.image('game/icons/$iconName'), true, 150, 150);

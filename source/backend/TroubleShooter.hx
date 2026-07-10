@@ -49,7 +49,7 @@ class TroubleShooter extends FlxBasic {
 	{
 		if (cam == troubleShooter.camera)
 		{
-			Logs.send('The TroubleShooter is in $cam at this moment', 'Source Info');
+			Logs.send('The TroubleShooter is in $cam at this moment', {type: 'Source Info'});
 			return;
 		}
 

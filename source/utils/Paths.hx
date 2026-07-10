@@ -22,17 +22,17 @@ class Paths {
 		{
 			if (path.endsWith('.png'))
 			{
-				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', 'Error');
+				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', {type: 'Warning'});
 				return 'assets/images/logo/logo.png';
 			}
 
 			if (path.endsWith('.xml'))
 			{
-				Logs.send('$path does\'nt exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', 'Error');
+				Logs.send('$path does\'nt exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', {type: 'Warning'});
 
 				if (!exists('assets/images/characters/bf.xml'))
 				{
-					Logs.send('$path does\'nt exists,\nplease, don\'t delete that...');
+					Logs.send('$path does\'nt exists,\nplease, don\'t delete that...', {type: 'Error'});
 					return '';
 				}
 
@@ -41,7 +41,7 @@ class Paths {
 
 			if (path.endsWith('.ogg'))
 			{
-				Logs.send('$path does\'nt exists,\nsound will be replaced with uh,\nthe "beep" sound', 'Error');
+				Logs.send('$path does\'nt exists,\nsound will be replaced with uh,\nthe "beep" sound', {type: 'Warning'});
 				return 'assets/sounds/beep.ogg';
 			}
 		}

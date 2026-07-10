@@ -4,9 +4,20 @@ import backend.system.ANSI;
 
 using StringTools;
 
+typedef SendSettings =
+{
+	@:optional var type:Null<String>;
+	@:optional var shooterTime:Null<Float>;
+	@:optional var showShooter:Null<Bool>;
+}
+
 class Logs {
-	public static function send(msg:Dynamic, ?type:String = "Info", ?shooterTime:Float = 2)
+	public static function send(msg:Dynamic, ?extraSettings:SendSettings)
 	{
+		var type:String = extraSettings.type ?? 'Info';
+		var shooterTime:Float = extraSettings.shooterTime ?? 2;
+		var showShooter:Bool = extraSettings.showShooter ?? true;
+
 		var cleanMsg:String = Std.string(msg);
 
 		#if sys
@@ -30,6 +41,7 @@ class Logs {
         }
 		#end
 
-		TroubleShooter.instance.send(msg, type, shooterTime);
+		if (showShooter)
+			TroubleShooter.instance.send(msg, type, shooterTime);
     }
 }
