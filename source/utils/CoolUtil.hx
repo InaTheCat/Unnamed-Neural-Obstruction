@@ -27,9 +27,9 @@ class CoolUtil {
 	}
 
     // 21
-	public static inline function zeros(str:String, num:Int):String
+	public static inline function zeros(str:String, amount:Int):String
 	{
-		while (str.length < num)
+		while (str.length < amount)
 			str = '0${str}';
 
 		return str;

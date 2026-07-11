@@ -8,6 +8,7 @@ import flixel.text.FlxText.FlxTextBorderStyle;
 import flixel.util.typeLimit.OneOfTwo;
 import game.CamPointer;
 import game.Character;
+import game.Combo;
 import game.Controls;
 import game.HealthBar;
 import game.Icon;
@@ -48,12 +49,15 @@ class PlayState extends UNOState
 	var opponentManager:NoteManager;
 	var playerManager:NoteManager;
 
+	public var combo:Int = 0;
+	public var comboRating:Combo;
+
 	var directions:Array<String> = ['singLEFT', 'singDOWN', 'singUP', 'singRIGHT'];
 
 	public var stage:Stage = new Stage();
 
-	var healthBar:HealthBar;
-	var maxHealth:Float = 2;
+	public var healthBar:HealthBar;
+	public var maxHealth:Float = 2;
 	public var health:Float = 1;
 
 	public var iconP1:Icon;
@@ -97,6 +101,9 @@ class PlayState extends UNOState
 		for (e in [back, floor, dad, bf, curtains])
 			e.camera = camGame;
 
+		add(comboRating = new Combo(600, 200));
+		comboRating.camera = camGame;
+
 		// stage.startStage('stage');
 
 		// --- HUD ---
@@ -137,7 +144,7 @@ class PlayState extends UNOState
 		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('test', '', false);
+		loadSong('red-3', null, false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -165,6 +172,8 @@ class PlayState extends UNOState
 				{
 					player.noteAnim(note.dir, 'confirm', true);
 					scoreManager.addTapScore('sick');
+					combo++;
+					comboRating.showCombo('sick', combo);
 					addHealth(0.015);
 				}
 			}
@@ -199,34 +208,37 @@ class PlayState extends UNOState
 		for (e in [iconP1, iconP2])
 			e.updateIcon(health);
 
-		for (direction in 0...4) {
-			if (Controls.getKeyPressed(direction))
+		if (!playerManager.cpu)
+		{
+			for (direction in 0...4)
 			{
-				switch (playerManager.press(direction))
+				if (Controls.getKeyPressed(direction))
 				{
-					case HIT(note, diff, rating):
-						scoreManager.addTapScore(rating);
-						player.noteAnim(direction, 'confirm');
-						addHealth(0.015);
+					switch (playerManager.press(direction))
+					{
+						case HIT(note, diff, rating):
+							scoreManager.addTapScore(rating);
+							combo++;
+							comboRating.showCombo(rating, combo);
+							player.noteAnim(direction, 'confirm');
+							addHealth(0.015);
 
-					case MISS:
-						player.noteAnim(direction, 'pressed');
-						addHealth(-0.05);
-						health += 0.05;
+						case MISS:
+							combo = 0;
+							player.noteAnim(direction, 'pressed');
+							addHealth(-0.05);
+					}
 				}
+				else if (Controls.getKeyReleased(direction))
+				{
+					playerManager.release(direction);
 
-			}
-			else if (Controls.getKeyReleased(direction))
-			{
-				playerManager.release(direction);
-
-				player.noteAnim(direction, 'static');
+					player.noteAnim(direction, 'static');
+				}
 			}
 		}
 		for (direction in 0...4)
-		{
 			playerManager.setHeld(direction, Controls.getKeyHeld(direction));
-		}
 
 		health = FlxMath.bound(health, 0, maxHealth);
 
@@ -384,7 +396,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 13 * 1000;
+		FlxG.sound.music.time = 11 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)
