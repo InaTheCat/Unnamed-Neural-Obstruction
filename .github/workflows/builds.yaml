@@ -31,12 +31,12 @@ jobs:
           - platform: MacOS
             os: macos-15
             build_cmd: haxelib run lime build macos --app-version="4.0.0-${{ github.run_id}}"
-            artifact_path: export/release/macos/bin
+            artifact_path: export/macos/bin
 
           - platform: MacOS x64
             os: macos-15-intel
             build_cmd: haxelib run lime build macos --app-version="4.0.0-${{ github.run_id}}"
-            artifact_path: export/release/macos/bin
+            artifact_path: export/macos/bin
 
     steps:
       - name: Pull the New Commit
