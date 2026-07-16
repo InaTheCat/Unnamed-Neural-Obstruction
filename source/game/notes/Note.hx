@@ -14,7 +14,8 @@ class Note extends FlxSprite
 
 	public var whenhit:Bool = false;
 	public var holding:Bool = false;
-	public var rewardsustainnote:Float = 0;
+	public var rewardSustainNote:Float = 0;
+	public var sustainTimer:Float = 0;
 	public var holdScoreGiven:Int = 0; // who is this
 
 	public function new(x:Float, y:Float, dir:Int = 0, strumTime:Float = 0, sustain:Float = 0)

@@ -6,9 +6,9 @@ import utils.Paths;
 class SustainNote extends FlxSprite
 {
 	public var dir:Int = 0;
-	public var cola:Bool = false;
+	public var tail:Bool = false;
 
-	public var origenNote:Note;
+	public var noteOrigin:Note;
 	public var lengthPixels:Float = 0;
 
 	public var strumTime:Float = 0;
@@ -20,17 +20,17 @@ class SustainNote extends FlxSprite
 
 	public var pair:SustainNote;
 
-	public function new(x:Float, y:Float, dir:Int = 0, cola:Bool = false, lengthPixels:Float = 0, alphaValue:Float = 0.5)
+	public function new(x:Float, y:Float, dir:Int = 0, tail:Bool = false, lengthPixels:Float = 0, alphaValue:Float = 0.5)
 	{
 		super(x, y);
 
 		this.dir = dir;
-		this.cola = cola;
+		this.tail = tail;
 		this.lengthPixels = lengthPixels;
 
 		frames = Paths.getSparrowAtlas('game/notes/default');
 
-		if (cola)
+		if (tail)
 		{
 			switch (dir % 4)
 			{
@@ -63,7 +63,10 @@ class SustainNote extends FlxSprite
 		baseHeight = height;
 		fullHeight = lengthPixels;
 
-		if (!cola && lengthPixels > 0)
+		if (tail)
+			flipY = Options.downscroll;
+
+		if (!tail && lengthPixels > 0)
 		{
 			scale.y = normalScaleY * (lengthPixels / baseHeight);
 			updateHitbox();

@@ -26,13 +26,18 @@ class NoteManager extends FlxSpriteGroup
 	public var shitWindow:Float = 166;
 	public var missWindow:Float = 180;
 
-	public var onHoldScore:Int->Void;
+	public var onSustainScore:Int->Void;
+	public var onSustainNote:Note->Void;
 	public var onMiss:Void->Void;
 	public var onNoteHit:Note->Void;
 
 	public var holdClipOffsetY:Float = 35;
 
 	public var cpu:Bool = false;
+
+	public var downscroll:Bool = Options.downscroll;
+
+	private var scrollDir:Int = 1;
 
 	public function new(playerStrum:StrumLine, notes:Array<ParsedNote>)
 	{
@@ -54,6 +59,8 @@ class NoteManager extends FlxSpriteGroup
 
 	public function updateNotes():Void
 	{
+		scrollDir = downscroll ? -1 : 1;
+
 		for (noteData in unspawnNotes.copy())
 		{
 			if (noteData.time <= Conductor.songPosition + spawnAhead)
@@ -64,8 +71,6 @@ class NoteManager extends FlxSpriteGroup
 		}
 
 //xd
-		
-
 
 		for (note in activeNotes.copy())
 		{
@@ -80,14 +85,23 @@ class NoteManager extends FlxSpriteGroup
 				{
 					if (heldDirs[note.dir])
 					{
-						note.rewardsustainnote += FlxG.elapsed * 1000;
+						note.rewardSustainNote += FlxG.elapsed * 1000;
+						note.sustainTimer += FlxG.elapsed * 1000;
 
-						while (note.rewardsustainnote >= 100)
+						while (note.rewardSustainNote >= 100)
 						{
-							note.rewardsustainnote -= 100;
+							note.rewardSustainNote -= 100;
 
-							if (onHoldScore != null)
-								onHoldScore(100);
+							if (onSustainScore != null)
+								onSustainScore(100);
+						}
+
+						while (note.sustainTimer >= 175)
+						{
+							note.sustainTimer -= 175;
+
+							if (onSustainNote != null)
+								onSustainNote(note);
 						}
 					}
 				}
@@ -106,7 +120,8 @@ class NoteManager extends FlxSpriteGroup
 			var receptor = playerStrum.getReceptor(note.dir % 4);
 			var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
 
-			note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs;
+			note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs * scrollDir;
+			// note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs;
 		}
 
 		for (hold in activeSustains.copy())
@@ -114,21 +129,22 @@ class NoteManager extends FlxSpriteGroup
 			if (hold == null || !hold.exists || !hold.alive)
 				continue;
 
-			if (hold.origenNote != null)
+			if (hold.noteOrigin != null)
 			{
 				var receptor = playerStrum.getReceptor(hold.dir % 4);
 				var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
 
-				if (!hold.cola)
+				if (!hold.tail)
 				{
-					var startY:Float = hold.origenNote.y + hold.origenNote.height * 0.45;
-					var endY:Float = hold.origenNote.y + hold.origenNote.height * 0.45 + hold.fullHeight;
+					var startY:Float = downscroll ? hold.noteOrigin.y + -hold.noteOrigin.height * 1.85 : hold.noteOrigin.y + hold.noteOrigin.height * 0.45;
+					var endY:Float = startY + hold.fullHeight * scrollDir;
+					// var endY:Float = hold.noteOrigin.y + hold.noteOrigin.height * 0.45 + hold.fullHeight;
 
-					if (hold.origenNote.whenhit)
+					if (hold.noteOrigin.whenhit)
 					{
-						var clipY:Float = receptor.y + holdClipOffsetY;
-						var clippedStartY:Float = Math.max(startY, clipY);
-						var visibleHeight:Float = endY - clippedStartY;
+						var clipY:Float = downscroll ? receptor.y - holdClipOffsetY : receptor.y + holdClipOffsetY;
+						var clippedStartY:Float = downscroll ? Math.min(startY, clipY) : Math.max(startY, clipY);
+						var visibleHeight:Float = downscroll ? clippedStartY - endY : endY - clippedStartY;
 
 						if (visibleHeight <= 0)
 						{
@@ -139,8 +155,12 @@ class NoteManager extends FlxSpriteGroup
 							hold.visible = true;
 							hold.y = clippedStartY;
 
-							hold.scale.y = hold.normalScaleY * (visibleHeight / hold.baseHeight);
+							var oldBottom:Float = hold.y + hold.height;
+
+							hold.scale.y = hold.normalScaleY * (visibleHeight / (downscroll ? -hold.baseHeight : hold.baseHeight));
 							hold.updateHitbox();
+							if (downscroll)
+								hold.y = oldBottom - hold.height;
 						}
 					}
 					else
@@ -149,14 +169,14 @@ class NoteManager extends FlxSpriteGroup
 						hold.y = startY;
 					}
 
-					hold.x = hold.origenNote.x + (hold.origenNote.width - hold.width) / 2;
+					hold.x = hold.noteOrigin.x + (hold.noteOrigin.width - hold.width) / 2;
 				}
 				else
 				{
 					if (hold.pair != null)
-						hold.y = hold.pair.y + hold.pair.height - 4;
+						hold.y = downscroll ? hold.pair.y - hold.height + 4 : hold.pair.y + hold.pair.height - 4;
 
-					hold.x = hold.origenNote.x + (hold.origenNote.width - hold.width) / 2;
+					hold.x = hold.noteOrigin.x + (hold.noteOrigin.width - hold.width) / 2;
 				}
 			}
 		}
@@ -195,9 +215,7 @@ class NoteManager extends FlxSpriteGroup
 					note.visible = false;
 				}
 				else
-				{
 					clearHoldNote(note);
-				}
 			}
 		}
 	}
@@ -206,7 +224,7 @@ class NoteManager extends FlxSpriteGroup
 	{
 		for (hold in activeSustains.copy())
 		{
-			if (hold != null && hold.origenNote == note)
+			if (hold != null && hold.noteOrigin == note)
 			{
 				activeSustains.remove(hold);
 				remove(hold, true);
@@ -244,7 +262,8 @@ class NoteManager extends FlxSpriteGroup
 		var receptor = playerStrum.getReceptor(dir);
 
 		var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
-		var startY:Float = receptor.y + (noteData.time - Conductor.songPosition) * pixelsPerMs;
+		var startY:Float = receptor.y + (noteData.time - Conductor.songPosition) * pixelsPerMs * scrollDir;
+		// var startY:Float = receptor.y + (noteData.time - Conductor.songPosition) * pixelsPerMs;
 
 		var note:Note = new Note(0, startY, dir, noteData.time, noteData.sustain);
 		note.scrollSpeed = baseScrollSpeed * Conductor.speed;
@@ -256,7 +275,7 @@ class NoteManager extends FlxSpriteGroup
 			var holdLength:Float = noteData.sustain * pixelsPerMs;
 
 			var holdPiece:SustainNote = new SustainNote(0, 0, dir, false, holdLength, sustainAlpha);
-			holdPiece.origenNote = note;
+			holdPiece.noteOrigin = note;
 			holdPiece.strumTime = noteData.time;
 			holdPiece.sustainLength = noteData.sustain;
 			holdPiece.x = note.x + (note.width - holdPiece.width) / 2;
@@ -264,7 +283,7 @@ class NoteManager extends FlxSpriteGroup
 			activeSustains.push(holdPiece);
 
 			var holdEnd:SustainNote = new SustainNote(0, 0, dir, true, holdLength, sustainAlpha);
-			holdEnd.origenNote = note;
+			holdEnd.noteOrigin = note;
 			holdEnd.strumTime = noteData.time + noteData.sustain;
 			holdEnd.sustainLength = noteData.sustain;
 			holdEnd.x = note.x + (note.width - holdEnd.width) / 2;
@@ -313,9 +332,7 @@ class NoteManager extends FlxSpriteGroup
 			note.visible = false;
 		}
 		else
-		{
 			clearHoldNote(note);
-		}
 
 		return HIT(note, diff, rating);
 	}

@@ -17,8 +17,6 @@ class Options {
 		setDown();
 	}
 
-	private static function setDown()
-	{
+	private static function setDown():Void
 		altShooterPosition = downscroll;
-    }
 }

@@ -1,11 +1,15 @@
 package game;
 
+import backend.system.ANSI;
 import flixel.group.FlxSpriteGroup;
 
 class Combo extends FlxSpriteGroup
 {
-	var rateGroup = new FlxSpriteGroup();
-	var numGroup = new FlxSpriteGroup();
+	public var rateGroup = new FlxSpriteGroup();
+	public var numGroup = new FlxSpriteGroup();
+
+	public var comboLimit:Int = 5;
+	public var numLimit:Int = 15;
 
 	public function new(x:Float, y:Float)
 	{
@@ -19,15 +23,13 @@ class Combo extends FlxSpriteGroup
 
 	public function showCombo(rating:String, combo:Int)
 	{
-		maxRateShowable(15);
-		maxNumShowable(50);
-
-		var rateSprite:String = Paths.exists('images/game/combo/$rating') ? Paths.image('game/combo/$rating') : Paths.image('game/combo/sick');
+		limitShowable(rateGroup, comboLimit);
+		limitShowable(numGroup, numLimit);
 
 		var rate:FlxSprite = rateGroup.recycle(FlxSprite);
 
-		if (rate.graphic == null || rate.graphic.key != rateSprite)
-			rate.loadGraphic(rateSprite);
+		if (rate.graphic == null || rate.graphic.key != Paths.image('game/combo/$rating'))
+			rate.loadGraphic(Paths.image('game/combo/$rating'));
 
 		rate.revive();
 
@@ -79,33 +81,30 @@ class Combo extends FlxSpriteGroup
 		}
 	}
 
-	public function maxRateShowable(max:Int)
+	function limitShowable(group:FlxSpriteGroup, max:Int):Void
 	{
+		if (group == rateGroup && max <= 1)
+		{
+			Logs.send('rateGroup limit is too low, replaced with ${ANSI.coloredType('2', 0xFFAAAAFF)}',
+				{type: 'Warning', overrideShooterText: 'rateGroup limit is too long, replaced with 2'});
+			comboLimit = max = 2;
+		}
+
+		if (group == numGroup && max <= 2)
+		{
+			Logs.send('numGroup limit is too low, replaced with ${ANSI.coloredType('3', 0xFFAAAAFF)}',
+				{type: 'Warning', overrideShooterText: 'numGroup limit is too long, replaced with 3'});
+			numLimit = max = 3;
+		}
+
 		var alive = 0;
 
-		for (sprite in rateGroup.members)
+		for (sprite in group.members)
 			if (sprite != null && sprite.alive)
 				alive++;
 
-		if (alive >= max)
-			for (sprite in rateGroup.members)
-				if (sprite != null && sprite.alive)
-				{
-					FlxTween.cancelTweensOf(sprite);
-					sprite.kill();
-				}
-	}
-
-	public function maxNumShowable(max:Int)
-	{
-		var alive = 0;
-
-		for (sprite in numGroup.members)
-			if (sprite != null && sprite.alive)
-				alive++;
-
-		if (alive >= max)
-			for (sprite in numGroup.members)
+		if (alive > max)
+			for (sprite in group.members)
 				if (sprite != null && sprite.alive)
 				{
 					FlxTween.cancelTweensOf(sprite);

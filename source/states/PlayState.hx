@@ -13,13 +13,22 @@ import game.Controls;
 import game.HealthBar;
 import game.Icon;
 import game.Stage;
+import game.notes.Note;
 import game.notes.NoteHitResult;
 import game.notes.NoteManager;
 import game.notes.StrumLine;
 import game.score.ScoreManager;
 
+typedef HitSettings =
+{
+	@:optional var note:Null<Note>;
+	@:optional var sustain:Null<Bool>;
+}
+
 class PlayState extends UNOState
 {
+	public static var instance:PlayState = null;
+
 	public var camPointer:CamPointer = new CamPointer();
 	public var camUpdating:Bool = true;
 
@@ -31,15 +40,15 @@ class PlayState extends UNOState
 	public var bf:Character;
 	public var dad:Character;
 
-	public var inst:FlxSound;
-	public var voices:Array<FlxSound> = [];
+	public static var inst:FlxSound;
+	public static var voices:Array<FlxSound> = [];
 	private var nullVoices:Bool = false;
 
 	public static var mustHitSection:Bool = false;
 	public static var chart:ParsedChart;
 
 	public var songPosition:Float = 0;
-	public var curSong:String = '';
+	public var curSong:String = null;
 
 	public var unspawnNotes:Array<ParsedNote> = [];
 	public var playerNotes:Array<ParsedNote> = [];
@@ -81,6 +90,8 @@ class PlayState extends UNOState
 	public final DAD_BASE:FlxPoint = FlxPoint.get(150, 50);
 
 	override public function create() {
+		instance = this;
+
 		super.create();
 
 		// --- Test stage n char ---
@@ -114,7 +125,7 @@ class PlayState extends UNOState
 		strums.camera = camHUD;
 		strums.add(player = new StrumLine(true));
 		strums.add(opponent = new StrumLine());
-		strums.y = 50;
+		strums.y = Options.downscroll ? FlxG.height * 0.8 : 50;
 
 		healthBarGrp.add(healthBar = new HealthBar(0, 0, 0, maxHealth, this, 'health', LEFT_TO_RIGHT, true));
 		healthBar.setColors(dad.getColor(), bf.getColor());
@@ -122,13 +133,13 @@ class PlayState extends UNOState
 			e.updateHitbox();
 		healthBarGrp.screenCenter(X);
 
+		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
 		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
 		scoreTexts.add(missesTxt = new FlxText(0, 0, 0, 'Misses: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'center', OUTLINE, 0xFF000000));
-		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
 
-		for (i => e in [accuracyTxt, missesTxt, scoreTxt])
+		for (i => e in [scoreTxt, missesTxt, accuracyTxt])
 		{
-			e.x = i * 250;
+			e.x = i * 200;
 			e.scale.set(0.5, 0.5);
 			e.updateHitbox();
 		}
@@ -136,62 +147,33 @@ class PlayState extends UNOState
 		scoreTexts.camera = camHUD;
 		scoreTexts.screenCenter(X);
 
-		scoreTxt.x -= 50;
-
 		healthBarGrp.add(iconP1 = new Icon(bf, true, 1.8));
 		healthBarGrp.add(iconP2 = new Icon(dad, false, 0.2));
 		healthBarGrp.y = FlxG.height * 0.9;
 		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('red-3', null, false);
+		loadSong('Premeditated', ['smiley', 'boyfriend'], false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
 		opponentManager.cpu = true;
-		opponentManager.onNoteHit = function(note:game.notes.Note)
-		{
-			if (dad != null && note != null)
-			{
-				dad.playAnim(directions[note.dir], true);
-				if (opponentManager.cpu)
-					opponent.noteAnim(note.dir, 'confirm', true);
-			}
-		};
+		opponentManager.onNoteHit = (note:Note) -> onOpponentHit({note: note});
+		opponentManager.onSustainNote = (note:Note) -> onOpponentHit({note: note, sustain: true});
 		strums.add(opponentManager);
 
 		playerManager = new NoteManager(player, playerNotes);
-		playerManager.cpu = true;
-		playerManager.onNoteHit = function(note:game.notes.Note)
-		{
-			if (bf != null && note != null)
-			{
-				bf.playAnim(directions[note.dir], true);
-
-				if (playerManager.cpu)
-				{
-					player.noteAnim(note.dir, 'confirm', true);
-					scoreManager.addTapScore('sick');
-					combo++;
-					comboRating.showCombo('sick', combo);
-					addHealth(0.015);
-				}
-			}
-		};
+		playerManager.cpu = false;
+		playerManager.onSustainScore = (points:Int) -> scoreManager.addHoldScore(points);
+		playerManager.onNoteHit = (note:Note) -> onPlayerHit({note: note});
+		playerManager.onSustainNote = (note:Note) -> onPlayerHit({note: note, sustain: true});
 		strums.add(playerManager);
 		scoreManager = new ScoreManager();
 
-		playerManager.onHoldScore = function(points:Int)
-		{
-			scoreManager.addHoldScore(points);
-		};
-
-		playerManager.onMiss = function()
-		{
-			scoreManager.addMiss();
-		};
+		playerManager.onMiss = () -> scoreManager.addMiss();
 
 		add(camPointer);
+		// camPointer.setPosition = (bf.getMidpoint().x + dad.getMidpoint().x) / 2;
 		camPointer.updatePos(bf);
 
 		camGame.follow(camPointer, LOCKON, 0.045);
@@ -261,6 +243,69 @@ class PlayState extends UNOState
 		scoreTxt.text = "Score: " + scoreManager.score;
 		missesTxt.text = "Misses: " + scoreManager.misses;
 		accuracyTxt.text = "Accuracy: " + Std.int(scoreManager.getAccuracy()) + "%";
+		if (FlxG.keys.justPressed.ESCAPE)
+			FlxG.switchState(() -> new states.LoadState());
+	}
+
+	override function destroy():Void
+	{
+		super.destroy();
+
+		inst?.stop();
+		FlxG.sound?.music?.stop();
+
+		if (voices != null || voices.length > 0 || !nullVoices)
+			for (e in voices)
+				e.stop();
+
+		Conductor.reset();
+
+		for (e in members)
+			if (e is FlxSprite)
+				e.destroy();
+	}
+
+	public function onPlayerHit(?n:HitSettings = null)
+	{
+		var note:Null<Note> = n.note ?? null;
+		var sustain:Null<Bool> = n.sustain ?? false;
+
+		if (note != null)
+		{
+			if (bf != null)
+			{
+				bf.playAnim(directions[note.dir], true);
+
+				if (playerManager.cpu)
+				{
+					player.noteAnim(note.dir, 'confirm', false);
+
+					if (!sustain)
+					{
+						scoreManager.addTapScore('sick');
+						combo++;
+						comboRating.showCombo('sick', combo);
+						addHealth(0.015);
+					}
+				}
+			}
+		}
+	}
+
+	public function onOpponentHit(?n:HitSettings = null)
+	{
+		var note:Null<Note> = n.note ?? null;
+		var sustain:Null<Bool> = n.sustain ?? false;
+
+		if (note != null)
+		{
+			if (dad != null)
+			{
+				dad.playAnim(directions[note.dir], true);
+				if (opponentManager.cpu)
+					opponent.noteAnim(note.dir, 'confirm', true);
+			}
+		}
 	}
 
 	override function beatHit(b:Int)
@@ -301,7 +346,7 @@ class PlayState extends UNOState
 			e.alpha = t;
 		}
 
-		healthBarGrp.y = (-strums.y + FlxG.height) - 50;
+		healthBarGrp.y = (-strums.y + FlxG.height) - 50 - (Options.downscroll ? 40 : 0);
 
 		if (switchScorePos)
 			scoreTexts.y = healthBarGrp.y * 1.025 + ((healthBarGrp.y * 0.15) - 72.5);
@@ -396,7 +441,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 11 * 1000;
+		FlxG.sound.music.time = 10 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)

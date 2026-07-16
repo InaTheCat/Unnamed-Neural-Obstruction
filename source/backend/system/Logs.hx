@@ -9,6 +9,7 @@ typedef SendSettings =
 	@:optional var type:Null<String>;
 	@:optional var shooterTime:Null<Float>;
 	@:optional var showShooter:Null<Bool>;
+	@:optional var overrideShooterText:Null<String>;
 }
 
 class Logs {
@@ -17,6 +18,7 @@ class Logs {
 		var type:String = extraSettings.type ?? 'Info';
 		var shooterTime:Float = extraSettings.shooterTime ?? 2;
 		var showShooter:Bool = extraSettings.showShooter ?? true;
+		var overrideShooterText:String = extraSettings.overrideShooterText ?? null;
 
 		var cleanMsg:String = Std.string(msg);
 
@@ -42,6 +44,6 @@ class Logs {
 		#end
 
 		if (showShooter)
-			TroubleShooter.instance.send(msg, type, shooterTime);
+			TroubleShooter.instance.send(overrideShooterText == null ? msg : overrideShooterText, type, shooterTime);
     }
 }
