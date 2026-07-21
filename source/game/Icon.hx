@@ -5,8 +5,9 @@ import utils.Paths;
 
 using StringTools;
 
-class Icon extends FlxSprite {
-    public var parent:Character = null;
+class Icon extends FlxSprite
+{
+	public var parent:Character = null;
 	public var player:Bool = false;
 
 	public var curIconName:String = 'face';
@@ -24,9 +25,9 @@ class Icon extends FlxSprite {
 
 	public function new(parentChar:Character = null, isPlayer:Bool = false, min:Float = 0.2)
 	{
-        super();
+		super();
 
-        parent = parentChar;
+		parent = parentChar;
 
 		if (min != minHealth)
 			minHealth = min;
@@ -34,7 +35,7 @@ class Icon extends FlxSprite {
 		player = isPlayer;
 
 		prepareIcon((parentChar != null && parentChar.icon != null && parentChar.icon.trim() != '') ? parentChar.icon : 'face');
-    }
+	}
 
 	private function prepareIcon(name:String)
 	{
@@ -51,21 +52,21 @@ class Icon extends FlxSprite {
 		{
 			isSingle = true;
 
-			Logs.send('Icon got changed as ${backend.system.ANSI.coloredType('isSingle', 0xFF0055FF)}', {type: 'Source Info'});
+			Logs.send('$name icon got changed as ${backend.system.ANSI.coloredType('isSingle', 0xFF0055FF)}', {type: 'Source Info', showShooter: false});
 		}
 
 		loadGraphic(Paths.image('game/icons/$iconName'), true, 150, 150);
 
-        animation.add('neutral', [0], 0, false);
+		animation.add('neutral', [0], 0, false);
 		if (!isSingle)
 			animation.add('loose', [1], 0, false);
 
-        animation.play('neutral', true);
+		animation.play('neutral', true);
 
 		antialiasing = Options.antialiasing ?? true;
 		flipX = player;
 		curIconName = iconName;
-    }
+	}
 
 	public function updateScale()
 		if (canBump)
@@ -74,10 +75,10 @@ class Icon extends FlxSprite {
 			this.scale.set(iconScale, iconScale);
 		}
 
-    /**
-    * Well, the update of the icon, exactly the animation
+	/**
+	 * Well, the update of the icon, exactly the animation
 	 * @param ref is mostly used with `health` from `PlayState`, no?
-    **/
+	**/
 	public function updateIcon(ref:Float)
 	{
 		if (isSingle)
@@ -88,6 +89,7 @@ class Icon extends FlxSprite {
 
 		animation.play(player ? (ref < minHealth ? 'neutral' : 'loose') : (ref > minHealth ? 'neutral' : 'loose'));
 	}
+
 	/**
 	 * change character but icon heh
 	 * @param name literally the name of the img

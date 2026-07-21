@@ -77,6 +77,8 @@ class PlayState extends UNOState
 	public var missesTxt:FlxText;
 	public var scoreTxt:FlxText;
 
+	public var scoresBack:FlxSprite;
+
 	public var scoreTexts:FlxSpriteGroup = new FlxSpriteGroup();
 	public var healthBarGrp:FlxSpriteGroup = new FlxSpriteGroup();
 
@@ -89,10 +91,15 @@ class PlayState extends UNOState
 	public final BF_BASE:FlxPoint = FlxPoint.get(850, 400);
 	public final DAD_BASE:FlxPoint = FlxPoint.get(150, 50);
 
+	public var camZoom:Float = 0.9;
+	public var camZooming:Bool = true;
+
 	override public function create() {
 		instance = this;
 
 		super.create();
+
+		camGame.zoom = camZoom;
 
 		// --- Test stage n char ---
 		var floor:FlxSprite = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/stage/floor'));
@@ -133,19 +140,24 @@ class PlayState extends UNOState
 			e.updateHitbox();
 		healthBarGrp.screenCenter(X);
 
-		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
-		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
-		scoreTexts.add(missesTxt = new FlxText(0, 0, 0, 'Misses: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'center', OUTLINE, 0xFF000000));
+		scoreTexts.add(scoresBack = new FlxSprite());
+		scoresBack.camera = camHUD;
+
+		scoreTexts.add(scoreTxt = new FlxText(0, 0, 0, 'Score: 0', 32).setFormat(Paths.font('vcr.ttf'), 32, 0xFFFFFFFF, 'right', OUTLINE, 0xFF000000));
+		scoreTexts.add(accuracyTxt = new FlxText(0, 0, 0, 'Accuracy: -%', 32).setFormat(Paths.font('vcr.ttf'), 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
+		scoreTexts.add(missesTxt = new FlxText(0, 0, 0, 'Misses: 0', 32).setFormat(Paths.font('vcr.ttf'), 32, 0xFFFFFFFF, 'center', OUTLINE, 0xFF000000));
 
 		for (i => e in [scoreTxt, missesTxt, accuracyTxt])
 		{
 			e.x = i * 200;
-			e.scale.set(0.5, 0.5);
+			e.scale.set(0.65, 0.65);
 			e.updateHitbox();
 		}
 
 		scoreTexts.camera = camHUD;
 		scoreTexts.screenCenter(X);
+
+		scoresBack.makeGraphic(Std.int(accuracyTxt.textField.textWidth) * 2 + 147, Std.int(accuracyTxt.textField.textHeight) + 5, 0x55000000);
 
 		healthBarGrp.add(iconP1 = new Icon(bf, true, 1.8));
 		healthBarGrp.add(iconP2 = new Icon(dad, false, 0.2));
@@ -153,7 +165,7 @@ class PlayState extends UNOState
 		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('Premeditated', ['smiley', 'boyfriend'], false);
+		loadSong('Ectospasm', '', false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -184,6 +196,12 @@ class PlayState extends UNOState
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
+
+		if (camZooming)
+		{
+			camGame.zoom = CoolUtil.lerp(camGame.zoom, camZoom, 0.05);
+			camHUD.zoom = CoolUtil.lerp(camHUD.zoom, 1, 0.05);
+		}
 
 		updateHud();
 		updateIconPos();
@@ -278,7 +296,7 @@ class PlayState extends UNOState
 
 				if (playerManager.cpu)
 				{
-					player.noteAnim(note.dir, 'confirm', false);
+					player.noteAnim(note.dir, 'confirm', true);
 
 					if (!sustain)
 					{
@@ -325,6 +343,12 @@ class PlayState extends UNOState
 		if (camUpdating)
 			camPointer.updatePos(mustHitSection ? bf : dad);
 
+		if (camZooming)
+		{
+			camGame.zoom = camZoom + 0.02;
+			camHUD.zoom = 1.015;
+		}
+
 		for (e in [dad, bf])
 			e.dance();
 	}
@@ -352,6 +376,7 @@ class PlayState extends UNOState
 			scoreTexts.y = healthBarGrp.y * 1.025 + ((healthBarGrp.y * 0.15) - 72.5);
 		else
 			scoreTexts.y = healthBarGrp.y + 50;
+		scoresBack.setPosition(scoreTexts.x - 22.5, scoreTexts.y - 5);
 	}
 
 	private function updateIconPos():Void
@@ -441,7 +466,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 10 * 1000;
+		// FlxG.sound.music.time = 10 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)

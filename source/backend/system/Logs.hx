@@ -23,7 +23,7 @@ class Logs {
 		var cleanMsg:String = Std.string(msg);
 
 		#if sys
-		Sys.println(type.trim() == 'None' ? '${Std.string(cleanMsg)}' : '${ANSI.coloredType(type)} | ${Std.string(cleanMsg)}');
+		Sys.println(type.trim() == 'None' ? '${Std.string(cleanMsg).replace('\n', ' ')}' : '${ANSI.coloredType(type)} | ${Std.string(cleanMsg.replace('\n', ' '))}');
 		#end
 
 		#if !FLX_NO_DEBUG
@@ -44,6 +44,6 @@ class Logs {
 		#end
 
 		if (showShooter)
-			TroubleShooter.instance.send(overrideShooterText == null ? msg : overrideShooterText, type, shooterTime);
+			TroubleShooter.instance.send(overrideShooterText == null ? Std.string(msg) : overrideShooterText, type, shooterTime);
     }
 }

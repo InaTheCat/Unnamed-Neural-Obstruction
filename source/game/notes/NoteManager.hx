@@ -83,10 +83,11 @@ class NoteManager extends FlxSpriteGroup
 
 				if (Conductor.songPosition <= holdEndTime)
 				{
-					if (heldDirs[note.dir])
+					if (cpu || heldDirs[note.dir])
 					{
 						note.rewardSustainNote += FlxG.elapsed * 1000;
-						note.sustainTimer += FlxG.elapsed * 1000;
+						if (!Options.vSliceSustains)
+							note.sustainTimer += FlxG.elapsed * 1000;
 
 						while (note.rewardSustainNote >= 100)
 						{
@@ -96,13 +97,14 @@ class NoteManager extends FlxSpriteGroup
 								onSustainScore(100);
 						}
 
-						while (note.sustainTimer >= 175)
-						{
-							note.sustainTimer -= 175;
+						if (!Options.vSliceSustains)
+							while (note.sustainTimer >= Conductor.stepCrochet)
+							{
+								note.sustainTimer -= Conductor.stepCrochet;
 
-							if (onSustainNote != null)
-								onSustainNote(note);
-						}
+								if (onSustainNote != null)
+									onSustainNote(note);
+							}
 					}
 				}
 				else

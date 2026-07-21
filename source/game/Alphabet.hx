@@ -1,5 +1,7 @@
 package game;
 
+using StringTools;
+
 class Alphabet extends FlxSpriteGroup {
     public var text:String = '';
 
@@ -10,7 +12,7 @@ class Alphabet extends FlxSpriteGroup {
     }
 
     function prepareAlphabet(x:Float, y:Float, text:String):Void {
-        var daText:Array<String> = [];
+		var daText:Array<String> = text.split();
 
         for (e in daText){
             // var letter:FlxSprite = recycle(FlxSprite);

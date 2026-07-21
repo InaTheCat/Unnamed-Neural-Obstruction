@@ -64,6 +64,41 @@ class Paths {
 	public static inline function json(path:String):String
 		return getPath('assets/$path.json');
 
+	public static function font(path:String):String
+	{
+		// if (!path.endsWith('.ttf') || !path.endsWith('.otf'))
+		// {
+		// var found:String = 'nothing';
+		// var fails:Int = 0;
+		//
+		// if (Assets.exists('assets/fonts/$path.ttf'))
+		// {
+		// path += '.ttf';
+		// found = 'ttf';
+		// }
+		// else
+		// fails++;
+		//
+		// if (Assets.exists('assets/fonts/$path.otf'))
+		// {
+		// path += '.otf';
+		// found = 'otf';
+		// }
+		// else
+		// fails++;
+		//
+		// if (fails == 2)
+		// {
+		// Logs.send('Font couldn\'t be found or doesn\'t had an expected\nextension, returning null', {type: 'Error'});
+		// return null;
+		// }
+		//
+		// Logs.send('Font didn\'n had extension, but the code\nfound a $found file with the same name', {type: 'Warning'});
+		// }
+
+		return getPath('assets/fonts/$path');
+	}
+
 	public static inline function songJson(songName:String, difficulty:String):String
 		return getPath('assets/songs/$songName/chart/$difficulty.json');
 
