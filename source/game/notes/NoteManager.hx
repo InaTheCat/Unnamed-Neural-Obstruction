@@ -305,7 +305,11 @@ class NoteManager extends FlxSpriteGroup
 		var note:Note = getClosestNote(dir);
 
 		if (note == null)
+		{
+			if (onMiss != null)
+				onMiss();
 			return MISS;
+		}
 
 		var diff:Float = note.strumTime - Conductor.songPosition;
 		var thediff:Float = Math.abs(diff);
@@ -321,7 +325,11 @@ class NoteManager extends FlxSpriteGroup
 		else if (thediff <= shitWindow)
 			rating = "shit";
 		else
+		{
+			if (onMiss != null)
+				onMiss();
 			return MISS;
+		}
 
 		note.whenhit = true;
 
