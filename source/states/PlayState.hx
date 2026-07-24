@@ -165,7 +165,7 @@ class PlayState extends UNOState
 		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('Ectospasm', '', false);
+		loadSong('red-3', null, false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -175,7 +175,7 @@ class PlayState extends UNOState
 		strums.add(opponentManager);
 
 		playerManager = new NoteManager(player, playerNotes);
-		playerManager.cpu = false;
+		playerManager.cpu = true;
 		playerManager.onSustainScore = (points:Int) -> scoreManager.addHoldScore(points);
 		playerManager.onNoteHit = (note:Note) -> onPlayerHit({note: note});
 		playerManager.onSustainNote = (note:Note) -> onPlayerHit({note: note, sustain: true});
@@ -466,7 +466,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		// FlxG.sound.music.time = 10 * 1000;
+		FlxG.sound.music.time = 10 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)
