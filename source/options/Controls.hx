@@ -1,4 +1,4 @@
-package game;
+package options;
 
 import flixel.FlxG;
 

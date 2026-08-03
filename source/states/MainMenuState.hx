@@ -3,7 +3,6 @@ package states;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
-import game.Controls;
 import states.UNOState;
 import utils.Paths;
 

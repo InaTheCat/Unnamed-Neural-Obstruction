@@ -1,11 +1,7 @@
 package game;
 
-import flixel.FlxSprite;
-import flixel.group.FlxSpriteGroup;
 import flixel.ui.FlxBar;
-import flixel.util.FlxColor;
 import sys.FileSystem;
-import utils.Paths;
 
 class HealthBar extends FlxSpriteGroup
 {

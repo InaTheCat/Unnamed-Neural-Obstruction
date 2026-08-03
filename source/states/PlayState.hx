@@ -9,7 +9,6 @@ import flixel.util.typeLimit.OneOfTwo;
 import game.CamPointer;
 import game.Character;
 import game.Combo;
-import game.Controls;
 import game.HealthBar;
 import game.Icon;
 import game.Stage;

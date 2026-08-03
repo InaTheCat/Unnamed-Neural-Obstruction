@@ -2,7 +2,6 @@ package states;
 
 import backend.game.BeatState;
 import backend.system.Logs;
-import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
 
 class UNOState extends BeatState
 {

@@ -1,7 +1,6 @@
 package game;
 
 import backend.system.ANSI;
-import flixel.group.FlxSpriteGroup;
 
 class Combo extends FlxSpriteGroup
 {
@@ -87,14 +86,14 @@ class Combo extends FlxSpriteGroup
 		{
 			Logs.send('rateGroup limit is too low, replaced with ${ANSI.coloredType('2', 0xFFAAAAFF)}',
 				{type: 'Warning', overrideShooterText: 'rateGroup limit is too long, replaced with 2'});
-			comboLimit = max = 2;
+			comboLimit = 2;
 		}
 
 		if (group == numGroup && max <= 2)
 		{
 			Logs.send('numGroup limit is too low, replaced with ${ANSI.coloredType('3', 0xFFAAAAFF)}',
 				{type: 'Warning', overrideShooterText: 'numGroup limit is too long, replaced with 3'});
-			numLimit = max = 3;
+			numLimit = 3;
 		}
 
 		var alive = 0;

@@ -10,6 +10,15 @@ class StrumLine extends FlxSpriteGroup
     public var isPlayer:Bool = false;
 
 	/**
+	 * ts is js for the creation of the strum, if its true or null that is for
+	 * setting and `animation.onFinish.add()` for the notes whether is cpu or not
+	 * but... it cant be changed later, heh
+	 * 
+	 * `(Not Final Var)`
+	**/
+	public var _strumParentAsCpu:Bool = false;
+
+	/**
 	 * Creates a `StrumLine` already prepraded (isnt it like that how it should be?).
 	 * If is empty, it'll make an opponent strum.
 	 *
@@ -17,16 +26,18 @@ class StrumLine extends FlxSpriteGroup
 	 * @param y Same as `x` gng.
 	 * @param player if `true`, will be a Player Strum, else, it'll be opponent.
 	 */
-	public function new(?player:Bool = false, ?x:Float = 70, ?y:Float = 50):Void
+	public function new(?player:Bool = false, ?x:Float = 70, ?y:Float = 50, ?_cpu:Bool = null):Void
 	{
 		super();
 
 		isPlayer = player ?? false;
 		
+		_strumParentAsCpu = _cpu;
+
 		prepareStrums(player ?? false, x ?? 70, y ?? 50);
     }
 
-	private function prepareStrums(?playable:Bool = false, ?x:Float, y:Float):Void
+	private function prepareStrums(?playable:Bool = false, ?x:Float, ?y:Float):Void
 	{
         var playerOffset:Float = playable ? FlxG.width * 0.55 : 0;
 
@@ -80,6 +91,9 @@ class StrumLine extends FlxSpriteGroup
 			add(note);
             notes.push(note);
 
+			if (!_strumParentAsCpu)
+				note.animation.onFinish.add((n:String) -> if (n != 'static') noteAnim(i, 'static'));
+
             var receptor:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x00FFFFFF);
             
             receptor.setGraphicSize(note.width, note.height);
@@ -106,8 +120,6 @@ class StrumLine extends FlxSpriteGroup
 			var center:FlxPoint = FlxPoint.get(note.x + note.width / 2, note.y + note.height / 2);
 
 			note.animation.play(anim ?? 'static', true);
-			if (isCpu)
-				note.animation.onFinish.add((n:String) -> noteAnim(direction, 'static'));
 			note.updateHitbox();
 
 			note.setPosition(center.x - note.width / 2, center.y - note.height / 2);
@@ -116,8 +128,15 @@ class StrumLine extends FlxSpriteGroup
 		}
 	}
 
-	public function getReceptor(dir:Int):FlxSprite // a
-		return receptors[dir];
+	/**
+	 * returns a receptor gng
+	**/
+	public function getReceptor(dir:Int):FlxSprite
+		return dir >= 0 && dir <= 3 ? receptors[dir] : receptors[0];
 
-	
+	/**
+	 * same as the other one but with the note ig
+	**/
+	public function getNote(dir:Int):FlxSprite
+		return dir >= 0 && dir <= 3 ? notes[dir] : notes[0];
 }

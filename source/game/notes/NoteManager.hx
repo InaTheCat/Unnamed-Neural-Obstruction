@@ -2,7 +2,6 @@ package game.notes;
 
 import backend.chart.NewTestChartparser.ParsedNote;
 import backend.game.Conductor;
-import game.Controls;
 
 class NoteManager extends FlxSpriteGroup
 {

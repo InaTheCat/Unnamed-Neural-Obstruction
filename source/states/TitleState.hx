@@ -2,7 +2,6 @@ package states;
 
 import flixel.FlxSprite;
 import game.Character;
-import game.Controls;
 import states.UNOState;
 import utils.Paths;
 
