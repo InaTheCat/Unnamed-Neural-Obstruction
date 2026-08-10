@@ -1,7 +1,6 @@
 package states;
 
 import flixel.FlxState;
-import options.Options;
 import winapi.WindowsAPI;
 
 class LoadState extends FlxState {
@@ -22,6 +21,6 @@ class LoadState extends FlxState {
 
 		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, {type: 'Trace'});
 
-		FlxG.switchState(() -> new states.PlayState());
+		FlxG.switchState(() -> new states.editors.charter.Charter());
     }
 }

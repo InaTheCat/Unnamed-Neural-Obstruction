@@ -2,6 +2,7 @@ package game.notes;
 
 import backend.chart.NewTestChartparser.ParsedNote;
 import backend.game.Conductor;
+import game.notes.HitWindow;
 
 class NoteManager extends FlxSpriteGroup
 {
@@ -18,12 +19,7 @@ class NoteManager extends FlxSpriteGroup
 
 	public var activeSustains:Array<SustainNote> = [];
 
-
-	public var sickWindow:Float = 45;
-	public var goodWindow:Float = 90;
-	public var badWindow:Float = 135;
-	public var shitWindow:Float = 166;
-	public var missWindow:Float = 180;
+	public var ratingWindow:HitWindow = new HitWindow();
 
 	public var onSustainScore:Int->Void;
 	public var onSustainNote:Note->Void;
@@ -315,13 +311,13 @@ class NoteManager extends FlxSpriteGroup
 
 		var rating:String = "shit";
 
-		if (thediff <= sickWindow)
+		if (thediff <= ratingWindow.sick)
 			rating = "sick";
-		else if (thediff <= goodWindow)
+		else if (thediff <= ratingWindow.good)
 			rating = "good";
-		else if (thediff <= badWindow)
+		else if (thediff <= ratingWindow.bad)
 			rating = "bad";
-		else if (thediff <= shitWindow)
+		else if (thediff <= ratingWindow.shit)
 			rating = "shit";
 		else
 		{
@@ -349,7 +345,7 @@ class NoteManager extends FlxSpriteGroup
 	function getClosestNote(dir:Int):Note
 	{
 		var closest:Note = null;
-		var closestDiff:Float = missWindow;
+		var closestDiff:Float = ratingWindow.miss;
 
 		for (note in activeNotes)
 		{

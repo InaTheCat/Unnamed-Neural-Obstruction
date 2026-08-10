@@ -2,10 +2,6 @@
 	"song": {
 		"stage": "stage",
 		"events": [],
-		"gfVersion": "runaway",
-		"speed": 2.8,
-		"player1": "random",
-		"player2": "2011x",
 		"notes": [
 			{
 				"lengthInSteps": 16,
@@ -11721,9 +11717,12 @@
 				"mustHitSection": false
 			}
 		],
+		"inst": "premeditated",
 		"validScore": true,
 		"bpm": 144,
 		"needsVoices": false,
-		"song": "premeditated"
+		"speed": 2.8,
+		"player1": "dad",
+		"player2": "bf"
 	}
 }

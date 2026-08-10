@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="strumLine.png" width="892" height="839">
+	<SubTexture name="00000" x="1" y="682" width="154" height="156" frameX="-0" frameY="-0" frameWidth="154" frameHeight="156"/>
+	<SubTexture name="10000" x="674" y="657" width="157" height="154" frameX="-0" frameY="-0" frameWidth="157" frameHeight="154"/>
+	<SubTexture name="20000" x="455" y="677" width="157" height="154" frameX="-0" frameY="-0" frameWidth="157" frameHeight="154"/>
+	<SubTexture name="30000" x="157" y="682" width="154" height="156" frameX="-0" frameY="-0" frameWidth="154" frameHeight="156"/>
+	<SubTexture name="p00000" x="1" y="1" width="229" height="228" frameX="-6" frameY="-6" frameWidth="242" frameHeight="240"/>
+	<SubTexture name="p00001" x="1" y="231" width="229" height="228" frameX="-6" frameY="-6" frameWidth="242" frameHeight="240"/>
+	<SubTexture name="p00002" x="681" y="1" width="210" height="210" frameX="-14" frameY="-15" frameWidth="242" frameHeight="240"/>
+	<SubTexture name="p00003" x="681" y="1" width="210" height="210" frameX="-14" frameY="-15" frameWidth="242" frameHeight="240"/>
+	<SubTexture name="p10000" x="232" y="457" width="221" height="223" frameX="-1" frameY="-2" frameWidth="228" frameHeight="231"/>
+	<SubTexture name="p10001" x="674" y="441" width="212" height="214" frameX="-6" frameY="-7" frameWidth="228" frameHeight="231"/>
+	<SubTexture name="p10002" x="455" y="457" width="217" height="218" frameX="-4" frameY="-4" frameWidth="228" frameHeight="231"/>
+	<SubTexture name="p10003" x="455" y="457" width="217" height="218" frameX="-4" frameY="-4" frameWidth="228" frameHeight="231"/>
+	<SubTexture name="p20000" x="462" y="1" width="217" height="218" frameX="-1" frameY="-4" frameWidth="226" frameHeight="230"/>
+	<SubTexture name="p20001" x="462" y="221" width="217" height="218" frameX="-1" frameY="-4" frameWidth="226" frameHeight="230"/>
+	<SubTexture name="p20002" x="1" y="461" width="219" height="219" frameX="-1" frameY="-4" frameWidth="226" frameHeight="230"/>
+	<SubTexture name="p20003" x="1" y="461" width="219" height="219" frameX="-1" frameY="-4" frameWidth="226" frameHeight="230"/>
+	<SubTexture name="p30000" x="232" y="1" width="228" height="226" frameX="-3" frameY="-1" frameWidth="236" frameHeight="232"/>
+	<SubTexture name="p30001" x="232" y="229" width="228" height="226" frameX="-3" frameY="-1" frameWidth="236" frameHeight="232"/>
+	<SubTexture name="p30002" x="681" y="213" width="204" height="205" frameX="-15" frameY="-12" frameWidth="236" frameHeight="232"/>
+	<SubTexture name="p30003" x="681" y="213" width="204" height="205" frameX="-15" frameY="-12" frameWidth="236" frameHeight="232"/>
+</TextureAtlas>

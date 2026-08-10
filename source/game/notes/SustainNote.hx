@@ -31,7 +31,6 @@ class SustainNote extends FlxSprite
 		frames = Paths.getSparrowAtlas('game/notes/default');
 
 		if (tail)
-		{
 			switch (dir % 4)
 			{
 				case 0: animation.addByPrefix('hold', 'pruple end hold');
@@ -39,9 +38,7 @@ class SustainNote extends FlxSprite
 				case 2: animation.addByPrefix('hold', 'green hold end');
 				case 3: animation.addByPrefix('hold', 'red hold end');
 			}
-		}
 		else
-		{
 			switch (dir % 4)
 			{
 				case 0: animation.addByPrefix('hold', 'purple hold piece');
@@ -49,7 +46,6 @@ class SustainNote extends FlxSprite
 				case 2: animation.addByPrefix('hold', 'green hold piece');
 				case 3: animation.addByPrefix('hold', 'red hold piece');
 			}
-		}
 
 		animation.play('hold');
 
