@@ -14,6 +14,8 @@ class Sustain extends FlxSprite {
 
         setPosition(x ?? 0, y ?? 0);
 
+		antialiasing = Options.antialiasing ?? true;
+
         switch (dir % 4){
             case 0: color = 0xFFC24B99;
             case 1: color = 0xFF00FFFF;

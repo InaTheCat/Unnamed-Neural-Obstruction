@@ -59,6 +59,7 @@ class Charter extends FlxState {
 
         add(bg = new FlxBackdrop(Paths.image('editors/charter/bg')));
         bg.scrollFactor.set(0.25, 0.25);
+		bg.antialiasing = Options.antialiasing ?? true;
 
         add(strums = new FlxSpriteGroup());
 

@@ -21,6 +21,6 @@ class LoadState extends FlxState {
 
 		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, {type: 'Trace'});
 
-		FlxG.switchState(() -> new states.editors.charter.Charter());
+		FlxG.switchState(() -> new states.Tests());
     }
 }

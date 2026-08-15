@@ -20,5 +20,5 @@
         "strings": true
     },
     "haxe.enableServerView": true,
-    "haxe.enableCompilationServer": true
+	"haxe.enableCompilationServer": true
 }

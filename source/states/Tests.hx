@@ -14,5 +14,9 @@ class Tests extends UNOState {
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			alphabet.text = 'but when como cuando';
+		}
 	}
 }

@@ -62,6 +62,8 @@ class Strum extends FlxSpriteGroup {
             note.setPosition(x + (i * 109), y);
             note.alpha = 0.5;
 
+			note.antialiasing = Options.antialiasing ?? true;
+
             add(note);
             strum.push(note);
 

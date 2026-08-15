@@ -22,6 +22,8 @@ class Note extends FlxSprite {
         this.dir = dir;
         this.isPlayer = isPlayer;
 
+		antialiasing = Options.antialiasing ?? true;
+
         loadGraphic(Paths.image('editors/charter/note'));
 
         scale.set(0.7, 0.7);

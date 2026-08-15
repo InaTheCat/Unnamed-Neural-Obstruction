@@ -27,30 +27,30 @@ class UNOState extends BeatState
         }
 		if (FlxG.keys.justPressed.SPACE)
 		{
-			shootNum++;
-			shootNum = (shootNum % 9);
+			// shootNum++;
+			// shootNum = (shootNum % 9);
 
-			switch (shootNum)
-			{
-				case 0:
-					Logs.send('Shoot test Info $shootNum', {type: 'Info'});
-				case 1:
-					Logs.send('Shoot test Warning $shootNum', {type: 'Warning'});
-				case 2:
-					Logs.send('Shoot test Error $shootNum', {type: 'Error'});
-				case 3:
-					Logs.send('Shoot test None $shootNum', {type: 'None'});
-				case 4:
-					trace('Shoot test Trace $shootNum');
-				case 5:
-					Logs.send('Shoot test Source Info $shootNum', {type: 'Source Info'});
-				case 6:
-					Logs.send('Shoot test PSeScript $shootNum', {type: 'PSeScript'});
-				case 7:
-					Logs.send('Shoot test PSeWarning $shootNum', {type: 'PSeWarning'});
-				case 8:
-					Logs.send('Shoot test PSeError $shootNum', {type: 'PSeError'});
-			}
+			// switch (shootNum)
+			// {
+			// 	case 0:
+			// 		Logs.send('Shoot test Info $shootNum', {type: 'Info'});
+			// 	case 1:
+			// 		Logs.send('Shoot test Warning $shootNum', {type: 'Warning'});
+			// 	case 2:
+			// 		Logs.send('Shoot test Error $shootNum', {type: 'Error'});
+			// 	case 3:
+			// 		Logs.send('Shoot test None $shootNum', {type: 'None'});
+			// 	case 4:
+			// 		trace('Shoot test Trace $shootNum');
+			// 	case 5:
+			// 		Logs.send('Shoot test Source Info $shootNum', {type: 'Source Info'});
+			// 	case 6:
+			// 		Logs.send('Shoot test PSeScript $shootNum', {type: 'PSeScript'});
+			// 	case 7:
+			// 		Logs.send('Shoot test PSeWarning $shootNum', {type: 'PSeWarning'});
+			// 	case 8:
+			// 		Logs.send('Shoot test PSeError $shootNum', {type: 'PSeError'});
+			// }
 		}
     }
 
