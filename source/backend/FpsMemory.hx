@@ -44,6 +44,7 @@ class FpsMemory extends TextField {
 
 		if (visible){
             text = 'FPS: ${times.length} | Memory: $mem/$memPeak MB';
+			textColor = times.length < 30 ? (times.length < 15 ? 0xFFFF0000 : 0xFFFF5500) : 0xFFFFFFFF;
 		}
 	}
 }

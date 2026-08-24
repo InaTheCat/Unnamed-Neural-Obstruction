@@ -38,7 +38,8 @@ class NezuTest extends UNOState {
 
     var osaka:FlxSprite;
 
-    override function create():Void {
+	override public function create():Void
+	{
         super.create();
 
         camHUD.visible = false;
@@ -75,7 +76,8 @@ class NezuTest extends UNOState {
         green.screenCenter().x += 250;
     }
 
-    override function update(elapsed:Float):Void {
+	override public function update(elapsed:Float):Void
+	{
         super.update(elapsed);
 
 		Conductor.update(elapsed);
@@ -102,7 +104,8 @@ class NezuTest extends UNOState {
         osaka.scale.set(sC, sC);
     }
 
-    override function stepHit(s:Int):Void {
+	override public function stepHit(s:Int):Void
+	{
         super.stepHit(s);
 
         if (s % 2 == 0){

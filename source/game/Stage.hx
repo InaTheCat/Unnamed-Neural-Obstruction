@@ -116,7 +116,7 @@ class Stage {
 	{
 		if (!Paths.exists('data/stages/$jsonName.json'))
 		{
-			Logs.send('${ANSI.coloredType('$jsonName', 0xFF0055FF)} was\'nt found', {type: 'Error'});
+			Logs.send('${ANSI.coloredType('$jsonName', 0xFF0055FF)} was\'nt found', {type: Error});
             JSON = null;
             return;
         }
@@ -130,7 +130,7 @@ class Stage {
 	{
 		if (JSON == null)
 		{
-			Logs.send('Json is null, please check if you writted the stage correctly', {type: 'Error'});
+			Logs.send('Json is null, please check if you writted the stage correctly', {type: Error});
 			return;
 		}
 
@@ -179,7 +179,7 @@ class Stage {
 			stageObjects.set(e.name ?? e.sprite, sprite);
 
 			if (stageObjects.exists(e.name ?? e.sprite))
-				Logs.send('Duplicated object "${e.name ?? e.sprite}"', {type: 'Warning'});
+				Logs.send('Duplicated object "${e.name ?? e.sprite}"', {type: Warning});
 
 			sprite.alpha = e.properties.alpha ?? 1;
 			sprite.angle = e.properties.angle ?? 0;
@@ -231,7 +231,7 @@ class Stage {
 
 		if (!REG.match(requested))
 		{
-			Logs.send('Invalid color [$requested]', {type: 'Error'});
+			Logs.send('Invalid color [$requested]', {type: Error});
 			return;
 		}
 

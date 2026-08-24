@@ -4,6 +4,20 @@ import backend.system.ANSI;
 
 using StringTools;
 
+enum abstract LogType(String) from String to String
+{
+	var None = 'None';
+	var Debug = 'Debug';
+	var Info = 'Info';
+	var Warning = 'Warning';
+	var Error = 'Error';
+	var Trace = 'Trace';
+	var SourceInfo = 'Source Info';
+	var PSeScript = 'PSeScript';
+	var PSeWarning = 'PSeWarning';
+	var PSeError = 'PSeError';
+}
+
 typedef SendSettings =
 {
 	/**
@@ -11,6 +25,7 @@ typedef SendSettings =
 	 *
 	 * Available types:
 	 * - `None`
+	 * - `Debug`
 	 * - `Info`
 	 * - `Warning`
 	 * - `Error`
@@ -20,7 +35,7 @@ typedef SendSettings =
 	 * - `PSeWarning`
 	 * - `PSeError`
 	 */
-	@:optional var type:Null<String>;
+	@:optional var type:Null<LogType>;
 	/**
 	 *	`shooterTime`: well, u can guess what it is, DA SA `FLOAT`, but
 	 *	for the TroubleShooter, soooo, the time of how much time will be
@@ -42,6 +57,8 @@ typedef SendSettings =
 }
 
 class Logs {
+	public static var skipShooter:Bool = false;
+
 	/**
 	 * Main function of the Logs class
 	 *	 
@@ -65,7 +82,10 @@ class Logs {
 		var cleanMsg:String = Std.string(msg);
 
 		#if sys
-		Sys.println(type.trim() == 'None' ? '${cleanMsg.replace('\n', ' ')}' : '${ANSI.coloredType(type)} | ${cleanMsg.replace('\n', ' ')}');
+		if (type == 'Debug')
+			Sys.println(ANSI.coloredText('[$type] | $cleanMsg', 'Debug'));
+		else
+			Sys.println(type.trim() == 'None' ? '${cleanMsg.replace('\n', ' ')}' : '${ANSI.coloredType(type)} | ${cleanMsg.replace('\n', ' ')}');
 		#end
 
 		#if !FLX_NO_DEBUG
@@ -84,6 +104,9 @@ class Logs {
 				FlxG.log.add(cleanMsg);
         }
 		#end
+
+		if (skipShooter)
+			return;
 
 		if (showShooter)
 			TroubleShooter.instance.send(overrideShooterText == null ? Std.string(msg) : overrideShooterText, type, shooterTime);

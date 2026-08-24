@@ -115,7 +115,7 @@ class NoteManager extends FlxSpriteGroup
 				continue;
 
 			var receptor = playerStrum.getReceptor(note.dir % 4);
-			var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
+			var pixelsPerMs:Float = (baseScrollSpeed * Conductor.chartSpeed) / 1000;
 
 			note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs * scrollDir;
 			// note.y = receptor.y + (note.strumTime - Conductor.songPosition) * pixelsPerMs;
@@ -129,7 +129,7 @@ class NoteManager extends FlxSpriteGroup
 			if (hold.noteOrigin != null)
 			{
 				var receptor = playerStrum.getReceptor(hold.dir % 4);
-				var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
+				var pixelsPerMs:Float = (baseScrollSpeed * Conductor.chartSpeed) / 1000;
 
 				if (!hold.tail)
 				{
@@ -258,12 +258,12 @@ class NoteManager extends FlxSpriteGroup
 		var dir:Int = noteData.dir % 4;
 		var receptor = playerStrum.getReceptor(dir);
 
-		var pixelsPerMs:Float = (baseScrollSpeed * Conductor.speed) / 1000;
+		var pixelsPerMs:Float = (baseScrollSpeed * Conductor.chartSpeed) / 1000;
 		var startY:Float = receptor.y + (noteData.time - Conductor.songPosition) * pixelsPerMs * scrollDir;
 		// var startY:Float = receptor.y + (noteData.time - Conductor.songPosition) * pixelsPerMs;
 
 		var note:Note = new Note(0, startY, dir, noteData.time, noteData.sustain);
-		note.scrollSpeed = baseScrollSpeed * Conductor.speed;
+		note.scrollSpeed = baseScrollSpeed * Conductor.chartSpeed;
 		note.x = receptor.x + (receptor.width - note.width) / 2;
 
 		if (noteData.sustain > 0)

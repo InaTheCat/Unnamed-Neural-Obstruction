@@ -55,12 +55,12 @@ class Character extends FlxSprite {
 		if (charJson == null)
 		{
 			Logs.send('charJson failed to load ${backend.system.ANSI.coloredType('[$character]', 0xFFFFFF00)}, The Character will be\nreplaced with bf',
-				{type: 'Warning'});
+				{type: Warning});
 			charJson = CoolUtil.parseJson('data/characters/bf');
 
 			if (charJson == null)
 			{
-				Logs.send('Not even bf, then it wont fucking gonna appear then', {type: 'Error'});
+				Logs.send('Not even bf, then it wont fucking gonna appear then', {type: Error});
 				return;
 			}
 		}
@@ -96,7 +96,7 @@ class Character extends FlxSprite {
 
 			var added = animation.getByName(e.name);
 			if (added == null || added.frames.length == 0)
-				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML gng', {type: 'Error'});
+				Logs.send('Anim "${e.name}" (prefix "${e.anim}") doesn\'t have frames. Check the XML gng', {type: Error});
 		
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
@@ -137,7 +137,7 @@ class Character extends FlxSprite {
 			if (charJson.color == null)
 				shii = 'Icon color';
 
-			Logs.send('$shii is null gng', {type: 'Error'});
+			Logs.send('$shii is null gng', {type: Error});
 			return 0xFFFFFFFF;
 		}
 

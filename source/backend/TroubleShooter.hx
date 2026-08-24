@@ -8,14 +8,13 @@ import options.Options;
 class TroubleShooter extends FlxBasic {
     public static var instance:TroubleShooter;
 
-	private static var iNum:Int = 0;
-
     public var troubleShooter:FlxTypedSpriteGroup<Dynamic>;
     public var troubleText:FlxText;
     public var troubleBg:FlxSprite;
     private var hideTimer:FlxTimer = null;
 
     public var typeColors:Map<String, Int> = [
+		'Debug' => 0x00FF00,
 		'Info' => 0x0000FF,
 		'Warning' => 0xFFFF00,
 		'Error' => 0xFF0000,
@@ -49,7 +48,7 @@ class TroubleShooter extends FlxBasic {
 	{
 		if (cam == troubleShooter.camera)
 		{
-			Logs.send('The TroubleShooter is in $cam at this moment', {type: 'Source Info'});
+			Logs.send('The TroubleShooter is in that camera at this moment', {type: SourceInfo});
 			return;
 		}
 
@@ -62,13 +61,10 @@ class TroubleShooter extends FlxBasic {
     }
 
 	override public function draw():Void
+		troubleShooter.draw();
+
+	public function send(message:String, ?shootType:String = 'Info', ?displayTime:Float = 2):Void
 	{
-        troubleShooter.draw();
-    }
-
-    public function send(message:String, ?shootType:String = 'Info', ?displayTime:Float = 2):Void {
-		iNum++;
-
         FlxTween.cancelTweensOf(troubleShooter);
 		if (hideTimer != null)
 			hideTimer.cancel();
@@ -82,7 +78,6 @@ class TroubleShooter extends FlxBasic {
 
 		troubleText.setFormat(null, 16, typeColors.exists(shootType) ? typeColors[shootType] : 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
 
-		// Update shoot troubleBg
 		troubleBg.makeGraphic(Std.int(troubleText.textField.textWidth + 40), Std.int(troubleText.textField.textHeight + 40), 0xFFFFFFFF);
 
 		troubleText.y = FlxG.height - troubleBg.height;
@@ -90,7 +85,6 @@ class TroubleShooter extends FlxBasic {
 		troubleBg.setPosition(troubleText.x - 20, troubleText.y - 20);
 		troubleBg.updateHitbox();
 
-		// Notification appears
 		FlxTween.tween(troubleShooter, {x: -10, alpha: 0.6}, 0.5, {
 			ease: FlxEase.quadOut,
 			onComplete: function(_)

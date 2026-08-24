@@ -51,7 +51,7 @@ class Note extends FlxSprite {
                 angle = 90;
 
             default:
-                Logs.send('ion know how tf u did to skip the dir check, but well,\nnow u have a white note pointing up, ig', {type: 'Error'});
+				Logs.send('ion know how tf u did to skip the dir check, but well,\nnow u have a white note pointing up, ig', {type: Error});
         }
     }
 }

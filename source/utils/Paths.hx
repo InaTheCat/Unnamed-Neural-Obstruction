@@ -22,26 +22,32 @@ class Paths {
 		{
 			if (path.endsWith('.png'))
 			{
-				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', {type: 'Warning'});
+				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', {type: Warning});
 				return 'assets/images/logo/logo.png';
 			}
 
 			if (path.endsWith('.xml'))
 			{
-				Logs.send('$path does\'nt exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', {type: 'Warning'});
+				Logs.send('$path doesn\'t exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', {type: Warning});
 
 				if (!exists('assets/images/characters/bf.xml'))
 				{
-					Logs.send('$path does\'nt exists,\nplease, don\'t delete that...', {type: 'Error'});
+					Logs.send('$path doesn\'t exists,\nplease, don\'t delete that...', {type: Error});
 					return '';
 				}
 
 				return 'assets/images/characters/bf.xml';
 			}
 
+			if (path.endsWith('.txt'))
+			{
+				Logs.send('$path doesn\'t exists,\ntext will be replaced to...,\nabsolutely nothing, literally', {type: Warning});
+				return '';
+			}
+
 			if (path.endsWith('.ogg'))
 			{
-				Logs.send('$path does\'nt exists,\nsound will be replaced with uh,\nthe "beep" sound', {type: 'Warning'});
+				Logs.send('$path doesn\'t exists,\nsound will be replaced with uh,\nthe "beep" sound', {type: Warning});
 				return 'assets/sounds/beep.ogg';
 			}
 		}
@@ -63,6 +69,15 @@ class Paths {
 
 	public static inline function json(path:String):String
 		return getPath('assets/$path.json');
+
+	public static inline function music(path:String):String
+		return getPath('assets/music/$path.ogg');
+
+	public static inline function sound(path:String):String
+		return getPath('assets/sounds/$path.ogg');
+
+	public static inline function txt(path:String):String
+		return getPath('assets/$path.txt');
 
 	public static function font(path:String):String
 	{
@@ -89,11 +104,11 @@ class Paths {
 		//
 		// if (fails == 2)
 		// {
-		// Logs.send('Font couldn\'t be found or doesn\'t had an expected\nextension, returning null', {type: 'Error'});
+		// Logs.send('Font couldn\'t be found or doesn\'t had an expected\nextension, returning null', {type: Error});
 		// return null;
 		// }
 		//
-		// Logs.send('Font didn\'n had extension, but the code\nfound a $found file with the same name', {type: 'Warning'});
+		// Logs.send('Font didn\'n had extension, but the code\nfound a $found file with the same name', {type: Warning});
 		// }
 
 		return getPath('assets/fonts/$path');

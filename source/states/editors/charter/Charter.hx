@@ -49,7 +49,8 @@ class Charter extends FlxState {
 
     var playingSong:Bool = false;
 
-    override function create():Void {
+	override public function create():Void
+	{
         super.create();
 
         FlxG.cameras.add(charterCam);
@@ -120,20 +121,20 @@ class Charter extends FlxState {
             else if (chart.notes == null) thing = 'notes field';
             else thing = 'everything';
             
-            Logs.send('$thing is null. Returning...', {type: 'Error'});
+			Logs.send('$thing is null. Returning...', {type: Error});
 
             return;
         }
 
         if (notesSetted){
-            Logs.send('Notes already initialized', {type: 'Info'});
+			Logs.send('Notes already initialized', {type: Info});
             return;
         }
 
         for (i => nts in chart.notes){
             var note:Note = new Note(nts.dir * 109, (nts.time / Conductor.stepCrochet) * gridSize, nts.dir, nts.sustain > 0, nts.sustain, nts.mustHit);
 
-            // Logs.send('Note $i created with [Dir: ${note.dir}, hasSustain: ${note.hasSustain}, isPlayer: ${note.isPlayer}]', {type: 'Source Info', showShooter: false});
+			// Logs.send('Note $i created with [Dir: ${note.dir}, hasSustain: ${note.hasSustain}, isPlayer: ${note.isPlayer}]', {type: SourceInfo, showShooter: false});
 
             if (note.isPlayer)
                 player.add(note);
@@ -143,7 +144,7 @@ class Charter extends FlxState {
             if (note.hasSustain){
                 var sustain:Sustain = new Sustain(note.x + (note.frameWidth / 2) - 32, note.y + (note.frameHeight / 2), note.sustainLength, note.dir);
 
-                // Logs.send('Note $i, ${note.isPlayer ? 'player' : 'opponent'} side had sustain and created with [Dir: ${note.dir}, size: ${note.sustainLength}]', {type: 'Source Info', showShooter: false});
+				// Logs.send('Note $i, ${note.isPlayer ? 'player' : 'opponent'} side had sustain and created with [Dir: ${note.dir}, size: ${note.sustainLength}]', {type: SourceInfo, showShooter: false});
 
                 if (note.isPlayer)
                     player.add(sustain);
@@ -166,7 +167,8 @@ class Charter extends FlxState {
     var chartScroll:Float = 0;
     var chartZoom:Float = 0.8;
 
-    override function update(elapsed:Float):Void {
+	override public function update(elapsed:Float):Void
+	{
         super.update(elapsed);
 
         Conductor.update(charterCam.scroll.y);

@@ -9,14 +9,13 @@ class Tests extends UNOState {
         super.create();
 
 		add(alphabet = new Alphabet(50, 50, 'yo ese'));
+		alphabet.screenCenter();
     }
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
 		if (FlxG.keys.justPressed.SPACE)
-		{
-			alphabet.text = 'but when como cuando';
-		}
+			alphabet.text += 'A';
 	}
 }

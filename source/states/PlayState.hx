@@ -264,7 +264,7 @@ class PlayState extends UNOState
 			FlxG.switchState(() -> new states.LoadState());
 	}
 
-	override function destroy():Void
+	override public function destroy():Void
 	{
 		super.destroy();
 
@@ -325,7 +325,7 @@ class PlayState extends UNOState
 		}
 	}
 
-	override function beatHit(b:Int)
+	override public function beatHit(b:Int)
 	{
 		super.beatHit(b);
 
@@ -334,7 +334,7 @@ class PlayState extends UNOState
 				e.iconScale = 1.2;
 	}
 
-	override function sectionHit(s:Int)
+	override public function sectionHit(s:Int)
 	{
 		super.sectionHit(s);
 
@@ -431,7 +431,7 @@ class PlayState extends UNOState
 		}
 		else
 		{
-			Logs.send('prefix was null or not even a thing,\n voices will be replaced with "beep"', {type: 'Error'});
+			Logs.send('prefix was null or not even a thing,\n voices will be replaced with "beep"', {type: Error});
 			var beep:FlxSound = backend.system.SFXBank._beep;
 			voices.push(beep);
 		}

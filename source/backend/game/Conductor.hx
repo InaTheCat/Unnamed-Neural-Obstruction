@@ -4,7 +4,7 @@ class Conductor
 {
 	public static var songPosition:Float = 0;
 	public static var bpm:Float = 100;
-	public static var speed:Float = 1;
+	public static var chartSpeed:Float = 1;
 
 	public static var curSection:Int = 0;
 	public static var curStep:Int = 0;
@@ -26,9 +26,11 @@ class Conductor
 	static function get_stepCrochet():Float
 		return crochet / 4;
 
-	public static function reset():Void
+	public static function reset(noRePos:Bool = false):Void
 	{
-		songPosition = 0;
+		if (!noRePos)
+			songPosition = 0;
+
 		curStep = 0;
 		curBeat = 0;
 		curDecStep = 0;
@@ -38,13 +40,21 @@ class Conductor
 		lastSection = -1;
 	}
 
+	public static function changeBpm(?newBpm:Float)
+	{
+		reset(true);
+
+		if (newBpm != null && newBpm > 0)
+			bpm = newBpm;
+	}
+
 	public static function mapSong(?newBpm:Float, ?newSpeed:Float):Void
 	{
 		if (newBpm != null && newBpm > 0)
 			bpm = newBpm;
 
 		if (newSpeed != null && newSpeed > 0)
-			speed = newSpeed;
+			chartSpeed = newSpeed;
 	}
 
 	public static function update(pos:Float):Void

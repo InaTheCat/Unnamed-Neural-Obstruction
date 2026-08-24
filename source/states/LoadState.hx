@@ -1,10 +1,11 @@
 package states;
 
+import backend.system.SFXBank;
 import flixel.FlxState;
 import winapi.WindowsAPI;
 
 class LoadState extends FlxState {
-    override function create():Void
+	override public function create():Void
 	{
 		WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
 		WindowsAPI.windowDarkMode(true);
@@ -19,8 +20,10 @@ class LoadState extends FlxState {
 
 		#if !FLX_NO_DEBUG FlxG.debugger.visible = true; #end
 
-		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, {type: 'Trace'});
+		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, {type: Trace});
 
-		FlxG.switchState(() -> new states.Tests());
+		SFXBank.init();
+
+		FlxG.switchState(() -> new TitleState());
     }
 }

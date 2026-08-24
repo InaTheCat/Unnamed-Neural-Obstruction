@@ -11,7 +11,7 @@ class CamPointer extends FlxObject {
 
     public function updatePos(character:Character) {
         if (character == null){
-            Logs.send('Character was null, how tf r u even running the game?', {type: 'Error'});
+			Logs.send('Character was null, how tf r u even running the game?', {type: Error});
             return;
         }
 
