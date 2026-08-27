@@ -2,39 +2,39 @@ package backend.chart;
 
 typedef ParsedNote =
 {
-	var time:Float;
-	var dir:Int;
-	var sustain:Float; //dur
-	var mustHit:Bool; // player - opp
-	var mustHitSection:Bool;
+	time:Float,
+	dir:Int,
+	sustain:Float, // dur
+	mustHit:Bool, // player - opp
+	mustHitSection:Bool
 }
 
 typedef ParsedChart =
 {
-	var notes:Array<ParsedNote>;
-	var sections:Array<ParsedChartSection>;
-	var bpm:Float;
-	var speed:Float;
+	notes:Array<ParsedNote>,
+	sections:Array<ParsedChartSection>,
+	bpm:Float,
+	speed:Float
 }
 
 typedef ParsedChartSectionNoteData = Array<Dynamic>;
 
 typedef ParsedChartSection =
 {
-	var sectionNotes:Array<ParsedChartSectionNoteData>;
-	var mustHitSection:Bool;
+	sectionNotes:Array<ParsedChartSectionNoteData>,
+	mustHitSection:Bool
 }
 
 typedef ParsedChartSongData =
 {
-	var notes:Array<ParsedChartSection>;
-	var bpm:Null<Float>;
-	var speed:Null<Float>;
+	notes:Array<ParsedChartSection>,
+	?bpm:Float,
+	?speed:Float
 }
 
 typedef ParsedChartFile =
 {
-	var song:ParsedChartSongData;
+	song:ParsedChartSongData
 }
 
 class NewTestChartparser

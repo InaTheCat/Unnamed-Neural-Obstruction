@@ -5,17 +5,22 @@ import game.Alphabet;
 class Tests extends UNOState {
 	var alphabet:Alphabet;
 
+	var time:FlxText;
+
     override public function create() {
         super.create();
 
-		add(alphabet = new Alphabet(50, 50, 'yo ese'));
-		alphabet.screenCenter();
-    }
+		CoolUtil.playMusic('freakyMenu', 1, false, {fadeOut: true});
+
+		Conductor.time(105000);
+
+		add(time = new FlxText(0, 0, 0, '0/0', 64).setFormat(null, 64, 0xFFFFFFFF, 'center'));
+		time.screenCenter();
+	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.SPACE)
-			alphabet.text += 'A';
+		time.text = FlxG.sound?.music?.time + ' / ' + FlxG.sound?.music?.length;
 	}
 }

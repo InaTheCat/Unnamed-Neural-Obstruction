@@ -25,6 +25,11 @@ class UNOState extends BeatState
 			if (FlxG.keys.justPressed.R)
 				FlxG.resetState();
 
+		if (CoolUtil.playingMusic)
+		{
+			CoolUtil.updateMusic();
+		}
+
 		if (FlxG.sound?.music != null || CoolUtil.playingMusic)
 			Conductor.update(elapsed);
 	}

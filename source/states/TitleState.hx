@@ -81,6 +81,7 @@ class TitleState extends UNOState {
 					enter.playAnim('pressed', true);
 					FlxG.sound?.play(Paths.sound('menu/confirm'), 0.75, false);
 					madafakingCam.flash(0xFFFFFFFF, 1, null, true);
+					new FlxTimer().start(1.5, (_:FlxTimer) -> FlxG.switchState(() -> new MainMenuState()));
 				}
 			}
 		}
@@ -226,6 +227,9 @@ class TitleState extends UNOState {
 	{
 		if (texts == null || texts.length == 0)
 		{
+			if (pressed)
+				return;
+
 			Logs.send('Texts already been deleted gng', {type: Warning});
 
 			return;

@@ -1,6 +1,7 @@
 package utils;
 
 import backend.system.ANSI;
+import flixel.FlxState;
 import haxe.Json;
 import openfl.utils.Assets;
 
@@ -8,22 +9,28 @@ using StringTools;
 
 typedef PlayMusicSettings =
 {
-	@:optional var bpm:Null<Float>;
+	?bpm:Float,
 
 	/**
 	 * If u wanna force to play the exact same music thats
 	 * actually playing in other part or in the same state,
 	 * set it as `true` to force it to play
 	**/
-	@:optional var forcePlay:Null<Bool>;
+	?forcePlay:Bool,
 
-	@:optional var fadeIn:Null<Bool>;
+	?fadeIn:Bool,
 
 	/**
 	 * This only works and take effect if the `loop` is false
 	 * and the music is more than 3 seconds long
 	**/
-	@:optional var fadeOut:Null<Bool>;
+	?fadeOut:Bool,
+}
+
+typedef StateSettings =
+{
+	?skipIn:Bool,
+	?skipOut:Bool
 }
 
 // whats 9 + 10
@@ -33,6 +40,10 @@ class CoolUtil {
 
 	private static var startingFadeOut:Bool = false;
 	private static var lastMusic:String = '';
+
+	private static var musicFadeIn:Null<Bool>;
+	private static var musicFadeOut:Null<Bool>;
+	private static var musicLoop:Null<Bool>;
 
     /**
 	 * Self descreptive, but it parses a json and returns a json...
@@ -60,6 +71,10 @@ class CoolUtil {
 		var fadeIn:Bool = settings.fadeIn ?? false;
 		var fadeOut:Bool = settings.fadeOut ?? false;
 
+		musicFadeIn = fadeIn;
+		musicFadeOut = fadeOut;
+		musicLoop = loop;
+
 		if (lastMusic == path.toLowerCase() && !forcePlay)
 		{
 			Logs.send('$path is actually playing atm [If you want to skip and for some reason replay the exact same song, use last var in the function, "${ANSI.coloredType('forcePlay', 0xFF0000FF)}"]',
@@ -74,23 +89,61 @@ class CoolUtil {
 
 		FlxG.sound.playMusic(Paths.music(path), fadeIn ? 0 : volume, loop);
 
-		FlxG.sound?.music.fadeIn(1, 0, volume);
-
-		if (!loop && FlxG.sound?.music?.length >= 3000)
-			if (FlxG.sound?.music?.length >= FlxG.sound?.music?.length - 1000 && startingFadeOut)
-			{
-				startingFadeOut = true;
-				FlxG.sound?.music?.fadeOut(1, 0, (_:FlxTween) -> lastMusic = '');
-			}
+		if (fadeIn)
+			FlxG.sound?.music.fadeIn(1, 0, volume);
 
 		Conductor.changeBpm(bpm);
 
 		lastMusic = path.toLowerCase();
 
+		playingMusic = true;
+
+		if (FlxG.sound?.music != null && !loop)
+			FlxG.sound.music.onComplete = () -> playingMusic = false;
+
 		return;
 	}
 
+	public static function updateMusic():Void
+	{
+		if (!musicFadeOut && !musicLoop)
+			return;
+		if (startingFadeOut)
+			return;
+
+		var music = FlxG.sound.music;
+
+		if (music != null && music.length >= 3000 && music.time >= music.length - 1000)
+		{
+			startingFadeOut = true;
+			music.fadeOut(1, 0, (_:FlxTween) ->
+			{
+				lastMusic = '';
+				playingMusic = false;
+			});
+		}
+	}
+
     // 21
+	/**
+	 * Some type of switching the state but with settings like skipping the transition when switching in and out
+	 *
+	 * @param newState
+	 * 		u can guess what it is
+	 *
+	 * @param settings
+	 *		same, but settings
+	 *
+	 * - skipIn
+	 * - skipOut
+	 * - sharedParams (WIP n unexistent rn heh)
+	**/
+	public static function switchState(newState:FlxState = null, settings:StateSettings)
+	{
+		var skipIn:Bool = settings?.skipIn ?? false;
+		var skipOut:Bool = settings?.skipOut ?? false;
+	}
+
 	public static function sliceFromLine(text:String):Array<String>
 	{
 		if (text.trim() == '')

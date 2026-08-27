@@ -113,4 +113,34 @@ class Conductor
 		if (Math.abs(songPosition - music.time) > 20)
 			songPosition = music.time;
 	}
+	public static function time(time:Float)
+	{
+		if (FlxG.sound?.music == null)
+		{
+			Logs.send('uhm, theres isnt music playing rn', {type: Info});
+
+			return;
+		}
+
+		final music = FlxG.sound.music;
+
+		if (time <= 0 || time >= music.length)
+		{
+			var warnType:Bool = time <= 0;
+
+			Logs.send('reached a bound, time is ${warnType ? 'lower' : 'greater'} than the song time,\nsetting to ${warnType ? 'lower' : 'max'} possible bounds',
+				{
+				type: Warning
+			});
+
+			music.time = FlxMath.bound(time, 0, music.length - 1);
+		}
+
+		trace('Previous time: ${music.time}');
+
+		music.time = time;
+		songPosition = time;
+
+		trace('New time: ${music.time}');
+	}
 }

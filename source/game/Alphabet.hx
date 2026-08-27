@@ -8,7 +8,6 @@ using StringTools;
 
 class Alphabet extends FlxSpriteContainer
 {
-	public var pos:FlxPoint = FlxPoint.get();
 	public var text(get, set):String;
 	
 	function get_text():String
@@ -22,8 +21,6 @@ class Alphabet extends FlxSpriteContainer
 		super(x, y);
 
 		this.text = text;
-
-		pos.set(x ?? 0, y ?? 0);
 
 		prepareAlphabet(Std.string(text));
 	}
@@ -52,7 +49,7 @@ class Alphabet extends FlxSpriteContainer
 
 			letter.antialiasing = Options.antialiasing;
 
-			if (e == ' ')
+			if (e.trim() == '' || (e == '\\' || e == '\n'))
 				letter.visible = false;
 		}
 
@@ -64,8 +61,7 @@ class Alphabet extends FlxSpriteContainer
 		if (_text == value)
 			return value;
 
-		var centerX:Float = x + width * 0.5;
-		var centerY:Float = y + height * 0.5;
+		var center:FlxPoint = FlxPoint.get(x + width * 0.5, y + height * 0.5);
 
 		_text = value;
 
@@ -77,10 +73,13 @@ class Alphabet extends FlxSpriteContainer
 				e.destroy();
 			}
 		}
+
 		prepareAlphabet(value);
 
-		x = centerX - width * 0.5;
-		y = centerY - height * 0.5;
+		x = center.x - width * 0.5;
+		y = center.y - height * 0.5;
+
+		center.put();
 
 		return value;
 	}

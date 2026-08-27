@@ -22,20 +22,20 @@ typedef SpriteSettings = {
      * ion know, u forgot one, then, u have another one, or simply cuz one
      * is shorter that the other so, yea
     **/
-    @:optional var type:Null<String>;
+	?type:String,
 
-    @:optional var flipX:Null<Bool>;
-    @:optional var flipY:Null<Bool>;
+	?flipX:Bool,
+	?flipY:Bool,
 
     // if graphic
-    @:optional var width:Null<Int>;
-    @:optional var height:Null<Int>;
-    @:optional var color:Null<Int>;
+	?width:Int,
+	?height:Int,
+	?color:Int,
 
     // if anim
-    @:optional var anims:Null<Array<String>>;
-    @:optional var fps:Null<Int>;
-    @:optional var loop:Null<Bool>;
+	?anims:Array<String>,
+	?fps:Int,
+	?loop:Bool
 }
 
 class UNOSprite extends FlxSprite {

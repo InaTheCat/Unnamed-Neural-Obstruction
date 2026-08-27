@@ -35,25 +35,25 @@ typedef SendSettings =
 	 * - `PSeWarning`
 	 * - `PSeError`
 	 */
-	@:optional var type:Null<LogType>;
+	?type:LogType,
 	/**
 	 *	`shooterTime`: well, u can guess what it is, DA SA `FLOAT`, but
 	 *	for the TroubleShooter, soooo, the time of how much time will be
 	 *	the shooter in screen, ig???????????????????????????????????????.
 	**/
-	@:optional var shooterTime:Null<Float>;
+	?shooterTime:Float,
 	/**
 	 *	`showShooter`: dasa `Bool`, but the Shooter, if true well... u
 	 *	can guess it, itll prepare u a sandwich ig.
 	**/
-	@:optional var showShooter:Null<Bool>;
+	?showShooter:Bool,
 	/**
 	 *	`overrideShooterText`: this is for, uh, exactly what it says,
 	 *	the text that u write here will override the shooter one, its
 	 *	usable if for some reason u want the message of the Log and the
 	 *	TroubleShooter to be different, u can just "override" it with this.
 	**/
-	@:optional var overrideShooterText:Null<String>;
+	?overrideShooterText:String,
 }
 
 class Logs {

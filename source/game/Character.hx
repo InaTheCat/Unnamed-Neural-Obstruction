@@ -6,22 +6,22 @@ using StringTools;
 
 typedef CharacterAnim =
 {
-	var name:String;
-	var anim:String;
-	@:optional var fps:Null<Int>;
-	@:optional var loop:Null<Bool>;
-	@:optional var offset:Null<Array<Float>>;
+	name:String,
+	anim:String,
+	?fps:Int,
+	?loop:Bool,
+	?offset:Array<Float>
 }
 
 typedef CharacterJson =
 {
-	@:optional var name:Null<String>;
-	@:optional var holdTime:Null<Float>;
-	@:optional var path:Null<String>;
-	@:optional var color:Null<String>;
-	@:optional var icon:Null<String>;
-	@:optional var camOffset:Null<Array<Float>>;
-	var anims:Array<CharacterAnim>;
+	?name:String,
+	?holdTime:Float,
+	?path:String,
+	?color:String,
+	?icon:String,
+	?camOffset:Array<Float>,
+	anims:Array<CharacterAnim>
 }
 
 class Character extends FlxSprite {

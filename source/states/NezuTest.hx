@@ -9,8 +9,8 @@ import game.notes.StrumLine;
 
 typedef HitSettings =
 {
-	@:optional var note:Null<Note>;
-	@:optional var sustain:Null<Bool>;
+	?note:Note,
+	?sustain:Bool
 }
 
 class NezuTest extends UNOState {    

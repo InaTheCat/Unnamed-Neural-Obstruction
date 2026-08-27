@@ -24,6 +24,6 @@ class LoadState extends FlxState {
 
 		SFXBank.init();
 
-		FlxG.switchState(() -> new TitleState());
+		FlxG.switchState(() -> new LoadState());
     }
 }
