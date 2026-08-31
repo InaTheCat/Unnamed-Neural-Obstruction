@@ -188,12 +188,6 @@ class TitleState extends UNOState
 		super.destroy();
 
 		skipped = true;
-		if (gf != null && logo != null && enter != null)
-			for (e in [gf, logo, enter])
-			{
-				remove(e);
-				e.destroy();
-			}
 	}
 
 	public function skip()

@@ -10,7 +10,7 @@ class ANSI {
 	public static inline function refreshShooter():Void
 	{
 		if (TroubleShooter.instance != null)
-			shooter = TroubleShooter.instance.typeColors.copy();
+			shooter = TroubleShooter.typeColors.copy();
 		else if (shooter == null)
 			shooter = new Map();
 	}

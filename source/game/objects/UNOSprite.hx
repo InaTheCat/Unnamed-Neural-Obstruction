@@ -62,7 +62,7 @@ class UNOSprite extends FlxSprite {
                     frames = Paths.getSparrowAtlas(image);
 
                     imagePath = Paths.image(image);
-                    xmlPath = Paths.xml(image);
+					xmlPath = Paths.xml('images/$image');
 
                     if (settings.anims != null){
                         for (e in settings.anims){

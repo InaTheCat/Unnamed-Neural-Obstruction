@@ -17,7 +17,7 @@ class UNOState extends BeatState
 			FlxG.cameras.add(camHUD = new FlxCamera(), false).bgColor = 0x00000000;
 
 		if (troubleShooter == null)
-			FlxG.cameras.add(troubleShooter = new TroubleShooter());
+			FlxG.cameras.add(troubleShooter = new TroubleShooter(), false);
 	}
 
 	override public function update(elapsed:Float)
