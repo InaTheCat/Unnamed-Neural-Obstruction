@@ -15,15 +15,21 @@ class LoadState extends FlxState {
         super.create();
 
 		Options.init();
-
-		FlxG.plugins.addPlugin(new TroubleShooter());
+		SFXBank.init();
 
 		#if !FLX_NO_DEBUG FlxG.debugger.visible = true; #end
 
 		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, {type: Trace});
 
-		SFXBank.init();
+		if (Options.updateWindowsAPI)
+			FlxG.signals.postStateSwitch.add(() ->
+			{
+				if (!Options.updateWindowsAPI)
+					FlxG.signals.postStateSwitch.removeAll();
 
-		FlxG.switchState(() -> new LoadState());
+				WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
+			});
+
+		FlxG.switchState(() -> new TitleState());
     }
 }

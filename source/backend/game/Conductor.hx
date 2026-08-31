@@ -136,11 +136,7 @@ class Conductor
 			music.time = FlxMath.bound(time, 0, music.length - 1);
 		}
 
-		trace('Previous time: ${music.time}');
-
 		music.time = time;
 		songPosition = time;
-
-		trace('New time: ${music.time}');
 	}
 }

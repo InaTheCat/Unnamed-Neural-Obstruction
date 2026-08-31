@@ -62,10 +62,10 @@ class Paths {
 		return getPath('assets/images/$path.png');
 
     public static inline function xml(path:String):String
-		return getPath('assets/images/$path.xml');
+		return getPath('assets/$path.xml');
 
 	public static inline function getSparrowAtlas(path:String):flixel.graphics.frames.FlxFramesCollection
-        return FlxAtlasFrames.fromSparrow(image(path), xml(path));
+		return FlxAtlasFrames.fromSparrow(image(path), xml('images/$path'));
 
 	public static inline function json(path:String):String
 		return getPath('assets/$path.json');

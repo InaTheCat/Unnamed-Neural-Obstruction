@@ -22,7 +22,7 @@ class AlphabetUtil {
 		']' => 'squarebracket-right',
 		'<' => 'anglebracket-left',
 		'>' => 'anglebracket-right',
-		// uh???
+		// random bs???
 		"'" => 'singlequote',
 		'"' => 'doulequote',
 		"$" => 'dollar',
@@ -34,14 +34,28 @@ class AlphabetUtil {
 		'=' => 'equal',
 		'?' => 'questionmark',
 		'.' => 'period',
-		'\\' => 'backslash'
+		'-' => 'hypen',
+		'~' => 'tilde',
+		'|' => 'verticalbar',
+		'←' => 'arrow-left',
+		'↑' => 'arrow-down',
+		'↓' => 'arrow-up',
+		'→' => 'arrow-right',
+		'^' => 'caret',
+		'\\' => 'backslash',
+		'×' => 'multiply',
+		'@' => 'at',
+		'æ' => 'ash',
+		'œ' => 'ethel'
 	];
 
-    public static function check(input:String):String {
+	public static function check(input:String, extra:{full:String, textNum:Int}):String
+	{
         var found:Bool = replacement.exists(input);
 
 		if (found)
-			Logs.send('Letter given has replacement [$input -> ${replacement.get(input)}]', {type: SourceInfo, showShooter: false});
+			Logs.send('[${extra.full} | Index: ${extra.textNum}] Letter given has replacement [$input -> ${replacement.get(input)}]',
+				{type: SourceInfo, showShooter: false});
 
         return found ? replacement.get(input) : input;
     }

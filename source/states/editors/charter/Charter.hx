@@ -42,7 +42,7 @@ class Charter extends FlxState {
     var bg:FlxBackdrop;
 
     public var charterCam:FlxCamera = new FlxCamera();
-    public var _overlayCam:FlxCamera = new FlxCamera();
+	public var overlay:FlxCamera = new TroubleShooter();
 
     public var inst:FlxSound;
     public var voices:Array<FlxSound>;
@@ -53,10 +53,10 @@ class Charter extends FlxState {
 	{
         super.create();
 
-        FlxG.cameras.add(charterCam);
-        FlxG.cameras.add(_overlayCam, false).bgColor = 0x00000000;
-        TroubleShooter.instance.setCam(_overlayCam);
+		FlxG.cameras.add(charterCam);
         charterCam.zoom = 0.8;
+
+		FlxG.cameras.add(overlay, false);
 
         add(bg = new FlxBackdrop(Paths.image('editors/charter/bg')));
         bg.scrollFactor.set(0.25, 0.25);
@@ -107,8 +107,8 @@ class Charter extends FlxState {
             voices.push(voice);
         }
 
-        add(editorStats = new FlxText(0, 50, 0, 'Time: 0\nStep: 0\nBeat: 0\nSection: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
-        editorStats.camera = _overlayCam;
+		add(editorStats = new FlxText(0, 50, 0, 'Time: 0\nStep: 0\nBeat: 0\nSection: 0', 32).setFormat(null, 32, 0xFFFFFFFF, 'left', OUTLINE, 0xFF000000));
+		editorStats.camera = overlay;
 
         initNotes();
     }

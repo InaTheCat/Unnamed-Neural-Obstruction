@@ -4,17 +4,20 @@ import backend.game.BeatState;
 
 class UNOState extends BeatState
 {
-	public var camGame:FlxCamera = new FlxCamera();
-	public var camHUD:FlxCamera = new FlxCamera();
-	public var _topCam:FlxCamera = new FlxCamera();
+	public var camGame:FlxCamera;
+	public var camHUD:FlxCamera;
+	public var troubleShooter:TroubleShooter;
 
     override public function create() {
         super.create();
-		FlxG.cameras.add(camGame);
-		FlxG.cameras.add(camHUD, false).bgColor = 0x00000000;
-		FlxG.cameras.add(_topCam, false).bgColor = 0x00000000;
-		TroubleShooter.instance.setCam(_topCam);
+		if (camGame == null)
+			FlxG.cameras.add(camGame = new FlxCamera());
 
+		if (camHUD == null)
+			FlxG.cameras.add(camHUD = new FlxCamera(), false).bgColor = 0x00000000;
+
+		if (troubleShooter == null)
+			FlxG.cameras.add(troubleShooter = new TroubleShooter());
 	}
 
 	override public function update(elapsed:Float)

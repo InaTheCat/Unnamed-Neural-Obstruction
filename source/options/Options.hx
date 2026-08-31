@@ -26,8 +26,17 @@ class Options {
 
 	/**
 	 * uhm, yep, the v slice sustains, but only the anim
+	 * (Not functional atp)
 	 */
 	public static var vSliceSustains:Bool = false;
+
+	/**
+	 * updates and calls WindowsAPI every time the state
+	 * the state gets changed or reseted, please be careful
+	 * with this because not everyone can have this setted as true,
+	 * so, distrust this, ight?
+	**/
+	public static var updateWindowsAPI:Bool = false;
 
 	public static function init():Void
 	{

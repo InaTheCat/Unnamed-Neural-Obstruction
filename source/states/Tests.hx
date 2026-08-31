@@ -1,26 +1,33 @@
 package states;
 
-import game.Alphabet;
+import flixel.FlxState;
+import game.objects.UNOSprite;
+import game.objects.UNOText;
 
-class Tests extends UNOState {
-	var alphabet:Alphabet;
+class Tests extends UNOState
+{
+	var possibles:Array<String> = [
+		'Lorem ipsum dolor sit amet consectetur\nadipiscing elit commodo penatibus class bibendum,\nnulla inceptos primis fames ante himenaeos augue tempus nascetur.',
+		'long ass message for test omgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomg',
+		'.',
+		'trying\nlong\nmessages\nin\nheight\nheh\nheh'
+	];
 
-	var time:FlxText;
+	var times:Int = 0;
+	var oTimes:Int = 0;
 
     override public function create() {
         super.create();
 
-		CoolUtil.playMusic('freakyMenu', 1, false, {fadeOut: true});
-
-		Conductor.time(105000);
-
-		add(time = new FlxText(0, 0, 0, '0/0', 64).setFormat(null, 64, 0xFFFFFFFF, 'center'));
-		time.screenCenter();
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		time.text = FlxG.sound?.music?.time + ' / ' + FlxG.sound?.music?.length;
+		if (FlxG.keys.justPressed.SPACE)
+		{
+			times++;
+			Logs.send(possibles[FlxG.random.int(0, 3)], {type: Error, shooterTime: 1});
+		}
 	}
 }

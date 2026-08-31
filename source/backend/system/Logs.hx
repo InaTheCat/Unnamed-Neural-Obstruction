@@ -35,25 +35,25 @@ typedef SendSettings =
 	 * - `PSeWarning`
 	 * - `PSeError`
 	 */
-	?type:LogType,
+	@:optional var type:Null<LogType>;
 	/**
 	 *	`shooterTime`: well, u can guess what it is, DA SA `FLOAT`, but
 	 *	for the TroubleShooter, soooo, the time of how much time will be
 	 *	the shooter in screen, ig???????????????????????????????????????.
 	**/
-	?shooterTime:Float,
+	@:optional var shooterTime:Null<Float>;
 	/**
 	 *	`showShooter`: dasa `Bool`, but the Shooter, if true well... u
 	 *	can guess it, itll prepare u a sandwich ig.
 	**/
-	?showShooter:Bool,
+	@:optional var showShooter:Null<Bool>;
 	/**
 	 *	`overrideShooterText`: this is for, uh, exactly what it says,
 	 *	the text that u write here will override the shooter one, its
 	 *	usable if for some reason u want the message of the Log and the
 	 *	TroubleShooter to be different, u can just "override" it with this.
 	**/
-	?overrideShooterText:String,
+	@:optional var overrideShooterText:Null<Dynamic>;
 }
 
 class Logs {
@@ -74,10 +74,10 @@ class Logs {
 	**/
 	public static function send(msg:Dynamic, ?settings:SendSettings)
 	{
-		var type:String = settings.type ?? 'Info';
-		var shooterTime:Float = settings.shooterTime ?? 2;
-		var showShooter:Bool = settings.showShooter ?? true;
-		var overrideShooterText:String = settings.overrideShooterText ?? null;
+		var type:String = settings?.type ?? 'Info';
+		var shooterTime:Float = settings?.shooterTime ?? 2;
+		var showShooter:Bool = settings?.showShooter ?? true;
+		var overrideShooterText:String = settings?.overrideShooterText ?? null;
 
 		var cleanMsg:String = Std.string(msg);
 
@@ -109,6 +109,14 @@ class Logs {
 			return;
 
 		if (showShooter)
-			TroubleShooter.instance.send(overrideShooterText == null ? Std.string(msg) : overrideShooterText, type, shooterTime);
+			if (TroubleShooter.instance == null)
+			{
+				Sys.println(ANSI.coloredText('[Source Info] | TroubleShooter wasn\'t been created in this state, shooter was now created in the actual state',
+					0xFFFF0000));
+				FlxG.cameras.add(new TroubleShooter());
+				TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
+			}
+			else
+				TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
     }
 }

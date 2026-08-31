@@ -21,8 +21,6 @@ class Alphabet extends FlxSpriteContainer
 		super(x, y);
 
 		this.text = text;
-
-		prepareAlphabet(Std.string(text));
 	}
 
 	function prepareAlphabet(text:String):Void
@@ -40,7 +38,7 @@ class Alphabet extends FlxSpriteContainer
 			if (e == '.' || e == ',')
 				letter.y += 50;
 
-			e = AlphabetUtil.check(e);
+			e = AlphabetUtil.check(e, {full: text, textNum: i});
 
 			letter.animation.addByPrefix(e.toLowerCase(), (e.toLowerCase() == ' ' ? 'a' : e.toLowerCase()) + '0');
 			letter.animation.play(e.toLowerCase());

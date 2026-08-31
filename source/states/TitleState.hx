@@ -7,16 +7,14 @@ import openfl.Assets;
 
 using StringTools;
 
-class TitleState extends UNOState {
-	// ik its really NOT useful or really stupid to do ts but, it works like this
-	public var madafakingCam:FlxCamera = new FlxCamera();
-
+class TitleState extends UNOState
+{
 	public var gf:UNOSprite;
 	public var logo:UNOSprite;
 	public var enter:UNOSprite;
 	public var ng:FlxSprite;
 
-	public var introTexts:FlxSpriteGroup = new FlxSpriteGroup();
+	public var introTexts:FlxSpriteGroup;
 
 	var texts:Array<Alphabet>;
 
@@ -31,8 +29,6 @@ class TitleState extends UNOState {
     override public function create() {
         super.create();
 
-		FlxG.cameras.add(madafakingCam);
-
 		CoolUtil.playMusic('freakyMenu', 1, true, {fadeIn: true});
 
 		add(logo = new UNOSprite(-150, -100, 'menus/title/logo', {type: 'anim', anims: ['bump'], loop: false}));
@@ -43,9 +39,7 @@ class TitleState extends UNOState {
 		enter.playAnim('idle');
 
 		if (skipped)
-		{
-			madafakingCam.flash(0xFFFFFFFF, 1);
-		}
+			camGame.flash(0xFFFFFFFF, 1);
 		else
 		{
 			add(ng = new FlxSprite().loadGraphic(Paths.image('menus/title/ng')));
@@ -59,7 +53,7 @@ class TitleState extends UNOState {
 			for (e in [logo, gf, enter])
 				e.visible = false;
 
-			add(introTexts);
+			add(introTexts = new FlxSpriteGroup());
 
 			texts = [];
 		}
@@ -80,7 +74,7 @@ class TitleState extends UNOState {
 
 					enter.playAnim('pressed', true);
 					FlxG.sound?.play(Paths.sound('menu/confirm'), 0.75, false);
-					madafakingCam.flash(0xFFFFFFFF, 1, null, true);
+					camGame.flash(0xFFFFFFFF, 1, null, true);
 					new FlxTimer().start(1.5, (_:FlxTimer) -> FlxG.switchState(() -> new MainMenuState()));
 				}
 			}
@@ -194,6 +188,12 @@ class TitleState extends UNOState {
 		super.destroy();
 
 		skipped = true;
+		if (gf != null && logo != null && enter != null)
+			for (e in [gf, logo, enter])
+			{
+				remove(e);
+				e.destroy();
+			}
 	}
 
 	public function skip()
@@ -205,7 +205,14 @@ class TitleState extends UNOState {
 
 		removeTexts();
 
-		madafakingCam.flash(0xFFFFFFFF, 3);
+		if (introTexts != null)
+		{
+			remove(introTexts);
+			introTexts.destroy();
+			introTexts = null;
+		}
+
+		camGame.flash(0xFFFFFFFF, 3);
 
 		for (e in [logo, gf, enter])
 			e.visible = true;
@@ -214,6 +221,9 @@ class TitleState extends UNOState {
 	public function createText(text:String = '', offset:Float = 0, extraOff:Float = 0)
 	{
 		if (skipped)
+			return;
+
+		if (introTexts == null)
 			return;
 
 		var alphabet:Alphabet = new Alphabet(0, 0, text);
@@ -225,6 +235,9 @@ class TitleState extends UNOState {
 
 	public function removeTexts()
 	{
+		if (introTexts == null)
+			return;
+
 		if (texts == null || texts.length == 0)
 		{
 			if (pressed)

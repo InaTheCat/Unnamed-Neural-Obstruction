@@ -63,10 +63,62 @@ class CoolUtil {
         // the word json was mentioned 8 + 1 times here btw
 	}
 
+	/**
+	 * gets an Array with the animations, ONLY one of them
+	 *
+	 * if the xml has `idle-alt0000, idle-alt0001, idle-alt0002`,
+	 * `bopShii0022, bopShii0023, bopShii0024, bopShii0025`and more,
+	 * the array will only have `['idle-alt', 'bopShii']`
+	 *
+	 * @param path
+	 *		the path... but only a String
+	**/
+	public static function getXmlNames(path:String):Array<String>
+	{
+		if (!Paths.exists('$path.xml'))
+		{
+			Logs.send('Xml not found. [$path]', {type: Error});
+			return [''];
+		}
+
+		var raw:String = Assets.getText(Paths.xml(path));
+		var names:Array<String> = [];
+
+		var regex:EReg = ~/<SubTexture\s+name="([^"]+)"/g;
+		var frame:EReg = ~/\d{4}$/;
+
+		while (regex.match(raw))
+		{
+			var name:String = regex.matched(1);
+
+			if (frame.match(name))
+				name = name.substr(0, name.length - 4);
+
+			if (!names.contains(name))
+				names.push(name);
+		}
+
+		return names;
+	}
+
+	/**
+	 * well, plays... a music... but with settings!11!1!1!!!!11!
+	 *
+	 * @param path
+	 * 		the path of the song (only String, not `Paths.music()`),
+	 *		if this is `freakyMenu` and didn't setted a bpm, the bpm
+	 *		will be `102`
+	 *
+	 * @param settings
+	 * - forcePlay
+	 * - fadeIn
+	 * - fadeOut
+	 * - bpm
+	**/
 	public static function playMusic(path:String = 'freakyMenu', volume:Float = 1, loop:Bool = true, settings:PlayMusicSettings):Void
 	{
 		var forcePlay:Bool = settings.forcePlay ?? false;
-		var bpm:Float = path == 'freakyMenu' ? 102 : (settings.bpm ?? 100);
+		var bpm:Float = path == 'freakyMenu' && settings?.bpm == null ? 102 : (settings?.bpm ?? 100);
 
 		var fadeIn:Bool = settings.fadeIn ?? false;
 		var fadeOut:Bool = settings.fadeOut ?? false;
@@ -77,10 +129,10 @@ class CoolUtil {
 
 		if (lastMusic == path.toLowerCase() && !forcePlay)
 		{
-			Logs.send('$path is actually playing atm [If you want to skip and for some reason replay the exact same song, use last var in the function, "${ANSI.coloredType('forcePlay', 0xFF0000FF)}"]',
+			Logs.send('$path is actually playing atm [If you want to skip and for some reason replay the exact same song, use last var in the function, "${ANSI.coloredText('forcePlay', 0xFF0000FF)}"]',
 				{
 					type: SourceInfo,
-					overrideShooterText: '$path is actually playing atm'
+					showShooter: false
 				});
 			// bigass Log
 
