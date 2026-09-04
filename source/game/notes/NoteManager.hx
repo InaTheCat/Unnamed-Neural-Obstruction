@@ -19,7 +19,7 @@ class NoteManager extends FlxSpriteGroup
 
 	public var activeSustains:Array<SustainNote> = [];
 
-	public var ratingWindow:HitWindow = new HitWindow();
+	public var ratingWindow:RatingWindow = new RatingWindow();
 
 	public var onSustainScore:Int->Void;
 	public var onSustainNote:Note->Void;

@@ -24,10 +24,7 @@ class Tests extends UNOState
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.SPACE)
-		{
-			times++;
-			Logs.send(possibles[FlxG.random.int(0, 3)], {type: Error, shooterTime: 1});
-		}
+		if (FlxG.keys.justPressed.ENTER)
+			FlxG.switchState(() -> new MainMenuState());
 	}
 }

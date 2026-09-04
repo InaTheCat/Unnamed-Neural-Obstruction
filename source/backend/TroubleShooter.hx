@@ -1,10 +1,19 @@
 package backend;
 
-import backend.system.Logs;
-import game.objects.UNOText;
+import flixel.FlxBasic;
+import flixel.group.FlxSpriteGroup.FlxTypedSpriteGroup;
+import flixel.text.FlxText.FlxTextBorderStyle;
 
-class TroubleShooter extends FlxCamera
+class TroubleShooter extends FlxBasic
 {
+	public static var instance:TroubleShooter;
+
+	public static var troubleShooter:FlxTypedSpriteGroup<Dynamic>;
+	public static var troubleText:FlxText;
+	public static var troubleBg:FlxSprite;
+
+	private static var hideTimer:FlxTimer = null;
+
 	public static var typeColors:Map<String, Int> = [
 		'Debug' => 0x00FF00,
 		'Info' => 0x0000FF,
@@ -18,117 +27,86 @@ class TroubleShooter extends FlxCamera
 		'PSeError' => 0xFFFF5555
     ];
 
-	public static var troubleShooters:FlxSpriteGroup = new FlxSpriteGroup();
-	public static var actualShooters:Int = 0;
-
-	public static var instance:TroubleShooter;
-
 	public function new()
 	{
+		super();
 		instance = this;
 
-		super();
+		troubleShooter = new FlxTypedSpriteGroup<Dynamic>();
+		troubleShooter.scrollFactor.set();
+		troubleShooter.alpha = 0;
 
-		bgColor = 0x00000000;
+		troubleBg = new FlxSprite().makeGraphic(1, 1, 0xFFFFFFFF);
+		troubleBg.alpha = 0.75;
 
-		FlxG.state.add(troubleShooters).camera = this;
-		troubleShooters.scrollFactor.set();
+		troubleText = new FlxText(20, 10, 0, 'Initial Message', 16);
+		troubleText.setFormat(null, 16, 0xFFFFFFFF, "left", FlxTextBorderStyle.OUTLINE, 0xFF000000);
+
+		troubleShooter.add(troubleBg);
+		troubleShooter.add(troubleText);
 	}
 
-	public static function shoot(message:Dynamic, shootType:LogType = Info, shooterTime:Float = 4):Void
+	public static function setCam(cam:FlxCamera):Void
 	{
-		var shooter:FlxSpriteGroup = new FlxSpriteGroup();
-
-		var text:UNOText = new UNOText(0, 0, '$message\n\n[$shootType]', {
-			size: 16,
-			color: typeColors.exists(shootType) ? typeColors.get(shootType) : 0xFFFFFFFF,
-			alignment: LEFT,
-			borderStyle: OUTLINE,
-			borderColor: 0xFF000000
-		});
-
-		var bg:FlxSprite = new FlxSprite().makeGraphic(Std.int(text.textField.textWidth + 20), Std.int(text.textField.textHeight + 20), 0xFFFFFFFF);
-		bg.color = typeColors.exists(shootType) ? typeColors.get(shootType) : 0xFFFFFFFF;
-
-		shooter.add(bg);
-		shooter.add(text);
-
-		text.attachTo(bg, {x: 5, y: 7});
-
-		shooter.setPosition(-bg.width, FlxG.height - 50);
-
-		troubleShooters.add(shooter).alpha = 0;
-
-		repositionShooters();
-
-		actualShooters++;
-
-		if (actualShooters > 7)
+		if (cam == troubleShooter.camera)
 		{
-			var oldest:FlxSpriteGroup = cast troubleShooters.members[0];
+			Logs.send('The TroubleShooter is in that camera at this moment', {type: SourceInfo});
+			return;
+		}
 
-			if (oldest != null && oldest != shooter)
+		troubleShooter.cameras = [cam];
+	}
+
+	override public function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+		troubleShooter.update(elapsed);
+	}
+
+	override public function draw():Void
+		troubleShooter.draw();
+
+	public static function shoot(message:String, ?shootType:String = 'Info', ?displayTime:Float = 2):Void
+	{
+		FlxTween.cancelTweensOf(troubleShooter);
+		if (hideTimer != null)
+			hideTimer.cancel();
+		displayTime ?? 2;
+		shootType ?? 'Info';
+
+		troubleShooter.alpha = 0;
+		troubleShooter.setPosition(-troubleShooter.width, FlxG.height - troubleBg.height);
+
+		troubleText.text = message + (shootType != 'None' ? '\n\n[$shootType]' : '');
+
+		troubleText.setFormat(null, 16, typeColors.exists(shootType) ? typeColors[shootType] : 0xFFFFFFFF, 'left', FlxTextBorderStyle.OUTLINE, 0xFF000000);
+
+		troubleBg.makeGraphic(Std.int(troubleText.textField.textWidth + 40), Std.int(troubleText.textField.textHeight + 40), 0xFFFFFFFF);
+
+		troubleText.y = FlxG.height - troubleBg.height;
+
+		troubleBg.setPosition(troubleText.x - 20, troubleText.y - 20);
+		troubleBg.updateHitbox();
+
+		FlxTween.tween(troubleShooter, {x: -10, alpha: 0.6}, 0.5, {
+			ease: FlxEase.quadOut,
+			onComplete: function(_)
 			{
-				FlxTween.cancelTweensOf(oldest);
-
-				var oldestText:UNOText = null;
-
-				for (member in oldest.members)
+				hideTimer = new FlxTimer().start(displayTime, function(_)
 				{
-					if (Std.isOfType(member, UNOText))
-					{
-						oldestText = cast member;
-						break;
-					}
-				}
-
-				FlxTween.tween(oldest, {x: -oldest.width, alpha: 0}, 0.5,
-					{ease: FlxEase.sineInOut, onComplete: (_:FlxTween) -> removeShooter(oldest, oldestText)});
+					hide();
+				});
 			}
-		}
-
-
-		if (shooterTime == 0)
-		{
-			shooter.alpha = 0.5;
-			new FlxTimer().start(2, (_:FlxTimer) -> removeShooter(shooter, text));
-		}
-		else
-		{
-			FlxTween.tween(shooter, {x: 0, alpha: shooterTime / 4}, 0.5, {ease: FlxEase.sineInOut});
-			FlxTween.tween(shooter, {x: -shooter.width, alpha: 0}, shooterTime / 4,
-				{startDelay: shooterTime, ease: FlxEase.sineInOut, onComplete: (_:FlxTween) -> removeShooter(shooter, text)});
-		}
+		});
 	}
 
-	private static function repositionShooters():Void
+	private static function hide():Void
 	{
-		var y:Float = FlxG.height - 15;
 
-		for (i in 0...troubleShooters.members.length)
-		{
-			var index:Int = troubleShooters.members.length - 1 - i;
-			var shooter:FlxSpriteGroup = cast troubleShooters.members[index];
-
-			if (shooter == null)
-				continue;
-
-			y -= shooter.height;
-
-			FlxTween.tween(shooter, {y: y}, 0.5, {ease: FlxEase.sineInOut});
-
-			y -= 10;
-		}
-	}
-
-	private static function removeShooter(shooter:FlxSpriteGroup, text:UNOText):Void
-	{
-		text.deAttachAll();
-
-		troubleShooters.remove(shooter, true);
-
-		actualShooters--;
-
-		repositionShooters();
+		FlxTween.cancelTweensOf(troubleShooter);
+		FlxTween.tween(troubleShooter, {x: -troubleBg.width, alpha: 0}, 0.7, {
+			ease: FlxEase.quadIn,
+			onComplete: (_) -> troubleShooter.alpha = 0
+		});
 	}
 }

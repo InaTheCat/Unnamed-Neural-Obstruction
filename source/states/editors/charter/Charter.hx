@@ -42,7 +42,7 @@ class Charter extends FlxState {
     var bg:FlxBackdrop;
 
     public var charterCam:FlxCamera = new FlxCamera();
-	public var overlay:FlxCamera = new TroubleShooter();
+	public var overlay:FlxCamera = new FlxCamera();
 
     public var inst:FlxSound;
     public var voices:Array<FlxSound>;

@@ -1,5 +1,6 @@
 package utils;
 
+import backend.system.ANSI;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
@@ -14,6 +15,8 @@ typedef SongVoicesOptions =
 }
 
 class Paths {
+	public static var safeMode:Bool = true;
+
 	public static var savedFrames:Map<String, FlxFramesCollection> = [];
 
 	private static function getPath(path:String, ?type:String = ''):String
@@ -141,18 +144,27 @@ class Paths {
 		return getPath('assets/songs/$songName/song/Voices$prefix.ogg');
 	}
 
-    public static function getFrames(key:String):FlxFramesCollection {
-        if (savedFrames.exists(key)) {
-            var frames = savedFrames.get(key);
+	public static function getFrames(path:String):FlxFramesCollection
+	{
+		if (safeMode)
+		{
+			Logs.send('${ANSI.coloredClass('Paths.getFrames')} isn\'t usable atp, using ${ANSI.coloredClass('Paths.getSparrowAtlas')} instead',
+				{type: Warning, overrideShooterText: 'Paths.getFrames() isn\'t usable atp, using Paths.getSparrowAtlas() instead'});
+			return FlxAtlasFrames.fromSparrow(image(path), xml('images/$path'));
+		}
+
+		if (savedFrames.exists(path))
+		{
+			var frames = savedFrames.get(path);
             if (frames != null && frames.parent != null && frames.parent.bitmap != null && frames.parent.bitmap.readable)
                 return frames;
-            savedFrames.remove(key);
+			savedFrames.remove(path);
         }
 
-        var path = image(key);
+		var path = image(path);
         var frames = loadFrames(path);
         if (frames != null)
-            savedFrames.set(key, frames);
+			savedFrames.set(path, frames);
         return frames;
     }
 

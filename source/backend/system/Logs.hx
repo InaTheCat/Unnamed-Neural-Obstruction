@@ -109,14 +109,6 @@ class Logs {
 			return;
 
 		if (showShooter)
-			if (TroubleShooter.instance == null)
-			{
-				Sys.println(ANSI.coloredText('[Source Info] | TroubleShooter wasn\'t been created in this state, shooter was now created in the actual state',
-					0xFFFF0000));
-				FlxG.cameras.add(new TroubleShooter());
-				TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
-			}
-			else
-				TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
+			TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
     }
 }

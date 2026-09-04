@@ -1,11 +1,13 @@
 package game.notes;
 
 import flixel.math.FlxPoint;
+import game.notes.Splash;
 
 class StrumLine extends FlxSpriteGroup
 {
-    var notes:Array<FlxSprite>=[];
-    var receptors:Array<FlxSprite>=[];
+	public var notes:Array<FlxSprite>;
+	public var splashes:Array<Splash>;
+	public var receptors:Array<FlxSprite>;
 
     public var isPlayer:Bool = false;
 
@@ -26,7 +28,7 @@ class StrumLine extends FlxSpriteGroup
 	 * @param y Same as `x` gng.
 	 * @param player if `true`, will be a Player Strum, else, it'll be opponent.
 	 */
-	public function new(?player:Bool = false, ?x:Float = 70, ?y:Float = 50, ?_cpu:Bool = null):Void
+	public function new(player:Bool = false, x:Float = 70, y:Float = 50, _cpu:Bool = null):Void
 	{
 		super();
 
@@ -34,10 +36,14 @@ class StrumLine extends FlxSpriteGroup
 		
 		_strumParentAsCpu = _cpu;
 
+		notes = [];
+		splashes = [];
+		receptors = [];
+
 		prepareStrums(player ?? false, x ?? 70, y ?? 50);
     }
 
-	private function prepareStrums(?playable:Bool = false, ?x:Float, ?y:Float):Void
+	private function prepareStrums(playable:Bool = false, x:Float, y:Float):Void
 	{
         var playerOffset:Float = playable ? FlxG.width * 0.55 : 0;
 
@@ -89,7 +95,7 @@ class StrumLine extends FlxSpriteGroup
 			note.antialiasing = Options.antialiasing ?? true;
 
 			add(note);
-            notes.push(note);
+			notes.push(note);
 
 			if (!_strumParentAsCpu)
 				note.animation.onFinish.add((n:String) -> if (n != 'static') noteAnim(i, 'static'));
@@ -99,9 +105,12 @@ class StrumLine extends FlxSpriteGroup
             receptor.setGraphicSize(note.width, note.height);
             receptor.updateHitbox();
 			receptor.setPosition(note.x, note.y);
-
-            add(receptor);
-            receptors.push(receptor);
+			add(receptor);
+			receptors.push(receptor);
+			var splash:Splash = new Splash(0, 0, i, 0.5);
+			splash.setPosition(note.x - (splash.width / 6), note.y - (splash.height / 6));
+			insert(members.indexOf(note) + 1, splash);
+			splashes.push(splash);
 		}
 	}
 

@@ -77,4 +77,36 @@ class ANSI {
 
 		return '';
     }
+	/**
+	 * it generates... uhm, a type of "Class", literally, a type-like String
+	 *
+	 *	`Green`, `Blue`, `Gray`
+	 *   Class.variable.function();
+	 *
+	 * Literally js like that
+	**/
+	public static function coloredClass(input:Dynamic):String
+	{
+		var givenClass:Array<String> = Std.string(input).split('.');
+
+		if (givenClass.length == 0)
+			return coloredText(givenClass[0], 0xFF4EC9B0);
+		else if (givenClass.length == 1)
+			return '${coloredText(givenClass[0], 0xFF4EC9B0)}.${coloredText(givenClass[1], 0xFFDCDCAA)}()';
+		else if (givenClass.length >= 2)
+		{
+			var output:String = '';
+
+			output += '${coloredText(givenClass[0], 0xFF4EC9B0)}.';
+
+			for (i in 1...givenClass.length - 1)
+				output += '${coloredText(givenClass[i], 0xFF9CDCFE)}.';
+
+			output += '${coloredText(givenClass[givenClass.length], 0xFFDCDCAA)}';
+
+			return output;
+		}
+		else
+			return 'Class wasn\'t given';
+	}
 }

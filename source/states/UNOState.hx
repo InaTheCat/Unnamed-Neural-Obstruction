@@ -6,18 +6,24 @@ class UNOState extends BeatState
 {
 	public var camGame:FlxCamera;
 	public var camHUD:FlxCamera;
-	public var troubleShooter:TroubleShooter;
+	public var _overlay:FlxCamera;
 
-    override public function create() {
-        super.create();
+	override public function create()
+	{
+		super.create();
+
 		if (camGame == null)
 			FlxG.cameras.add(camGame = new FlxCamera());
 
 		if (camHUD == null)
 			FlxG.cameras.add(camHUD = new FlxCamera(), false).bgColor = 0x00000000;
 
-		if (troubleShooter == null)
-			FlxG.cameras.add(troubleShooter = new TroubleShooter(), false);
+		if (_overlay == null)
+		{
+			FlxG.cameras.add(_overlay = new FlxCamera(), false).bgColor = 0x00000000;
+			if (TroubleShooter.instance != null)
+				TroubleShooter.setCam(_overlay);
+		}
 	}
 
 	override public function update(elapsed:Float)
@@ -29,9 +35,7 @@ class UNOState extends BeatState
 				FlxG.resetState();
 
 		if (CoolUtil.playingMusic)
-		{
 			CoolUtil.updateMusic();
-		}
 
 		if (FlxG.sound?.music != null || CoolUtil.playingMusic)
 			Conductor.update(elapsed);

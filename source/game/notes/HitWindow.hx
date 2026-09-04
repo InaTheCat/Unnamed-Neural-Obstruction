@@ -1,6 +1,6 @@
 package game.notes;
 
-abstract RatingWindows(Array<Float>)
+abstract RatingWindow(Array<Float>)
 {
 	public inline function new(
 		sick:Float = 45,

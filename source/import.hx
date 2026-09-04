@@ -7,6 +7,7 @@ import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.group.FlxSpriteContainer;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;

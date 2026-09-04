@@ -5,6 +5,10 @@ import flixel.FlxState;
 import winapi.WindowsAPI;
 
 class LoadState extends FlxState {
+	public var troubleShooter:TroubleShooter;
+
+	public var holderCam:FlxCamera;
+
 	override public function create():Void
 	{
 		WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
@@ -16,6 +20,8 @@ class LoadState extends FlxState {
 
 		Options.init();
 		SFXBank.init();
+
+		FlxG.plugins.addPlugin(new TroubleShooter());
 
 		#if !FLX_NO_DEBUG FlxG.debugger.visible = true; #end
 
@@ -30,6 +36,6 @@ class LoadState extends FlxState {
 				WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
 			});
 
-		FlxG.switchState(() -> new TitleState());
+		FlxG.switchState(() -> new PlayState());
     }
 }

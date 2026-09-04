@@ -164,7 +164,7 @@ class PlayState extends UNOState
 		healthBarGrp.camera = camHUD;
 
 		// --- Song ---
-		loadSong('red-3', null, false);
+		loadSong('Ectospasm', 'Voices', false);
 		startSong();
 
 		opponentManager = new NoteManager(opponent, opponentNotes);
@@ -174,7 +174,7 @@ class PlayState extends UNOState
 		strums.add(opponentManager);
 
 		playerManager = new NoteManager(player, playerNotes);
-		playerManager.cpu = true;
+		// playerManager.cpu = true;
 		playerManager.onSustainScore = (points:Int) -> scoreManager.addHoldScore(points);
 		playerManager.onNoteHit = (note:Note) -> onPlayerHit({note: note});
 		playerManager.onSustainNote = (note:Note) -> onPlayerHit({note: note, sustain: true});
@@ -220,6 +220,9 @@ class PlayState extends UNOState
 							combo++;
 							comboRating.showCombo(rating, combo);
 							player.noteAnim(direction, 'confirm');
+							if (rating == 'sick')
+								player.splashes[note.dir].press();
+
 							addHealth(0.015);
 
 						case MISS:
