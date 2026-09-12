@@ -8,6 +8,8 @@ class UNOState extends BeatState
 	public var camHUD:FlxCamera;
 	public var _overlay:FlxCamera;
 
+	public static var updateConductor:Bool = true;
+
 	override public function create()
 	{
 		super.create();
@@ -38,7 +40,8 @@ class UNOState extends BeatState
 			CoolUtil.updateMusic();
 
 		if (FlxG.sound?.music != null || CoolUtil.playingMusic)
-			Conductor.update(elapsed);
+			if (updateConductor)
+				Conductor.update(elapsed);
 	}
 
 	override public function beatHit(curBeat:Int):Void {}

@@ -1,30 +1,42 @@
 package states;
 
+import backend.system.ANSI;
 import flixel.FlxState;
 import game.objects.UNOSprite;
 import game.objects.UNOText;
+import scripting.hscript.Script;
 
 class Tests extends UNOState
 {
-	var possibles:Array<String> = [
-		'Lorem ipsum dolor sit amet consectetur\nadipiscing elit commodo penatibus class bibendum,\nnulla inceptos primis fames ante himenaeos augue tempus nascetur.',
-		'long ass message for test omgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomgomg',
-		'.',
-		'trying\nlong\nmessages\nin\nheight\nheh\nheh'
-	];
-
-	var times:Int = 0;
-	var oTimes:Int = 0;
+	public var insertedScript:Script;
+	public var externalScript:Script;
 
     override public function create() {
         super.create();
 
+		insertedScript = new Script("
+			import flixel.FlxSprite;
+			import flixel.FlxG;
+			import utils.Paths;
+
+			var sprite:FlxSprite;
+
+			function create() {
+				FlxG.state.add(sprite = new FlxSprite(30, 50).loadGraphic(Paths.image('chiyo')));
+
+				trace('inserted script');
+			}
+		", true);
+
+		insertedScript.call('create');
+
+		externalScript = new Script(Paths.script('data/scripts/uh', 'hx'));
+
+		externalScript.call('create');
 	}
 
 	override public function update(elapsed:Float) {
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.ENTER)
-			FlxG.switchState(() -> new MainMenuState());
 	}
 }

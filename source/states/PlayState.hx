@@ -468,7 +468,7 @@ class PlayState extends UNOState
 		/**
 		 * FOR TESTING!!!
 		 */
-		FlxG.sound.music.time = 10 * 1000;
+		// FlxG.sound.music.time = 10 * 1000;
 		// my dih
 
 		if (voices != null || voices.length > 0 || !nullVoices)

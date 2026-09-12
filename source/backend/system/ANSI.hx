@@ -2,6 +2,8 @@ package backend.system;
 
 import flixel.util.typeLimit.OneOfTwo;
 
+using StringTools;
+
 class ANSI {
 	public static var shooter:Map<String, Int> = new Map();
 
@@ -89,11 +91,9 @@ class ANSI {
 	{
 		var givenClass:Array<String> = Std.string(input).split('.');
 
-		if (givenClass.length == 0)
+		if (givenClass.length <= 1)
 			return coloredText(givenClass[0], 0xFF4EC9B0);
-		else if (givenClass.length == 1)
-			return '${coloredText(givenClass[0], 0xFF4EC9B0)}.${coloredText(givenClass[1], 0xFFDCDCAA)}()';
-		else if (givenClass.length >= 2)
+		else
 		{
 			var output:String = '';
 
@@ -102,11 +102,10 @@ class ANSI {
 			for (i in 1...givenClass.length - 1)
 				output += '${coloredText(givenClass[i], 0xFF9CDCFE)}.';
 
-			output += '${coloredText(givenClass[givenClass.length], 0xFFDCDCAA)}';
+			var lastPart:String = givenClass[givenClass.length - 1];
+			output += '${coloredText(lastPart, lastPart.endsWith('()') ? 0xFFDCDCAA : 0xFF9CDCFE)}';
 
 			return output;
 		}
-		else
-			return 'Class wasn\'t given';
 	}
 }

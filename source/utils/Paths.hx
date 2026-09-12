@@ -5,6 +5,7 @@ import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
 import openfl.utils.Assets;
+import sys.io.File;
 
 using StringTools;
 
@@ -19,7 +20,7 @@ class Paths {
 
 	public static var savedFrames:Map<String, FlxFramesCollection> = [];
 
-	private static function getPath(path:String, ?type:String = ''):String
+	public static function getPath(path:String):String
 	{
 		if (!Assets.exists(path))
 		{
@@ -81,6 +82,49 @@ class Paths {
 
 	public static inline function txt(path:String):String
 		return getPath('assets/$path.txt');
+
+	public static inline function getContent(path:String):String
+	{
+		#if sys
+		return File.getContent(path);
+		#elseif openfl
+		return Assets.getText(path);
+		#else
+		Logs.send('returned nothing heh', {type: Error});
+		return '';
+		#end
+	}
+
+	// same bs as the top one heh
+	public static inline function getText(path:String):String
+	{
+		#if sys
+		return File.getContent(path);
+		#elseif openfl
+		return Assets.getText(path);
+		#else
+		Logs.send('returned nothing heh', {type: Error});
+		return '';
+		#end
+	}
+
+	public static function script(path:String, ?scriptType:String = '', asContent:Bool = false)
+	{
+		if (!(path.endsWith('.hx') || path.endsWith('.lua') || path.endsWith('.psc')))
+			switch (scriptType.toLowerCase())
+			{
+				case 'hscript', 'hx', 'hxscript', 'iris':
+					return asContent ? getContent('$path.hx') : getPath('assets/$path.hx');
+
+				case 'lua':
+					return asContent ? getContent('$path.lua') : getPath('assets/$path.lua');
+
+				case 'psc', 'pseint':
+					return asContent ? getContent('$path.psc') : getPath('assets/$path.psc');
+			}
+
+		return asContent ? getContent('$path.hx') : getPath('assets/$path');
+	}
 
 	public static function font(path:String):String
 	{

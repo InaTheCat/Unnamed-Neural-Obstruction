@@ -5,11 +5,16 @@ import game.notes.Splash;
 
 class StrumLine extends FlxSpriteGroup
 {
+	public var keyCount:Int = 4;
+
 	public var notes:Array<FlxSprite>;
 	public var splashes:Array<Splash>;
 	public var receptors:Array<FlxSprite>;
 
     public var isPlayer:Bool = false;
+
+	public var splashesInitialized(default, null):Bool = false;
+	public var strumInitialized(default, null):Bool = false;
 
 	/**
 	 * ts is js for the creation of the strum, if its true or null that is for
@@ -43,8 +48,16 @@ class StrumLine extends FlxSpriteGroup
 		prepareStrums(player ?? false, x ?? 70, y ?? 50);
     }
 
-	private function prepareStrums(playable:Bool = false, x:Float, y:Float):Void
+	public function prepareStrums(playable:Bool = false, x:Float, y:Float):Void
 	{
+		if (strumInitialized)
+		{
+			Logs.send('Strum initialized', {type: SourceInfo, showShooter: false});
+			return;
+		}
+
+		strumInitialized = true;
+
         var playerOffset:Float = playable ? FlxG.width * 0.55 : 0;
 
 		for (i in 0...4){
@@ -102,14 +115,31 @@ class StrumLine extends FlxSpriteGroup
 
             var receptor:FlxSprite = new FlxSprite().makeGraphic(1, 1, 0x00FFFFFF);
             
-            receptor.setGraphicSize(note.width, note.height);
+			receptor.scale.set(note.width, note.height);
             receptor.updateHitbox();
 			receptor.setPosition(note.x, note.y);
 			add(receptor);
 			receptors.push(receptor);
-			var splash:Splash = new Splash(0, 0, i, 0.5);
-			splash.setPosition(note.x - (splash.width / 6), note.y - (splash.height / 6));
-			insert(members.indexOf(note) + 1, splash);
+			if (i == keyCount - 1)
+				initSplashes();
+		}
+	}
+
+	public function initSplashes()
+	{
+		if (splashesInitialized)
+		{
+			Logs.send('Splashed already initialized', {type: SourceInfo, showShooter: false});
+			return;
+		}
+
+		splashesInitialized = true;
+
+		for (i in 0...keyCount - 1)
+		{
+			var splash:Splash = new Splash(0, 0, Std.int(Math.abs(i) % i), 0.5);
+			splash.setPosition(notes[i].x - (splash.width / 3), notes[i].y - (splash.height / 3));
+			add(splash);
 			splashes.push(splash);
 		}
 	}
