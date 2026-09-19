@@ -33,13 +33,13 @@ class StrumLine extends FlxSpriteGroup
 	 * @param y Same as `x` gng.
 	 * @param player if `true`, will be a Player Strum, else, it'll be opponent.
 	 */
-	public function new(player:Bool = false, x:Float = 70, y:Float = 50, _cpu:Bool = null):Void
+	public function new(player:Bool = false, x:Float = 70, y:Float = 50):Void
 	{
 		super();
 
 		isPlayer = player ?? false;
-		
-		_strumParentAsCpu = _cpu;
+
+		_strumParentAsCpu = player;
 
 		notes = [];
 		splashes = [];
@@ -60,7 +60,8 @@ class StrumLine extends FlxSpriteGroup
 
         var playerOffset:Float = playable ? FlxG.width * 0.55 : 0;
 
-		for (i in 0...4){
+		for (i in 0...keyCount)
+		{
 			var note:FlxSprite = new FlxSprite();
 			note.frames = Paths.getSparrowAtlas('game/notes/default');
 
@@ -135,9 +136,9 @@ class StrumLine extends FlxSpriteGroup
 
 		splashesInitialized = true;
 
-		for (i in 0...keyCount - 1)
+		for (i in 0...keyCount)
 		{
-			var splash:Splash = new Splash(0, 0, Std.int(Math.abs(i) % i), 0.5);
+			var splash:Splash = new Splash(0, 0, i % 4, 0.5);
 			splash.setPosition(notes[i].x - (splash.width / 3), notes[i].y - (splash.height / 3));
 			add(splash);
 			splashes.push(splash);

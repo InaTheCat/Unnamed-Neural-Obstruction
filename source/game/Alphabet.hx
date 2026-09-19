@@ -74,8 +74,7 @@ class Alphabet extends FlxSpriteContainer
 
 		prepareAlphabet(value);
 
-		x = center.x - width * 0.5;
-		y = center.y - height * 0.5;
+		setPosition(center.x - width * 0.5, center.y - height * 0.5);
 
 		center.put();
 

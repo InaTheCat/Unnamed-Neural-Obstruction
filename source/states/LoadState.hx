@@ -36,6 +36,6 @@ class LoadState extends FlxState {
 				WindowsAPI.reDefineMainWindowTitle(lime.app.Application.current.window.title);
 			});
 
-		FlxG.switchState(() -> new Tests());
+		FlxG.switchState(() -> new PlayState());
     }
 }

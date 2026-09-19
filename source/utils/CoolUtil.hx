@@ -87,7 +87,9 @@ class CoolUtil {
 		var regex:EReg = ~/<SubTexture\s+name="([^"]+)"/g;
 		var frame:EReg = ~/\d{4}$/;
 
-		while (regex.match(raw))
+		var pos:Int = 0;
+
+		while (regex.matchSub(raw, pos))
 		{
 			var name:String = regex.matched(1);
 
@@ -96,6 +98,8 @@ class CoolUtil {
 
 			if (!names.contains(name))
 				names.push(name);
+			var match = regex.matchedPos();
+			pos = match.pos + match.len;
 		}
 
 		return names;

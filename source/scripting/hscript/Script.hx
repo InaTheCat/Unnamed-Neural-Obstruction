@@ -7,7 +7,7 @@ class Script
 {
     public var iris:Iris;
 
-    public function new(path:String, insertedCode:Bool = false)
+	public function new(path:String, insertedCode:Bool = false, firstCall:String = 'create')
     {
         final rules:RawIrisConfig = {
             name: insertedCode ? 'Nameless Script' : path,
@@ -15,16 +15,13 @@ class Script
             autoPreset: true
         };
 
-        var text:String = '';
-
-        if (insertedCode)
-            text = path;
-        else
-            text = Paths.getContent(path);
+		var text:String = insertedCode ? path : Paths.getContent(path);
 
         iris = new Iris(text, rules);
 
         iris.execute();
+		if (insertedCode)
+			iris.call(firstCall);
     }
 
     public function call(func:String, ?args:Array<Dynamic>):Dynamic
