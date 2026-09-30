@@ -5,7 +5,8 @@ import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import states.editors.charter.Note;
 import states.editors.charter.Strum;
-import states.editors.charter.Sustain;
+import states.editors.charter.sustain.High;
+import states.editors.charter.sustain.Low;
 
 class Charter extends FlxState {
     static var songName:String = 'Ectospasm';
@@ -56,7 +57,7 @@ class Charter extends FlxState {
 		FlxG.cameras.add(charterCam);
         charterCam.zoom = 0.8;
 
-		FlxG.cameras.add(overlay, false);
+		FlxG.cameras.add(overlay, false).bgColor = 0x00000000;
 
         add(bg = new FlxBackdrop(Paths.image('editors/charter/bg')));
         bg.scrollFactor.set(0.25, 0.25);
@@ -87,12 +88,12 @@ class Charter extends FlxState {
         guiders.add(noteLine1 = new FlxSprite().makeGraphic(435, 10, 0xFFFFFFFF));
         guiders.add(noteLine2 = new FlxSprite(500).makeGraphic(435, 10, 0xFFFFFFFF));
 
-        chart = NewTestChartparser.parseChart('$songName', 'hard');
+		chart = NewTestChartparser.parseChart(songName, 'hard');
 
         Conductor.reset();
         Conductor.mapSong(chart.bpm, chart.speed);
 
-        FlxG.sound.playMusic(Paths.songInst('$songName'), 1, true);
+		FlxG.sound.playMusic(Paths.songInst(songName), 1, true);
         songEnd = FlxG.sound?.music?.length;
         FlxG.sound?.music?.pause();
 
@@ -134,22 +135,38 @@ class Charter extends FlxState {
         for (i => nts in chart.notes){
             var note:Note = new Note(nts.dir * 109, (nts.time / Conductor.stepCrochet) * gridSize, nts.dir, nts.sustain > 0, nts.sustain, nts.mustHit);
 
-			// Logs.send('Note $i created with [Dir: ${note.dir}, hasSustain: ${note.hasSustain}, isPlayer: ${note.isPlayer}]', {type: SourceInfo, showShooter: false});
-
             if (note.isPlayer)
                 player.add(note);
             else
                 opponent.add(note);
 
             if (note.hasSustain){
-                var sustain:Sustain = new Sustain(note.x + (note.frameWidth / 2) - 32, note.y + (note.frameHeight / 2), note.sustainLength, note.dir);
+				if (Options.lowDetail)
+				{
+					var sustain:Low = new Low(note.x + (note.frameWidth / 2) - 32, note.y + (note.frameHeight / 2), note.sustainLength, note.dir);
 
-				// Logs.send('Note $i, ${note.isPlayer ? 'player' : 'opponent'} side had sustain and created with [Dir: ${note.dir}, size: ${note.sustainLength}]', {type: SourceInfo, showShooter: false});
+					if (note.isPlayer)
+						player.add(sustain);
+					else
+						opponent.add(sustain);
+				}
+				else
+				{
+					var sustain:High = new High(note.x + (note.frameWidth / 2) - 38, note.y + (note.frameHeight / 2), note.sustainLength, note.dir);
 
-                if (note.isPlayer)
-                    player.add(sustain);
-                else
-                    opponent.add(sustain);
+					if (note.isPlayer)
+					{
+						player.remove(note);
+						player.add(sustain);
+						player.add(note);
+					}
+					else
+					{
+						opponent.remove(note);
+						opponent.add(sustain);
+						opponent.add(note);
+					}
+				}
             }
         }
 

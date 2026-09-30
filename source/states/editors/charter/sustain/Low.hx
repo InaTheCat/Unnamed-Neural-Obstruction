@@ -1,6 +1,6 @@
-package states.editors.charter;
+package states.editors.charter.sustain;
 
-class Sustain extends FlxSprite {
+class Low extends FlxSprite {
     public function new(x:Float = 0, y:Float = 0, size:Float = 0, dir:Int = 0) {
         super(x, y);
 

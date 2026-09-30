@@ -24,7 +24,26 @@ class Note extends FlxSprite {
 
 		antialiasing = Options.antialiasing ?? true;
 
-        loadGraphic(Paths.image('editors/charter/note'));
+		if (Options.lowDetail)
+			loadGraphic(Paths.image('editors/charter/note'));
+		else
+		{
+			frames = Paths.getSparrowAtlas('editors/charter/notesHD');
+
+			switch (dir)
+			{
+				case 0:
+					animation.addByPrefix('i', 'left0', 0, false);
+				case 1:
+					animation.addByPrefix('i', 'down0', 0, false);
+				case 2:
+					animation.addByPrefix('i', 'up0', 0, false);
+				case 3:
+					animation.addByPrefix('i', 'right0', 0, false);
+			}
+
+			animation.play('i');
+		}
 
         scale.set(0.7, 0.7);
         updateHitbox();
@@ -33,6 +52,9 @@ class Note extends FlxSprite {
 
         if (isPlayer)
             this.x += 500;
+
+		if (!Options.lowDetail)
+			return;
 
         switch(dir){
             case 0:

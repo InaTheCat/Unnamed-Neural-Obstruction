@@ -111,4 +111,25 @@ class Logs {
 		if (showShooter)
 			TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
     }
+	public static function internal(msg:Dynamic)
+	{
+		Sys.println('${ANSI.coloredType(SourceInfo)} | ${Std.string(msg).replace('\n', ' ')}');
+
+		#if !FLX_NO_DEBUG
+		switch (type)
+		{
+			case 'Info':
+				FlxG.log.notice(cleanMsg);
+
+			case 'Warning':
+				FlxG.log.warn(cleanMsg);
+
+			case 'Error':
+				FlxG.log.error(cleanMsg);
+
+			default:
+				FlxG.log.add(cleanMsg);
+		}
+		#end
+	}
 }

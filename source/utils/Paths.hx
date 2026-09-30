@@ -170,6 +170,9 @@ class Paths {
 	public static inline function exists(path:String):Bool
 		return Assets.exists('assets/$path');
 
+	public static inline function sparrowExists(path:String):Bool
+		return Assets.exists('assets/$path.png') && Assets.exists('assets/$path.xml');
+
 	/**
 	 * @param type Opponent, Player, bf, dad, uhm, ion know, chars??????
 	 * 

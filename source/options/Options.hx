@@ -38,6 +38,11 @@ class Options {
 	**/
 	public static var updateWindowsAPI:Bool = false;
 
+	/**
+	 * uhm... do i need to explain it?
+	**/
+	public static var lowDetail:Bool = false;
+
 	public static function init():Void
 	{
 		// setKeys();
