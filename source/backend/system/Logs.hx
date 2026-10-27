@@ -18,10 +18,30 @@ enum abstract LogType(String) from String to String
 	var PSeError = 'PSeError';
 }
 
-typedef SendSettings =
+typedef TraceFunction = Dynamic->?haxe.PosInfos->Void;
+
+class Logs
 {
 	/**
-	 * da type of the log
+	 * da og trace heh
+	**/
+	private static var _oTrace:TraceFunction;
+
+	public static var colors:Map<String, Int> = [
+		'Debug' => 0x00FF00,
+		'Info' => 0x0000FF,
+		'Warning' => 0xFFFF00,
+		'Error' => 0xFF0000,
+		'None' => 0xFFFFFFFF,
+		'Trace' => 0xFF000055,
+		'Source Info' => 0xAA00FF,
+		'PSeScript' => 0xFFAAAAAA,
+		'PSeWarning' => 0xFFFFFFAA,
+		'PSeError' => 0xFFFF5555
+	];
+
+	/**
+	 * mmmmh, Logs, like, another trace func ig heh
 	 *
 	 * Available types:
 	 * - `None`
@@ -35,57 +55,15 @@ typedef SendSettings =
 	 * - `PSeWarning`
 	 * - `PSeError`
 	 */
-	@:optional var type:Null<LogType>;
-	/**
-	 *	`shooterTime`: well, u can guess what it is, DA SA `FLOAT`, but
-	 *	for the TroubleShooter, soooo, the time of how much time will be
-	 *	the shooter in screen, ig???????????????????????????????????????.
-	**/
-	@:optional var shooterTime:Null<Float>;
-	/**
-	 *	`showShooter`: dasa `Bool`, but the Shooter, if true well... u
-	 *	can guess it, itll prepare u a sandwich ig.
-	**/
-	@:optional var showShooter:Null<Bool>;
-	/**
-	 *	`overrideShooterText`: this is for, uh, exactly what it says,
-	 *	the text that u write here will override the shooter one, its
-	 *	usable if for some reason u want the message of the Log and the
-	 *	TroubleShooter to be different, u can just "override" it with this.
-	**/
-	@:optional var overrideShooterText:Null<Dynamic>;
-}
-
-class Logs {
-	public static var skipShooter:Bool = false;
-
-	/**
-	 * Main function of the Logs class
-	 *	 
-	 * Literally sends a log/trace/TroubleShoot
-	 * 
-	 * u can also use trace(), it'll do a Logs.send with the `"Trace"` type
-	 *
-	 * @param msg
-	 *	   well... the message
-	 *
-	 * @param settings
-	 *	   da settings with things as the type of the Log, shooter settings n more
-	**/
-	public static function send(msg:Dynamic, ?settings:SendSettings)
+	public static function send(msg:Dynamic, type:LogType = Info)
 	{
-		var type:String = settings?.type ?? 'Info';
-		var shooterTime:Float = settings?.shooterTime ?? 2;
-		var showShooter:Bool = settings?.showShooter ?? true;
-		var overrideShooterText:String = settings?.overrideShooterText ?? null;
-
 		var cleanMsg:String = Std.string(msg);
 
 		#if sys
-		if (type == 'Debug')
+		if (type == Debug)
 			Sys.println(ANSI.coloredText('[$type] | $cleanMsg', 'Debug'));
 		else
-			Sys.println(type.trim() == 'None' ? '${cleanMsg.replace('\n', ' ')}' : '${ANSI.coloredType(type)} | ${cleanMsg.replace('\n', ' ')}');
+			Sys.println(type.trim() == None ? '${cleanMsg.replace('\n', ' ')}' : '${ANSI.coloredType(type)} | ${cleanMsg.replace('\n', ' ')}');
 		#end
 
 		#if !FLX_NO_DEBUG
@@ -104,12 +82,6 @@ class Logs {
 				FlxG.log.add(cleanMsg);
         }
 		#end
-
-		if (skipShooter)
-			return;
-
-		if (showShooter)
-			TroubleShooter.shoot(overrideShooterText == null ? Std.string(msg) : Std.string(overrideShooterText), type, shooterTime);
     }
 	public static function internal(msg:Dynamic)
 	{
@@ -132,4 +104,10 @@ class Logs {
 		}
 		#end
 	}
+	/**
+	 * with ts u call da og trace function (function that got overrided before heh)
+	**/
+	public static function trace(msg:Dynamic, ?infos:haxe.PosInfos)
+		if (_oTrace != null)
+			_oTrace(Std.string(msg), infos);
 }

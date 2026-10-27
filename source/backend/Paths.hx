@@ -1,4 +1,4 @@
-package utils;
+package backend;
 
 import backend.system.ANSI;
 import flixel.graphics.FlxGraphic;
@@ -26,17 +26,17 @@ class Paths {
 		{
 			if (path.endsWith('.png'))
 			{
-				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', {type: Warning});
+				Logs.send('$path does\'nt exists,\ngraphic will be replaced with uh,\nHaxe anticrash logo heh', Warning);
 				return 'assets/images/logo/logo.png';
 			}
 
 			if (path.endsWith('.xml'))
 			{
-				Logs.send('$path doesn\'t exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', {type: Warning});
+				Logs.send('$path doesn\'t exists,\nxml will be replaced with uh,\nbf xml cuz, uhm, why not', Warning);
 
 				if (!exists('assets/images/characters/bf.xml'))
 				{
-					Logs.send('$path doesn\'t exists,\nplease, don\'t delete that...', {type: Error});
+					Logs.send('$path doesn\'t exists,\nplease, don\'t delete that...', Error);
 					return '';
 				}
 
@@ -45,13 +45,13 @@ class Paths {
 
 			if (path.endsWith('.txt'))
 			{
-				Logs.send('$path doesn\'t exists,\ntext will be replaced to...,\nabsolutely nothing, literally', {type: Warning});
+				Logs.send('$path doesn\'t exists,\ntext will be replaced to...,\nabsolutely nothing, literally', Warning);
 				return '';
 			}
 
 			if (path.endsWith('.ogg'))
 			{
-				Logs.send('$path doesn\'t exists,\nsound will be replaced with uh,\nthe "beep" sound', {type: Warning});
+				Logs.send('$path doesn\'t exists,\nsound will be replaced with uh,\nthe "beep" sound', Warning);
 				return 'assets/sounds/beep.ogg';
 			}
 		}
@@ -90,7 +90,7 @@ class Paths {
 		#elseif openfl
 		return Assets.getText(path);
 		#else
-		Logs.send('returned nothing heh', {type: Error});
+		Logs.send('returned nothing heh', Error);
 		return '';
 		#end
 	}
@@ -103,7 +103,7 @@ class Paths {
 		#elseif openfl
 		return Assets.getText(path);
 		#else
-		Logs.send('returned nothing heh', {type: Error});
+		Logs.send('returned nothing heh', Error);
 		return '';
 		#end
 	}
@@ -151,11 +151,11 @@ class Paths {
 		//
 		// if (fails == 2)
 		// {
-		// Logs.send('Font couldn\'t be found or doesn\'t had an expected\nextension, returning null', {type: Error});
+		// Logs.send('Font couldn\'t be found or doesn\'t had an expected\nextension, returning null', Error);
 		// return null;
 		// }
 		//
-		// Logs.send('Font didn\'n had extension, but the code\nfound a $found file with the same name', {type: Warning});
+		// Logs.send('Font didn\'n had extension, but the code\nfound a $found file with the same name', Warning);
 		// }
 
 		return getPath('assets/fonts/$path');
@@ -195,8 +195,7 @@ class Paths {
 	{
 		if (safeMode)
 		{
-			Logs.send('${ANSI.coloredClass('Paths.getFrames')} isn\'t usable atp, using ${ANSI.coloredClass('Paths.getSparrowAtlas')} instead',
-				{type: Warning, overrideShooterText: 'Paths.getFrames() isn\'t usable atp, using Paths.getSparrowAtlas() instead'});
+			Logs.send('${ANSI.coloredClass('Paths.getFrames')} isn\'t usable atp, using ${ANSI.coloredClass('Paths.getSparrowAtlas')} instead', Warning);
 			return FlxAtlasFrames.fromSparrow(image(path), xml('images/$path'));
 		}
 

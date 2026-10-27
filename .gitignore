@@ -3,6 +3,7 @@ bin/*
 dist/*
 build/*
 .haxelib/*
+old source/*
 
 *.log
 *.tmp
