@@ -12,6 +12,8 @@ class LoadState extends FlxState
 
         super.create();
 
+		FlxSprite.defaultAntialiasing = true;
+
 		@:privateAccess
 		Logs._oTrace = haxe.Log.trace;
 

@@ -5,8 +5,6 @@ import backend.system.FpsMemory;
 import flixel.FlxGame;
 import openfl.display.Sprite;
 import states.*;
-import winapi.WindowsAPI;
-import winapi.WindowsCPP;
 
 class Main extends Sprite
 {
