@@ -1,25 +1,52 @@
 package game.notes;
 
-import game.notes.StrumNote;
-
 class StrumLine extends FlxSpriteContainer {
     public var keyCount:Int = 4;
     public var spacing:Int = 110;
+
+	public var notes:Array<StrumNote>;
+	public var splashes:Array<Splash>;
+
+	/**
+	 * ik it might be fucking stupid but, uhm, its sorta useful, ig???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
+	**/
+	public var keyCountMap:Map<Int, Array<Int>> = [
+		1 => [2],
+		2 => [0, 3],
+		3 => [0, 1, 3],
+		4 => [0, 1, 2, 3],
+		5 => [0, 1, 2, 2, 3],
+		6 => [0, 1, 3, 0, 2, 3],
+		7 => [0, 1, 3, 1, 0, 2, 3],
+		8 => [0, 1, 2, 3, 0, 1, 2, 3],
+		9 => [0, 1, 2, 3, 2, 0, 1, 2, 3]
+	];
 
     public function new(x:Float = 0, y:Float = 0, keyCount = 4) {
         super(x, y);
 
         this.keyCount = keyCount;
 
-        for (i in 0...this.keyCount){
-            var note:StrumNote = new StrumNote(i * spacing, 0, i);
-            add(note);
-        }
+		notes = [];
+		splashes = [];
+
+		var dirs:Array<Int> = keyCountMap.get(this.keyCount);
+		for (i in 0...this.keyCount)
+		{
+			var dir:Int = dirs != null && i < dirs.length ? dirs[i] : i % 4;
+			var note:StrumNote = new StrumNote(i * spacing, 0, dir);
+			add(note);
+			notes.push(note);
+
+			var splash:Splash = new Splash(note.x, 0, dir);
+			add(splash);
+			splashes.push(splash);
+		}
     }
 
     public function playAnim(dir:Int = 0, anim:String, force:Bool = false) {
         dir %= keyCount;
 
-        cast(members[dir], StrumNote).playAnim(anim, force);
+		notes[dir].playAnim(anim, force);
     }
 }
