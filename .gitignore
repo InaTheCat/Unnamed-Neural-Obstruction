@@ -3,6 +3,7 @@ bin/*
 dist/*
 build/*
 .haxelib/*
+source/game/managers/strums/BrokenStrumController.hx
 old source/*
 
 *.log

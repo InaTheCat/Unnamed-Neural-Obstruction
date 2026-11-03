@@ -1,0 +1,31 @@
+{
+	"song": {
+		"events": [],
+		"notes": [
+			{
+				"lengthInSteps": 16,
+				"mustHitSection": false,
+				"altAnim": false,
+				"bpm": 150,
+				"sectionBeats": 4,
+				"changeBPM": false,
+				"sectionNotes": [
+					[
+						12800,
+						0,
+						0,
+						null
+					]
+				]
+			}
+		],
+		"validScore": true,
+		"needsVoices": true,
+		"bpm": 150,
+		"stage": "tank",
+		"song": "test",
+		"speed": 1.6,
+		"player1": "bf",
+		"player2": "bf-pixel"
+	}
+}

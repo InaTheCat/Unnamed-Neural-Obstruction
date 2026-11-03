@@ -1,10 +1,28 @@
 package states;
 
+import flixel.sound.FlxSound;
+import flixel.util.FlxTimer;
+import game.chart.UNOChart;
+import game.managers.music.BeatState;
+import game.managers.music.Conductor;
+import game.managers.music.Voices.VoicesPack;
 import game.notes.StrumLine;
 
-class PlayState extends FlxState
+class PlayState extends BeatState
 {
+	var songStarted:Bool = false;
+	var stateLoss:Bool = false;
+	var sOnFocus:Bool = false;
+	var vOnLoss:Array<Bool> = [];
+	var curSong:String = 'Tutorial';
+
+	var inst:FlxSound;
+	var voices:VoicesPack = new VoicesPack();
+
+	var chart:UnnamedChart;
+
 	var strum:StrumLine;
+	var strum2:StrumLine;
 	var floor:FlxSprite;
 	var bg:FlxSprite;
 
@@ -13,60 +31,113 @@ class PlayState extends FlxState
 		super.create();
 		add(bg = new FlxSprite().loadGraphic(Paths.image('stages/stage/back')));
 		add(floor = new FlxSprite().loadGraphic(Paths.image('stages/stage/floor')));
-		add(strum = new StrumLine(50, 50, 6));
+		// chart = PsychParser.parse('test', 'hard');
+
+		chart = UNOChart.toTypedef('run', 'hard');
+		curSong = chart.song;
+
+		add(strum = new StrumLine(50, 50, 4, false, chart.strums[0].notes, chart.speed));
+		add(strum2 = new StrumLine(FlxG.width * 0.55, 50, 4, false, chart.strums[1].notes, chart.speed));
+
+		loadSong();
+
+		new FlxTimer().start(0.5, (_:FlxTimer) -> startSong());
 	}
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		if (FlxG.keys.justPressed.Q)
+		if (songStarted)
 		{
-			strum.notes[0].playAnim('press', true);
-			strum.splashes[0].hit();
+			Conductor.update(elapsed, inst);
+			voices.update(inst);
 		}
-		else if (FlxG.keys.justReleased.Q)
-			strum.notes[0].playAnim('static', true);
+	}
 
-		if (FlxG.keys.justPressed.W)
+	override public function destroy()
+	{
+		super.destroy();
+
+		voices.destroy();
+
+		if (inst != null)
 		{
-			strum.notes[1].playAnim('press', true);
-			strum.splashes[1].hit();
+			inst.stop();
+			inst = null;
 		}
-		else if (FlxG.keys.justReleased.W)
-			strum.notes[1].playAnim('static', true);
+	}
 
-		if (FlxG.keys.justPressed.E)
+	override public function onFocusLost():Void
+	{
+		super.onFocusLost();
+
+		if (stateLoss)
+			return;
+
+		stateLoss = true;
+		sOnFocus = songStarted && inst != null && inst.playing;
+		vOnLoss = [for (voice in voices.vocals) voice != null && voice.playing];
+	}
+	override public function onFocus():Void
+	{
+		super.onFocus();
+
+		if (!stateLoss)
+			return;
+
+		stateLoss = false;
+
+		if (!sOnFocus)
+			return;
+
+		sOnFocus = false;
+
+		if (inst != null)
 		{
-			strum.notes[2].playAnim('press', true);
-			strum.splashes[2].hit();
+			inst.play();
+			Conductor.songPosition = inst.time;
 		}
-		else if (FlxG.keys.justReleased.E)
-			strum.notes[2].playAnim('static', true);
+		for (i in 0...voices.vocals.length)
+			if (i < vOnLoss.length && vOnLoss[i])
+				voices.vocals[i].play();
 
-		if (FlxG.keys.justPressed.I)
-		{
-			strum.notes[3].playAnim('press', true);
-			strum.splashes[3].hit();
-		}
-		else if (FlxG.keys.justReleased.I)
-			strum.notes[3].playAnim('static', true);
+		vOnLoss = [];
+	}
 
-		if (FlxG.keys.justPressed.O)
-		{
-			strum.notes[4].playAnim('press', true);
-			strum.splashes[4].hit();
-		}
-		else if (FlxG.keys.justReleased.O)
-			strum.notes[4].playAnim('static', true);
+	public function loadSong()
+	{
+		var _vcs:Array<String> = [];
 
-		if (FlxG.keys.justPressed.P)
-		{
-			strum.notes[5].playAnim('press', true);
-			strum.splashes[5].hit();
-		}
-		else if (FlxG.keys.justReleased.P)
-			strum.notes[5].playAnim('static', true);
+		for (i in 0...2)
+			_vcs.push(chart?.strums[i]?.voice);
 
+		if (Paths.exists('songs/$curSong/song/Voices${_vcs[0]}.ogg')
+			&& Paths.exists('songs/$curSong/song/Voices${_vcs[1]}.ogg')
+			|| Paths.exists('songs/$curSong/song/Voices.ogg'))
+			if (_vcs != null)
+				if (_vcs == ['', ''])
+					voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
+				else
+					for (i in 0...2)
+						voices.save(FlxG.sound.load(Paths.songVoices(chart.song, chart?.strums[i]?.voice), 0.7, false));
+			else
+				voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
+
+		FlxG.sound.music = inst = FlxG.sound.load(Paths.songInst(chart.song), 1, false);
+
+		Conductor.bpm = chart?.bpm;
+	}
+
+	function startSong()
+	{
+		Conductor.songPosition = inst.time;
+
+		voices.play();
+		inst.play();
+
+		// FlxG.sound.music.time = 50000;
+
+		songStarted = true;
 	}
 }

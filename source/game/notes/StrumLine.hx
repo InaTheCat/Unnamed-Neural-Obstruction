@@ -1,11 +1,24 @@
 package game.notes;
 
-class StrumLine extends FlxSpriteContainer {
+import game.chart.UNOChart;
+import game.managers.strums.StrumController;
+
+class StrumLine extends FlxSpriteGroup
+{
+	public var controller:StrumController;
+
     public var keyCount:Int = 4;
     public var spacing:Int = 110;
 
+	public var isPlayer:Bool = false;
+
 	public var notes:Array<StrumNote>;
+	public var boxes:Array<FlxSprite>;
 	public var splashes:Array<Splash>;
+	public var hitbox:FlxSprite;
+	public var scrollSpeed:Float;
+
+	public var unspawnNotes:FlxSpriteGroup = new FlxSpriteGroup();
 
 	/**
 	 * ik it might be fucking stupid but, uhm, its sorta useful, ig???????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
@@ -22,13 +35,17 @@ class StrumLine extends FlxSpriteContainer {
 		9 => [0, 1, 2, 3, 2, 0, 1, 2, 3]
 	];
 
-    public function new(x:Float = 0, y:Float = 0, keyCount = 4) {
-        super(x, y);
+	public function new(x:Float = 0, y:Float = 0, keyCount:Int = 4, isPlayer:Bool = false, ?chartNotes:Array<StrumNotes>, scrollSpeed:Float = 1)
+	{
+		super();
 
         this.keyCount = keyCount;
+		this.scrollSpeed = scrollSpeed;
+		this.isPlayer = isPlayer;
 
 		notes = [];
 		splashes = [];
+		boxes = [];
 
 		var dirs:Array<Int> = keyCountMap.get(this.keyCount);
 		for (i in 0...this.keyCount)
@@ -38,15 +55,60 @@ class StrumLine extends FlxSpriteContainer {
 			add(note);
 			notes.push(note);
 
-			var splash:Splash = new Splash(note.x, 0, dir);
+			var box:FlxSprite = new FlxSprite(note.x, note.y).makeGraphic(Std.int(note.width), Std.int(note.height), 0x00000000);
+			add(box);
+			boxes.push(box);
+
+			if (!isPlayer)
+				note.animation.onFinish.add((n:String) -> if (n != 'static') note.playAnim('static', true));
+		}
+		add(unspawnNotes);
+
+		add(hitbox = new FlxSprite(notes[0].x ?? 0,
+			notes[0].y ?? 0).makeGraphic(Std.int(notes[notes.length - 1].x + notes[notes.length - 1].width), Std.int(notes[0].height), 0x00FFFFFF));
+
+		for (i in 0...this.keyCount)
+		{
+			var dir:Int = dirs != null && i < dirs.length ? dirs[i] : i % 4;
+			var splash:Splash = new Splash(notes[i].x, 0, dir);
 			add(splash);
 			splashes.push(splash);
 		}
-    }
+		setPosition(x, y);
+		controller = new StrumController(this, chartNotes);
+	}
+
+	override public function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		if (controller != null)
+			controller.update();
+	}
+
+	override public function destroy()
+	{
+		super.destroy();
+
+		controller.destroy();
+		controller = null;
+
+		for (e in unspawnNotes.members)
+			if (e != null)
+			{
+				unspawnNotes.remove(e);
+				e.destroy();
+			}
+	}
 
     public function playAnim(dir:Int = 0, anim:String, force:Bool = false) {
         dir %= keyCount;
 
 		notes[dir].playAnim(anim, force);
     }
+	public function _receptor(dir:Int):Int
+		return notes[dir].dir ?? notes[0].dir;
+
+	public function getReceptor(dir:Int):FlxSprite
+		return boxes[dir] ?? boxes[0];
 }

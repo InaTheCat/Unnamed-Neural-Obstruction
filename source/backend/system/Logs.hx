@@ -69,13 +69,13 @@ class Logs
 		#if !FLX_NO_DEBUG
 		switch (type)
 		{
-			case "Info":
+			case Info:
 				FlxG.log.notice(cleanMsg);
 
-			case "Warning":
+			case Warning:
 				FlxG.log.warn(cleanMsg);
 
-			case "Error":
+			case Error:
 				FlxG.log.error(cleanMsg);
 
             default:
@@ -88,20 +88,7 @@ class Logs
 		Sys.println('${ANSI.coloredType(SourceInfo)} | ${Std.string(msg).replace('\n', ' ')}');
 
 		#if !FLX_NO_DEBUG
-		switch (type)
-		{
-			case 'Info':
-				FlxG.log.notice(cleanMsg);
-
-			case 'Warning':
-				FlxG.log.warn(cleanMsg);
-
-			case 'Error':
-				FlxG.log.error(cleanMsg);
-
-			default:
-				FlxG.log.add(cleanMsg);
-		}
+		FlxG.log.notice(Std.string(msg));
 		#end
 	}
 	/**

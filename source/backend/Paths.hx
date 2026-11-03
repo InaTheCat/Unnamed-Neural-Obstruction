@@ -4,7 +4,7 @@ import backend.system.ANSI;
 import flixel.graphics.FlxGraphic;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.graphics.frames.FlxFramesCollection;
-import openfl.utils.Assets;
+import sys.FileSystem;
 import sys.io.File;
 
 using StringTools;
@@ -22,7 +22,7 @@ class Paths {
 
 	public static function getPath(path:String):String
 	{
-		if (!Assets.exists(path))
+		if (!FileSystem.exists(path))
 		{
 			if (path.endsWith('.png'))
 			{
@@ -86,9 +86,15 @@ class Paths {
 	public static inline function getContent(path:String):String
 	{
 		#if sys
-		return File.getContent(path);
+		if (!FileSystem.exists('assets/$path'))
+			return '';
+
+		return File.getContent('assets/$path');
 		#elseif openfl
-		return Assets.getText(path);
+		if (openfl.utils.Assets.exists('assets/$path'))
+			return '';
+
+		return FileSystem.getText('assets/$path');
 		#else
 		Logs.send('returned nothing heh', Error);
 		return '';
@@ -97,16 +103,7 @@ class Paths {
 
 	// same bs as the top one heh
 	public static inline function getText(path:String):String
-	{
-		#if sys
-		return File.getContent(path);
-		#elseif openfl
-		return Assets.getText(path);
-		#else
-		Logs.send('returned nothing heh', Error);
-		return '';
-		#end
-	}
+		return getContent(path);
 
 	public static function script(path:String, ?scriptType:String = '', asContent:Bool = false)
 	{
@@ -133,7 +130,7 @@ class Paths {
 		// var found:String = 'nothing';
 		// var fails:Int = 0;
 		//
-		// if (Assets.exists('assets/fonts/$path.ttf'))
+		// if (FileSystem.exists('assets/fonts/$path.ttf'))
 		// {
 		// path += '.ttf';
 		// found = 'ttf';
@@ -141,7 +138,7 @@ class Paths {
 		// else
 		// fails++;
 		//
-		// if (Assets.exists('assets/fonts/$path.otf'))
+		// if (FileSystem.exists('assets/fonts/$path.otf'))
 		// {
 		// path += '.otf';
 		// found = 'otf';
@@ -161,35 +158,26 @@ class Paths {
 		return getPath('assets/fonts/$path');
 	}
 
-	public static inline function songJson(songName:String, difficulty:String):String
-		return getPath('assets/songs/$songName/chart/$difficulty.json');
-
 	public static inline function songInst(songName:String):String
 		return getPath('assets/songs/$songName/song/Inst.ogg');
 
+	public static function songVoices(songName:String, prefix:String = '')
+		return getPath('assets/songs/$songName/song/Voices$prefix.ogg');
+
 	public static inline function exists(path:String):Bool
-		return Assets.exists('assets/$path');
+	{
+		#if sys
+		return FileSystem.exists('assets/$path');
+		#elseif openfl
+		return openfl.utils.Assets.exists('assets/$path');
+		#else
+		Logs.send('couldnt search "$path" cuz... uh, dunno, for sum fucking reason it didnt found it');
+		return false;
+		#end
+	}
 
 	public static inline function sparrowExists(path:String):Bool
-		return Assets.exists('assets/$path.png') && Assets.exists('assets/$path.xml');
-
-	/**
-	 * @param type Opponent, Player, bf, dad, uhm, ion know, chars??????
-	 * 
-	 * @param hasBar Well, the thang of `-opponent`, `-dih` and those thangs,
-	 * 				 if its `true`, the bar will appear automatically
-	**/
-	public static function songVoices(songName:String, ?type:String = '', hasBar:Bool = true)
-	{
-		var prefix:String = '';
-
-		var hasType = type != null && type.trim() != '';
-			
-		if (hasType)
-			prefix = hasBar ? '-$type' : ' $type';
-
-		return getPath('assets/songs/$songName/song/Voices$prefix.ogg');
-	}
+		return FileSystem.exists('assets/$path.png') && FileSystem.exists('assets/$path.xml');
 
 	public static function getFrames(path:String):FlxFramesCollection
 	{

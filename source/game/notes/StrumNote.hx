@@ -4,17 +4,22 @@ import flixel.math.FlxPoint;
 
 class StrumNote extends FlxSprite
 {
-    var center:FlxPoint = FlxPoint.get();
+	var center:FlxPoint = FlxPoint.get();
+
+	public var isDown:Bool = false;
+	public var dir:Int = 0;
 
 	public function new(x:Float = 0, y:Float = 0, dir:Int = 0)
 	{
         dir %= 4;
+		this.dir = dir;
 
         super();
 
 		frames = Paths.getSparrowAtlas('game/notes/default');
 		animation.addByPrefix('static', getDir(dir), 0, false);
-		animation.addByPrefix('press', getDir(dir, true) + ' press', 24, false);
+		animation.addByPrefix('press', '${getDir(dir, true)} press', 24, false);
+		animation.addByPrefix('confirm', '${getDir(dir, true)} confirm', 24, false);
 		animation.play('static');
 		scale.set(0.7, 0.7);
 		updateHitbox();
@@ -23,6 +28,8 @@ class StrumNote extends FlxSprite
     }
 
     public function playAnim(anim:String, force:Bool = false) {
+		isDown = anim != 'static';
+
 		center.set(x + width / 2, y + height / 2);
 
 		animation.play(animation.exists(anim) ? anim : 'static', force);
@@ -32,8 +39,8 @@ class StrumNote extends FlxSprite
 
 		centerOffsets();
 
-        center.put();
-    }
+		center.put();
+	}
 
 	public static function getDir(dir:Int = 0, alt:Bool = false):String
         switch(dir){

@@ -1,0 +1,24 @@
+{
+    "song": {
+        "song": "Test",
+        "bpm": 150.0,
+        "needsVoices": true,
+        "player1": "bf",
+        "player2": "bf-pixel-opponent",
+        "speed": 1.6,
+        "notes": [
+            {
+                "lengthInSteps": 16,
+                "mustHitSection": false,
+                "sectionNotes": [
+                    [
+                        12800.0,
+                        0,
+                        0.0
+                    ]
+                ]
+            }
+        ]
+    },
+    "generatedBy": "SNIFF ver.6"
+}
