@@ -86,19 +86,19 @@ class StrumLine extends FlxSpriteGroup
 			controller.update();
 	}
 
-	override public function destroy()
+	public function clean()
 	{
-		super.destroy();
-
 		controller.destroy();
 		controller = null;
 
 		for (e in unspawnNotes.members)
+		{
 			if (e != null)
 			{
-				unspawnNotes.remove(e);
+				remove(e);
 				e.destroy();
 			}
+		}
 	}
 
     public function playAnim(dir:Int = 0, anim:String, force:Bool = false) {

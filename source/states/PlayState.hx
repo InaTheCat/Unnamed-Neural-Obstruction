@@ -15,6 +15,7 @@ class PlayState extends BeatState
 	var sOnFocus:Bool = false;
 	var vOnLoss:Array<Bool> = [];
 	var curSong:String = 'Tutorial';
+	var curDiff:String = 'hard';
 
 	var inst:FlxSound;
 	var voices:VoicesPack = new VoicesPack();
@@ -26,6 +27,14 @@ class PlayState extends BeatState
 	var floor:FlxSprite;
 	var bg:FlxSprite;
 
+	public function new(song:String, diff:String)
+	{
+		super();
+
+		curSong = song;
+		curDiff = diff;
+	}
+
 	override public function create()
 	{
 		super.create();
@@ -33,7 +42,7 @@ class PlayState extends BeatState
 		add(floor = new FlxSprite().loadGraphic(Paths.image('stages/stage/floor')));
 		// chart = PsychParser.parse('test', 'hard');
 
-		chart = UNOChart.toTypedef('run', 'hard');
+		chart = UNOChart.toTypedef(curSong, curDiff);
 		curSong = chart.song;
 
 		add(strum = new StrumLine(50, 50, 4, false, chart.strums[0].notes, chart.speed));
@@ -52,6 +61,13 @@ class PlayState extends BeatState
 		{
 			Conductor.update(elapsed, inst);
 			voices.update(inst);
+		}
+		if (FlxG.keys.justPressed.ESCAPE)
+		{
+			Conductor.reset();
+			for (e in [strum, strum2])
+				e.clean();
+			FlxG.switchState(() -> new states.Selector());
 		}
 	}
 
@@ -136,7 +152,7 @@ class PlayState extends BeatState
 		voices.play();
 		inst.play();
 
-		// FlxG.sound.music.time = 50000;
+		// FlxG.sound.music.time = 5000;
 
 		songStarted = true;
 	}

@@ -19,6 +19,6 @@ class LoadState extends FlxState
 
 		haxe.Log.trace = (v:Dynamic, ?infos:haxe.PosInfos) -> Logs.send(v, Trace);
 
-		FlxG.switchState(() -> new PlayState());
+		FlxG.switchState(() -> new Selector());
     }
 }

@@ -30,6 +30,20 @@ class Conductor {
     static function set_bpm(v:Float):Float
         return v > 0 ? v : 1;
 
+	public static function reset()
+	{
+		songPosition = 0;
+		bpm = 100;
+
+		curSection = 0;
+		curStep = 0;
+		curBeat = 0;
+
+		curDecSection = 0;
+		curDecStep = 0;
+		curDecBeat = 0;
+	}
+
     public static function update(pos:Float, music:FlxSound) {
         updatePosition(pos, music);
 
