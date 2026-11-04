@@ -2,15 +2,20 @@ package game.notes;
 
 import game.chart.UNOChart;
 import game.managers.strums.StrumController;
+import states.PlayState;
 
 class StrumLine extends FlxSpriteGroup
 {
+	public var stateParent:PlayState;
+
 	public var controller:StrumController;
 
     public var keyCount:Int = 4;
     public var spacing:Int = 110;
 
 	public var isPlayer:Bool = false;
+	public var character:Character = null;
+	public var willMimic:Bool = false;
 
 	public var notes:Array<StrumNote>;
 	public var boxes:Array<FlxSprite>;
@@ -35,13 +40,19 @@ class StrumLine extends FlxSpriteGroup
 		9 => [0, 1, 2, 3, 2, 0, 1, 2, 3]
 	];
 
-	public function new(x:Float = 0, y:Float = 0, keyCount:Int = 4, isPlayer:Bool = false, ?chartNotes:Array<StrumNotes>, scrollSpeed:Float = 1)
+	public function new(x:Float = 0, y:Float = 0, keyCount:Int = 4, isPlayer:Bool = false, charParent:Character, ?stateParent:PlayState,
+			mimicPlayer:Bool = false)
 	{
 		super();
 
+		stateParent.strumLines++;
+
+		this.stateParent = stateParent;
         this.keyCount = keyCount;
-		this.scrollSpeed = scrollSpeed;
+		this.scrollSpeed = stateParent.chart.speed ?? 1;
 		this.isPlayer = isPlayer;
+		this.character = charParent;
+		this.willMimic = mimicPlayer;
 
 		notes = [];
 		splashes = [];
@@ -70,12 +81,14 @@ class StrumLine extends FlxSpriteGroup
 		for (i in 0...this.keyCount)
 		{
 			var dir:Int = dirs != null && i < dirs.length ? dirs[i] : i % 4;
-			var splash:Splash = new Splash(notes[i].x, 0, dir);
+			var splash:Splash = new Splash(notes[i].x + 25, 0, dir);
 			add(splash);
 			splashes.push(splash);
 		}
 		setPosition(x, y);
-		controller = new StrumController(this, chartNotes);
+		var chart:Array<StrumNotes> = stateParent.chart.strums[stateParent.strumLines].notes ?? null;
+
+		controller = new StrumController(this, chart);
 	}
 
 	override public function update(elapsed:Float)

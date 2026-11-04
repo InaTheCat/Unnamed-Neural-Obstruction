@@ -3,6 +3,8 @@ package game.options;
 import flixel.input.keyboard.FlxKey;
 
 class Options {
+	public static var antialiasing:Bool = true;
+
     public static var keybinds:Map<Int, Array<FlxKey>> = [
         1 => [SPACE],
         2 => [Q, P],

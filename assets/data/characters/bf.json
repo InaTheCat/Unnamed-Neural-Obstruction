@@ -16,14 +16,34 @@
             "name": "singDOWN"
         },
         {
-            "offset":[-36, 27],
+            "offset":[-39, 27],
             "anim": "up",
             "name": "singUP"
         },
         {
-            "offset":[-48, -6],
-            "anim": "right",
-            "name": "singRIGHT"
+			"offset": [-48, -6],
+			"anim": "right",
+			"name": "singRIGHT"
+		},
+        {
+            "offset": [6, 19],
+            "anim": "Missleft",
+            "name": "singLEFTmiss"
+        },
+        {
+            "offset":[-15, -19],
+            "anim": "Missdown",
+            "name": "singDOWNmiss"
+        },
+        {
+            "offset": [-35, 27],
+            "anim": "Missup",
+            "name": "singUPmiss"
+        },
+        {
+            "offset": [-44, 22],
+            "anim": "Missright",
+            "name": "singRIGHTmiss"
         }
     ],
 

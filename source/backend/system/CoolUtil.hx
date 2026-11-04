@@ -64,6 +64,14 @@ class CoolUtil {
 
     // 21
 
+	public static inline function zeros(str:String, amount:Int):String
+	{
+		while (str.length < amount)
+			str = '0${str}';
+
+		return str;
+	}
+
 	public static inline function lerp(org:Float, dest:Float, ratio:Float):Float
 		return FlxMath.lerp(org, dest, 1.0 - Math.pow(1.0 - ratio, FlxG.elapsed * 60));
 }

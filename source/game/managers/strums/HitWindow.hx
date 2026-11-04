@@ -2,22 +2,8 @@ package game.managers.strums;
 
 abstract RatingWindow(Array<Float>)
 {
-	public inline function new(
-		sick:Float = 30,
-		good:Float = 60,
-		bad:Float = 100,
-		shit:Float = 130,
-		miss:Float = 200
-	)
-	{
-		this = [
-			sick,
-			good,
-			bad,
-			shit,
-			miss
-		];
-	}
+	public inline function new(sick:Float = 35, good:Float = 60, bad:Float = 120, shit:Float = 150, miss:Float = 250)
+		this = [sick, good, bad, shit, miss];
 
 	public var sick(get, set):Float;
 

@@ -1,31 +1,53 @@
 package states;
 
+import flixel.FlxObject;
 import flixel.sound.FlxSound;
-import flixel.util.FlxTimer;
+import flixel.text.FlxText;
+import game.Character;
+import game.Combo;
 import game.chart.UNOChart;
 import game.managers.music.BeatState;
-import game.managers.music.Conductor;
-import game.managers.music.Voices.VoicesPack;
+import game.managers.music.VoicesPack;
 import game.notes.StrumLine;
 
 class PlayState extends BeatState
 {
-	var songStarted:Bool = false;
-	var stateLoss:Bool = false;
-	var sOnFocus:Bool = false;
-	var vOnLoss:Array<Bool> = [];
-	var curSong:String = 'Tutorial';
-	var curDiff:String = 'hard';
+	public var songStarted:Bool = false;
+	public var stateLoss:Bool = false;
+	public var sOnFocus:Bool = false;
+	public var vOnLoss:Array<Bool> = [];
+	public var curSong:String = 'Tutorial';
+	public var curDiff:String = 'hard';
 
-	var inst:FlxSound;
-	var voices:VoicesPack = new VoicesPack();
+	public var inst:FlxSound;
+	public var voices:VoicesPack = new VoicesPack();
+	public var startingPos:Bool = false;
 
-	var chart:UnnamedChart;
+	public var chart:UnnamedChart;
 
-	var strum:StrumLine;
-	var strum2:StrumLine;
-	var floor:FlxSprite;
-	var bg:FlxSprite;
+	public var camGame:FlxCamera;
+	public var camHUD:FlxCamera;
+	public var camPointer:FlxObject = new FlxObject(0, 0, 1, 1);
+
+	public var opponent:StrumLine;
+	public var player:StrumLine;
+	public var strumLines:Int = -1;
+
+	public var bf:Character;
+	public var dad:Character;
+
+	public final BF_BASE:FlxPoint = FlxPoint.get(850, 400);
+	public final DAD_BASE:FlxPoint = FlxPoint.get(150, 50);
+
+	public var comboGrp:Combo;
+
+	public var combo:Int = 0;
+	public var misses:Int = 0;
+
+	public var floor:FlxSprite;
+	public var bg:FlxSprite;
+
+	var impossible:Bool = false;
 
 	public function new(song:String, diff:String)
 	{
@@ -38,15 +60,35 @@ class PlayState extends BeatState
 	override public function create()
 	{
 		super.create();
-		add(bg = new FlxSprite().loadGraphic(Paths.image('stages/stage/back')));
-		add(floor = new FlxSprite().loadGraphic(Paths.image('stages/stage/floor')));
-		// chart = PsychParser.parse('test', 'hard');
+		impossible = curSong == 'run' || curSong == 'red-3';
+
+		FlxG.cameras.add(camGame = new FlxCamera());
+		FlxG.cameras.add(camHUD = new FlxCamera(), false).bgColor = 0x00000000;
+
+		camGame.zoom = 0.9;
+
+		add(bg = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/stage/back')));
+		add(floor = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/stage/floor')));
+
+		add(dad = new Character(DAD_BASE.x, DAD_BASE.y, 'dad', true));
+		add(bf = new Character(BF_BASE.x, BF_BASE.y, 'bf', true));
 
 		chart = UNOChart.toTypedef(curSong, curDiff);
 		curSong = chart.song;
 
-		add(strum = new StrumLine(50, 50, 4, false, chart.strums[0].notes, chart.speed));
-		add(strum2 = new StrumLine(FlxG.width * 0.55, 50, 4, false, chart.strums[1].notes, chart.speed));
+		insert(members.indexOf(dad) - 1, comboGrp = new Combo((dad.x + bf.x) / 2 + 10, (dad.y + bf.y) / 2));
+
+		add(opponent = new StrumLine(50, 50, 4, false, dad, this));
+
+		add(player = new StrumLine(FlxG.width * 0.55, 50, 4, !impossible, bf, this, impossible));
+
+		add(camPointer);
+		camPointer.setPosition(dad.getMidpoint().x + dad.camOffset.x, dad.getMidpoint().y + dad.camOffset.y);
+
+		camGame.follow(camPointer, LOCKON, 0.045);
+
+		opponent.camera = camHUD;
+		player.camera = camHUD;
 
 		loadSong();
 
@@ -55,20 +97,88 @@ class PlayState extends BeatState
 
 	override public function update(elapsed:Float)
 	{
-		super.update(elapsed);
-
 		if (songStarted)
 		{
 			Conductor.update(elapsed, inst);
 			voices.update(inst);
 		}
+		super.update(elapsed);
+
 		if (FlxG.keys.justPressed.ESCAPE)
-		{
-			Conductor.reset();
-			for (e in [strum, strum2])
-				e.clean();
-			FlxG.switchState(() -> new states.Selector());
-		}
+			exitSong();
+
+		camGame.zoom = CoolUtil.lerp(camGame.zoom, 0.9, 0.05);
+		camHUD.zoom = CoolUtil.lerp(camHUD.zoom, 1, 0.05);
+	}
+
+	public function loadSong()
+	{
+		var _vcs:Array<String> = [];
+
+		for (i in 0...2)
+			_vcs.push(chart?.strums[i]?.voice);
+
+		if (Paths.exists('songs/$curSong/song/Voices${_vcs[0]}.ogg')
+			&& Paths.exists('songs/$curSong/song/Voices${_vcs[1]}.ogg')
+			|| Paths.exists('songs/$curSong/song/Voices.ogg'))
+			if (_vcs != null)
+				if (_vcs == ['', ''])
+					voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
+				else
+					for (i in 0...2)
+						voices.save(FlxG.sound.load(Paths.songVoices(chart.song, chart?.strums[i]?.voice), 0.7, false));
+			else
+				voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
+
+		FlxG.sound.music = inst = FlxG.sound.load(Paths.songInst(chart.song), 1, false);
+
+		inst.onComplete = () -> exitSong();
+
+		Conductor.bpm = chart.bpm;
+	}
+
+	function startSong()
+	{
+		Conductor.songPosition = inst.time;
+
+		voices.play();
+		inst.play();
+
+		FlxG.sound.music.time = 3000;
+
+		songStarted = true;
+	}
+
+	public function exitSong()
+	{
+		Conductor.reset();
+		for (e in [opponent, player])
+			e.clean();
+		FlxG.switchState(() -> new states.Selector());
+	}
+	override public function sectionHit(sec:Int)
+	{
+		super.sectionHit(sec);
+
+		if (chart.meta.length != 0)
+			for (i in 0...chart.meta.length)
+			{
+				if (chart.meta[i].sec == sec)
+				{
+					var character:Character = chart.meta[i].mustHitSection ? bf : dad;
+					var mid:FlxPoint = character.getMidpoint();
+
+					var offsets:FlxPoint = FlxPoint.get(character.camOffset.x ?? 0, character.camOffset.y ?? 0);
+
+					camPointer.setPosition(mid.x + offsets.x, mid.y + offsets.y);
+				}
+			}
+
+		camGame.zoom += 0.02;
+		camHUD.zoom += 0.015;
+
+		for (e in [dad, bf])
+			e.dance();
 	}
 
 	override public function destroy()
@@ -119,41 +229,5 @@ class PlayState extends BeatState
 				voices.vocals[i].play();
 
 		vOnLoss = [];
-	}
-
-	public function loadSong()
-	{
-		var _vcs:Array<String> = [];
-
-		for (i in 0...2)
-			_vcs.push(chart?.strums[i]?.voice);
-
-		if (Paths.exists('songs/$curSong/song/Voices${_vcs[0]}.ogg')
-			&& Paths.exists('songs/$curSong/song/Voices${_vcs[1]}.ogg')
-			|| Paths.exists('songs/$curSong/song/Voices.ogg'))
-			if (_vcs != null)
-				if (_vcs == ['', ''])
-					voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
-				else
-					for (i in 0...2)
-						voices.save(FlxG.sound.load(Paths.songVoices(chart.song, chart?.strums[i]?.voice), 0.7, false));
-			else
-				voices.save(FlxG.sound.load(Paths.songVoices(chart.song), 0.7, false));
-
-		FlxG.sound.music = inst = FlxG.sound.load(Paths.songInst(chart.song), 1, false);
-
-		Conductor.bpm = chart?.bpm;
-	}
-
-	function startSong()
-	{
-		Conductor.songPosition = inst.time;
-
-		voices.play();
-		inst.play();
-
-		// FlxG.sound.music.time = 5000;
-
-		songStarted = true;
 	}
 }

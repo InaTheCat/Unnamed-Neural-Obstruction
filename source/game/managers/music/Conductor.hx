@@ -1,10 +1,11 @@
 package game.managers.music;
 
 import flixel.sound.FlxSound;
+import haxe.rtti.Meta;
 
 class Conductor {
     public static var songPosition:Float = 0;
-    public static var bpm(default, set):Float = 100;
+	public static var bpm:Float = 100;
 
     public static var curSection:Int = 0;
     public static var curStep:Int = 0;
@@ -27,9 +28,6 @@ class Conductor {
     static function get_stepCrochet():Float
         return crochet / 4;
 
-    static function set_bpm(v:Float):Float
-        return v > 0 ? v : 1;
-
 	public static function reset()
 	{
 		songPosition = 0;
@@ -39,12 +37,19 @@ class Conductor {
 		curStep = 0;
 		curBeat = 0;
 
+		_lSection = -1;
+		_lStep = -1;
+		_lBeat = -1;
+
 		curDecSection = 0;
 		curDecStep = 0;
 		curDecBeat = 0;
 	}
 
     public static function update(pos:Float, music:FlxSound) {
+		if (bpm < 1)
+			bpm = 1;
+
         updatePosition(pos, music);
 
 		curDecStep = songPosition / stepCrochet;
@@ -52,38 +57,44 @@ class Conductor {
 
 		curDecBeat = curDecStep / 4;
 		curBeat = Math.floor(curDecBeat);
-		curSection = Math.floor(curStep / 16);
 
-		curSection = Math.floor(curStep / 16);
+		curDecSection = curDecStep / 16;
+		curSection = Math.floor(curDecSection);
 
 		if (curSection != _lSection)
 		{
+			var oldSection = _lSection;
 			_lSection = curSection;
 
 			var state = Std.downcast(FlxG.state, BeatState);
 
 			if (state != null)
-				state.sectionHit(curSection);
+				for (i in (oldSection + 1)...(curSection + 1))
+					state.sectionHit(i);
 		}
 
 		if (curBeat != _lBeat)
 		{
+			var oldBeat = _lBeat;
 			_lBeat = curBeat;
 
 			var state = Std.downcast(FlxG.state, BeatState);
 
 			if (state != null)
-				state.beatHit(curBeat);
+				for (i in (oldBeat + 1)...(curBeat + 1))
+					state.beatHit(i);
 		}
 
 		if (curStep != _lStep)
 		{
+			var oldStep = _lStep;
 			_lStep = curStep;
 
 			var state = Std.downcast(FlxG.state, BeatState);
 
 			if (state != null)
-				state.stepHit(curStep);
+				for (i in (oldStep + 1)...(curStep + 1))
+					state.stepHit(i);
 		}
     }
 
