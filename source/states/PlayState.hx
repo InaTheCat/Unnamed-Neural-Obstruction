@@ -144,7 +144,7 @@ class PlayState extends BeatState
 		voices.play();
 		inst.play();
 
-		FlxG.sound.music.time = 3000;
+		// FlxG.sound.music.time = 3000;
 
 		songStarted = true;
 	}
