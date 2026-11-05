@@ -4,8 +4,8 @@ import backend.system.ANSI;
 
 class Combo extends FlxSpriteGroup
 {
-	public var rateGroup = new FlxSpriteGroup();
-	public var numGroup = new FlxSpriteGroup();
+	public var ratingSprite:FlxSprite;
+	public var numGroup:Array<FlxSprite>;
 
 	public var comboLimit(default, set):Int = 5;
 	public var numLimit(default, set):Int = 15;
@@ -39,8 +39,12 @@ class Combo extends FlxSpriteGroup
 
 		setPosition(x ?? 0, y ?? 0);
 
-		add(rateGroup);
-		add(numGroup);
+		add(ratingSprite = new FlxSprite(x, y));
+		ratingSprite.alpha = 0;
+		ratingSprite.scale.set(0.75, 0.75);
+		ratingSprite.updateHitbox();
+
+		numGroup = [];
 	}
 
 	override public function update(elapsed:Float) {
@@ -55,7 +59,7 @@ class Combo extends FlxSpriteGroup
 			}
 
 			if (sinceMax != 0 && _tCalled >= 750){
-				sinceMax -= elapsed * 5;
+				sinceMax -= elapsed * 2;
 				if (sinceMax <= 0){
 					sinceMax = 2;
 					_tCalled = Std.int(_tCalled / 2);
@@ -71,30 +75,32 @@ class Combo extends FlxSpriteGroup
 		if (_tCalled >= 750)
 			return;
 
-		limitShowable(rateGroup, comboLimit);
-		limitShowable(numGroup, numLimit);
+		for (numScore in members.copy())
+		{
+			if (numScore == null || numScore == ratingSprite)
+				continue;
 
-		var rate:FlxSprite = rateGroup.recycle(FlxSprite);
+			FlxTween.cancelTweensOf(numScore);
+			numScore.kill();
+		}
 
-		if (rate.graphic == null || rate.graphic.key != Paths.image('game/combo/$rating'))
-			rate.loadGraphic(Paths.image('game/combo/$rating'));
+		numGroup.resize(0);
 
-		rate.revive();
+		if (ratingSprite.graphic == null || ratingSprite.graphic.key != Paths.image('game/combo/$rating'))
+			ratingSprite.loadGraphic(Paths.image('game/combo/$rating'));
 
-		rate.alpha = 1;
-		rate.scale.set(0.75, 0.75);
-		rate.updateHitbox();
-		rate.setPosition(this.x, this.y);
+		ratingSprite.setPosition(x, y);
+		ratingSprite.alpha = 1;
 
-		rate.acceleration.y = 550;
-		rate.velocity.set(-FlxG.random.int(-10, 10), -FlxG.random.int(140, 175));
+		ratingSprite.acceleration.y = 550;
+		ratingSprite.velocity.set(-FlxG.random.int(-10, 10), -FlxG.random.int(140, 175));
 
-		FlxTween.cancelTweensOf(rate);
+		FlxTween.cancelTweensOf(ratingSprite);
 
-		FlxTween.tween(rate, {alpha: 0}, (Conductor.stepCrochet / 1000) * 8, {
+		FlxTween.tween(ratingSprite, {alpha: 0}, (Conductor.stepCrochet / 1000) * 8, {
 			ease: FlxEase.smoothStepInOut,
 			startDelay: 0.5,
-			onComplete: (_:FlxTween) -> rate.kill()
+			onComplete: (_:FlxTween) -> ratingSprite.alpha = 0
 		});
 
 		if (combo == null)
@@ -104,20 +110,17 @@ class Combo extends FlxSpriteGroup
 
 		for (i in 0...nums.length)
 		{
-			var numScore:FlxSprite = numGroup.recycle(FlxSprite);
+			var numScore:FlxSprite = recycle(FlxSprite);
+			if (numScore.graphic == null || numScore.graphic.key != Paths.image('game/combo/${nums.charAt(i)}'))
+				numScore.loadGraphic(Paths.image('game/combo/${nums.charAt(i)}'));
 
-			var rateSprite = Paths.image('game/combo/${nums.charAt(i)}');
-
-			if (numScore.graphic == null || numScore.graphic.key != rateSprite)
-				numScore.loadGraphic(rateSprite);
-
+			numScore.setPosition(ratingSprite.x + (i * 45) + 50, ratingSprite.y + ratingSprite.height);
 			numScore.revive();
-
 			numScore.alpha = 1;
+			numGroup.push(numScore);
+
 			numScore.scale.set(0.5, 0.5);
 			numScore.updateHitbox();
-
-			numScore.setPosition(this.x + (i * 45) + 60, rate.height + 180);
 
 			numScore.acceleration.y = 550;
 			numScore.velocity.set(-FlxG.random.int(-10, 10), -FlxG.random.int(140, 175));
@@ -130,24 +133,5 @@ class Combo extends FlxSpriteGroup
 				onComplete: (_:FlxTween) -> numScore.kill()
 			});
 		}
-
-		setPosition(pos.x, pos.y);
-	}
-
-	function limitShowable(group:FlxSpriteGroup, max:Int):Void
-	{
-		var alive = 0;
-
-		for (sprite in group.members)
-			if (sprite != null && sprite.alive)
-				alive++;
-
-		if (alive > max)
-			for (sprite in group.members)
-				if (sprite != null && sprite.alive)
-				{
-					FlxTween.cancelTweensOf(sprite);
-					sprite.kill();
-				}
 	}
 }

@@ -171,7 +171,7 @@ class Character extends FlxSprite {
 		else
 		{
 			if (animation?.curAnim?.name == 'idle')
-				playAnim('idle');
+				playAnim('idle', true);
 		}
 	}
 }

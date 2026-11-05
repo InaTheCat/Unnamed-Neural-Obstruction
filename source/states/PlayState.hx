@@ -16,14 +16,31 @@ class PlayState extends BeatState
 	public var stateLoss:Bool = false;
 	public var sOnFocus:Bool = false;
 	public var vOnLoss:Array<Bool> = [];
+
 	public var curSong:String = 'Tutorial';
 	public var curDiff:String = 'hard';
+	public var forcedVoices:Array<String>;
 
 	public var inst:FlxSound;
 	public var voices:VoicesPack = new VoicesPack();
 	public var startingPos:Bool = false;
 
 	public var chart:UnnamedChart;
+
+	public var camZoom:Float = 0.9;
+	public var defaultCamZoom(get, set):Float;
+
+	function set_defaultCamZoom(v:Float):Float
+	{
+		camZoom = v;
+
+		return camZoom;
+	}
+
+	function get_defaultCamZoom():Float
+	{
+		return camZoom;
+	}
 
 	public var camGame:FlxCamera;
 	public var camHUD:FlxCamera;
@@ -49,9 +66,12 @@ class PlayState extends BeatState
 
 	var impossible:Bool = false;
 
-	public function new(song:String, diff:String)
+	public function new(song:String, diff:String, ?forcedVoices:Array<String>)
 	{
 		super();
+
+		if (forcedVoices != null)
+			this.forcedVoices = forcedVoices;
 
 		curSong = song;
 		curDiff = diff;
@@ -65,7 +85,7 @@ class PlayState extends BeatState
 		FlxG.cameras.add(camGame = new FlxCamera());
 		FlxG.cameras.add(camHUD = new FlxCamera(), false).bgColor = 0x00000000;
 
-		camGame.zoom = 0.9;
+		camGame.zoom = camZoom;
 
 		add(bg = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/stage/back')));
 		add(floor = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/stage/floor')));
@@ -74,7 +94,6 @@ class PlayState extends BeatState
 		add(bf = new Character(BF_BASE.x, BF_BASE.y, 'bf', true));
 
 		chart = UNOChart.toTypedef(curSong, curDiff);
-		curSong = chart.song;
 
 		insert(members.indexOf(dad) - 1, comboGrp = new Combo((dad.x + bf.x) / 2 + 10, (dad.y + bf.y) / 2));
 
@@ -92,7 +111,7 @@ class PlayState extends BeatState
 
 		loadSong();
 
-		new FlxTimer().start(0.5, (_:FlxTimer) -> startSong());
+		new FlxTimer().start(0.25, (_:FlxTimer) -> startSong());
 	}
 
 	override public function update(elapsed:Float)
@@ -107,12 +126,16 @@ class PlayState extends BeatState
 		if (FlxG.keys.justPressed.ESCAPE)
 			exitSong();
 
-		camGame.zoom = CoolUtil.lerp(camGame.zoom, 0.9, 0.05);
+		camGame.zoom = CoolUtil.lerp(camGame.zoom, camZoom, 0.05);
 		camHUD.zoom = CoolUtil.lerp(camHUD.zoom, 1, 0.05);
 	}
 
 	public function loadSong()
 	{
+		if (forcedVoices != null)
+			for (i in 0...2)
+				chart.strums[i].voice = forcedVoices[i];
+
 		var _vcs:Array<String> = [];
 
 		for (i in 0...2)
@@ -144,7 +167,8 @@ class PlayState extends BeatState
 		voices.play();
 		inst.play();
 
-		// FlxG.sound.music.time = 3000;
+		if (curSong == 'red-3')
+			FlxG.sound.music.time = 19000;
 
 		songStarted = true;
 	}
@@ -156,6 +180,23 @@ class PlayState extends BeatState
 			e.clean();
 		FlxG.switchState(() -> new states.Selector());
 	}
+	public function updateCamera(i:Int)
+	{
+		if (chart.meta[i].mustHitSection == null)
+			return;
+
+		var character:Character = chart.meta[i].mustHitSection ? bf : dad;
+		var mid:FlxPoint = character.getMidpoint();
+
+		var offsets:FlxPoint = FlxPoint.get(character.camOffset.x ?? 0, character.camOffset.y ?? 0);
+
+		camPointer.setPosition(mid.x + offsets.x, mid.y + offsets.y);
+	}
+
+	public function updateBpm(i:Int)
+		if (chart.meta[i].bpm != Conductor.bpm)
+			Conductor.bpm = chart.meta[i].bpm;
+
 	override public function sectionHit(sec:Int)
 	{
 		super.sectionHit(sec);
@@ -165,17 +206,15 @@ class PlayState extends BeatState
 			{
 				if (chart.meta[i].sec == sec)
 				{
-					var character:Character = chart.meta[i].mustHitSection ? bf : dad;
-					var mid:FlxPoint = character.getMidpoint();
+					updateCamera(i);
 
-					var offsets:FlxPoint = FlxPoint.get(character.camOffset.x ?? 0, character.camOffset.y ?? 0);
-
-					camPointer.setPosition(mid.x + offsets.x, mid.y + offsets.y);
+					if (chart.meta[i].changeBPM == true)
+						updateBpm(i);
 				}
 			}
 
-		camGame.zoom += 0.02;
-		camHUD.zoom += 0.015;
+		camGame.zoom = camZoom + 0.02;
+		camHUD.zoom = 1.015;
 
 		for (e in [dad, bf])
 			e.dance();

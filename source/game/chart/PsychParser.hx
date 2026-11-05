@@ -59,7 +59,7 @@ class PsychParser {
         var sections:Array<ChartNotes> = [];
 
         if (chart == null || chart.song == null)
-            return {notes: notes, sections: sections, bpm: 100, speed: 1, player1: 'dad', player2: 'bf', stage: 'stage', song: 'test'}
+            return {notes: notes, sections: sections, bpm: 100, speed: 1, player1: 'dad', player2: 'bf', stage: 'stage', song: songName}
 
         var data:SongField = chart.song;
 
@@ -102,7 +102,7 @@ class PsychParser {
             bpm: data.bpm ?? 100,
             speed: data.speed ?? 100,
 
-            song: data.song ?? 'test',
+            song: data.song ?? songName,
             player1: data.player1 ?? 'dad',
             player2: data.player2 ?? 'bf',
             stage: data.stage ?? 'stage'
