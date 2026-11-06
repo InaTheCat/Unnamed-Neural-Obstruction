@@ -151,15 +151,13 @@ class StrumController {
 			removeNoteAt(i);
 	}
 
-    public function updatePos() {
-        var songPos = Conductor.songPosition;
-        var speed = 0.45 * parent.scrollSpeed;
-    
+	public function updatePos()
+	{
         for (note in spawnedNotes) {
             if (note == null)
                 continue;
 
-            note.y = parent.getReceptor(note.dir).y + (note.strumTime - songPos) * speed;
+			note.y = parent.getReceptor(note.dir).y + (note.strumTime - Conductor.songPosition) * 0.45 * parent.scrollSpeed;
         }
     }
 

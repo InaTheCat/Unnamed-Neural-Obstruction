@@ -1,14 +1,9 @@
 package game;
 
-import backend.system.ANSI;
-
 class Combo extends FlxSpriteGroup
 {
 	public var ratingSprite:FlxSprite;
 	public var numGroup:Array<FlxSprite>;
-
-	public var comboLimit(default, set):Int = 5;
-	public var numLimit(default, set):Int = 15;
 
 	private var _tCalled:Int = 0;
 	private var t:Float = 0;
@@ -16,20 +11,6 @@ class Combo extends FlxSpriteGroup
 	private var gettingDown:Float = 0;
 
 	var pos:FlxPoint = FlxPoint.get();
-
-	function set_comboLimit(v:Int){
-		if (v <= 2)
-			Logs.send('comboLimit replaced with 2 cuz, well, itll look bad if its less than 2... mh', Warning);
-
-		return v <= 2 ? 2 : v;
-	}
-
-	function set_numLimit(v:Int){
-		if (v <= 3)
-			Logs.send('numLimit replaced with 3 cuz, well, itll look bad if its less than 3... mh', Warning);
-
-		return v <= 3 ? 3 : v;
-	}
 
 	public function new(x:Float, y:Float)
 	{

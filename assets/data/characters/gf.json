@@ -1,0 +1,53 @@
+{
+    "anims": [
+        {
+            "anim": "danceLeft",
+            "name": "danceLeft"
+        },
+        {
+            "anim": "danceRight",
+            "name": "danceRight"
+        },
+        {
+            "anim": "left",
+            "name": "singLEFT"
+        },
+        {
+            "anim": "down",
+            "name": "singDOWN"
+        },
+        {
+            "anim": "up",
+            "name": "singUP"
+        },
+        {
+			"anim": "right",
+			"name": "singRIGHT"
+		},
+        {
+			"anim": "cheer",
+			"name": "cheer"
+		},
+        {
+			"anim": "hairBlow",
+			"name": "hairBlow"
+		},
+        {
+			"anim": "hairLand",
+			"name": "hairLand"
+		},
+        {
+			"anim": "scared",
+			"name": "scared"
+		},
+        {
+			"anim": "sad",
+			"name": "sad"
+		}
+    ],
+
+    "camOffset": [-70, -100],
+    "path": "characters/gf",
+    "color": "#A5004D",
+    "icon": "gf"
+}

@@ -34,6 +34,8 @@ class Character extends FlxSprite {
 	public var icon:String = 'face';
 	public var sprite:String = null;
     public var isPlayer:Bool = false;
+	public var hasDanceLeftRight:Bool = false;
+	public var actualSide:Bool = false;
 
 	public var camOffset:FlxPoint = FlxPoint.get(0, 0);
 
@@ -101,6 +103,8 @@ class Character extends FlxSprite {
 			offsets.set(e.name, e.offset != null ? e.offset : [0, 0]);
 		}
 
+		hasDanceLeftRight = animation.exists('danceLeft') && animation.exists('danceRight');
+
 		dance(true);
 		antialiasing = Options.antialiasing ?? true;
 	}
@@ -121,7 +125,8 @@ class Character extends FlxSprite {
 
 		offset.set(animOffsets != null ? animOffsets[0] : 0, animOffsets != null ? animOffsets[1] : 0);
 
-		if (!lock && animName != 'idle')
+		var isDanceAnim:Bool = hasDanceLeftRight && (animName == 'danceLeft' || animName == 'danceRight');
+		if (!lock && animName != 'idle' && !isDanceAnim)
 		{
 			if (charTimer.active)
 				charTimer.cancel();
@@ -134,20 +139,14 @@ class Character extends FlxSprite {
 	 * mh, the "fastest" way to make a char sing with a dir??? dunno man,
 	 * i literally created ts for `StrumController`
 	**/
-	public function sing(dir:Int) {
-		dir %= 4;
-
-		playAnim(commonAnims[dir] ?? 'idle', true);
-	}
+	public inline function sing(dir:Int)
+		playAnim(commonAnims[dir %= 4] ?? 'idle', true);
 
 	/**
 	 * again, the "fastest" way to make the char make the miss anim, ig
 	**/
-	public function miss(dir:Int) {
-		dir %= 4;
-
-		playAnim('${commonAnims[dir]}miss' ?? 'idle', true);
-	}
+	public inline function miss(dir:Int)
+		playAnim('${commonAnims[dir %= 4]}miss' ?? 'idle', true);
 
 	public function getColor():FlxColor
 	{
@@ -166,12 +165,22 @@ class Character extends FlxSprite {
 
 	public function dance(?force:Bool = false)
 	{
-		if (force)
-			playAnim('idle', true)
-		else
-		{
-			if (animation?.curAnim?.name == 'idle')
-				playAnim('idle', true);
-		}
+		var currentAnim:String = animation?.curAnim?.name;
+		var canDance:Bool = force
+			|| currentAnim == 'idle'
+			|| (hasDanceLeftRight && (currentAnim == 'danceLeft' || currentAnim == 'danceRight'));
+
+		if (!canDance)
+			return;
+
+		if (hasDanceLeftRight)
+			actualSide = !actualSide;
+
+		var curAnim:String = 'idle';
+
+		if (hasDanceLeftRight)
+			curAnim = actualSide ? 'danceRight' : 'danceLeft';
+
+		playAnim(curAnim, true);
 	}
 }

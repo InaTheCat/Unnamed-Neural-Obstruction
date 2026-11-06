@@ -11,8 +11,7 @@ class StrumNote extends FlxSprite
 
 	public function new(x:Float = 0, y:Float = 0, dir:Int = 0)
 	{
-        dir %= 4;
-		this.dir = dir;
+		this.dir = dir %= 4;
 
         super();
 
@@ -42,12 +41,17 @@ class StrumNote extends FlxSprite
 		center.put();
 	}
 
-	public static function getDir(dir:Int = 0, alt:Bool = false):String
+	public static function getDir(dir:Int = 0, alt:Bool = false, toColor:Bool = false):String
         switch(dir){
-            case 0: return alt ? 'left' : 'arrowLEFT';
-            case 1: return alt ? 'down' : 'arrowDOWN';
-            case 2: return alt ? 'up' : 'arrowUP';
-            case 3: return alt ? 'right' : 'arrowRIGHT';
-            default: return alt ? 'left' : 'arrowLEFT';
+			case 0:
+				return alt ? (toColor ? 'purple' : 'left') : 'arrowLEFT';
+			case 1:
+				return alt ? (toColor ? 'blue' : 'down') : 'arrowDOWN';
+			case 2:
+				return alt ? (toColor ? 'green' : 'up') : 'arrowUP';
+			case 3:
+				return alt ? (toColor ? 'red' : 'right') : 'arrowRIGHT';
+			default:
+				return alt ? (toColor ? 'purple' : 'left') : 'arrowLEFT';
         }
 }

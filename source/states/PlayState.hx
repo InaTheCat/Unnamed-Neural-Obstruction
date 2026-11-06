@@ -28,6 +28,9 @@ class PlayState extends BeatState
 	public var chart:UnnamedChart;
 
 	public var camZoom:Float = 0.9;
+	/**
+	 * for compatibility purposes, ig
+	**/
 	public var defaultCamZoom(get, set):Float;
 
 	function set_defaultCamZoom(v:Float):Float
@@ -37,10 +40,8 @@ class PlayState extends BeatState
 		return camZoom;
 	}
 
-	function get_defaultCamZoom():Float
-	{
+	inline function get_defaultCamZoom():Float
 		return camZoom;
-	}
 
 	public var camGame:FlxCamera;
 	public var camHUD:FlxCamera;
@@ -52,9 +53,11 @@ class PlayState extends BeatState
 
 	public var bf:Character;
 	public var dad:Character;
+	public var gf:Character;
 
 	public final BF_BASE:FlxPoint = FlxPoint.get(850, 400);
 	public final DAD_BASE:FlxPoint = FlxPoint.get(150, 50);
+	public final GF_BASE:FlxPoint = FlxPoint.get(350, 60);
 
 	public var comboGrp:Combo;
 
@@ -90,15 +93,16 @@ class PlayState extends BeatState
 		add(bg = new FlxSprite(-600, -200).loadGraphic(Paths.image('stages/stage/back')));
 		add(floor = new FlxSprite(-600, 600).loadGraphic(Paths.image('stages/stage/floor')));
 
-		add(dad = new Character(DAD_BASE.x, DAD_BASE.y, 'dad', true));
+		add(gf = new Character(GF_BASE.x, GF_BASE.y, 'gf', false));
+		add(dad = new Character(DAD_BASE.x, DAD_BASE.y, 'dad', false));
 		add(bf = new Character(BF_BASE.x, BF_BASE.y, 'bf', true));
 
 		chart = UNOChart.toTypedef(curSong, curDiff);
 
-		insert(members.indexOf(dad) - 1, comboGrp = new Combo((dad.x + bf.x) / 2 + 10, (dad.y + bf.y) / 2));
+		insert(members.indexOf(gf) + 1,
+			comboGrp = new Combo(gf != null ? (gf.width / 2) + 150 : (dad.x + bf.x) / 2 + 25, gf != null ? (gf.height / 2) + 45 : (dad.y + bf.y) / 2));
 
 		add(opponent = new StrumLine(50, 50, 4, false, dad, this));
-
 		add(player = new StrumLine(FlxG.width * 0.55, 50, 4, !impossible, bf, this, impossible));
 
 		add(camPointer);
@@ -121,6 +125,7 @@ class PlayState extends BeatState
 			Conductor.update(elapsed, inst);
 			voices.update(inst);
 		}
+
 		super.update(elapsed);
 
 		if (FlxG.keys.justPressed.ESCAPE)
@@ -169,6 +174,8 @@ class PlayState extends BeatState
 
 		if (curSong == 'red-3')
 			FlxG.sound.music.time = 19000;
+		else if (curSong == 'run')
+			FlxG.sound.music.time = 10000;
 
 		songStarted = true;
 	}
@@ -203,7 +210,6 @@ class PlayState extends BeatState
 
 		if (chart.meta.length != 0)
 			for (i in 0...chart.meta.length)
-			{
 				if (chart.meta[i].sec == sec)
 				{
 					updateCamera(i);
@@ -211,13 +217,24 @@ class PlayState extends BeatState
 					if (chart.meta[i].changeBPM == true)
 						updateBpm(i);
 				}
-			}
 
 		camGame.zoom = camZoom + 0.02;
 		camHUD.zoom = 1.015;
 
-		for (e in [dad, bf])
-			e.dance();
+		for (e in [dad, bf, gf])
+			if (e == gf && gf != null && !gf.hasDanceLeftRight)
+				e.dance();
+			else if (e != gf)
+				e.dance();
+	}
+
+	override public function beatHit(beat:Int)
+	{
+		super.beatHit(beat);
+
+		if (gf != null && gf.hasDanceLeftRight)
+			if (beat % 2 == 0)
+				gf.dance();
 	}
 
 	override public function destroy()

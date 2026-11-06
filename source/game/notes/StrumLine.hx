@@ -81,7 +81,7 @@ class StrumLine extends FlxSpriteGroup
 		for (i in 0...this.keyCount)
 		{
 			var dir:Int = dirs != null && i < dirs.length ? dirs[i] : i % 4;
-			var splash:Splash = new Splash(notes[i].x + 25, 0, dir);
+			var splash:Splash = new Splash(notes[i].x + 35, 0, dir);
 			add(splash);
 			splashes.push(splash);
 		}
@@ -114,14 +114,12 @@ class StrumLine extends FlxSpriteGroup
 		}
 	}
 
-    public function playAnim(dir:Int = 0, anim:String, force:Bool = false) {
-        dir %= keyCount;
+	public inline function playAnim(dir:Int = 0, anim:String, force:Bool = false)
+		notes[dir %= keyCount].playAnim(anim, force);
 
-		notes[dir].playAnim(anim, force);
-    }
-	public function _receptor(dir:Int):Int
+	public inline function _receptor(dir:Int):Int
 		return notes[dir].dir ?? notes[0].dir;
 
-	public function getReceptor(dir:Int):FlxSprite
+	public inline function getReceptor(dir:Int):FlxSprite
 		return boxes[dir] ?? boxes[0];
 }

@@ -15,12 +15,7 @@ class Note extends FlxSprite {
 
         frames = Paths.getSparrowAtlas('game/notes/default');
 
-        switch(dir){
-            case 0: animation.addByPrefix('static', 'purple0', 0, false);                
-            case 1: animation.addByPrefix('static', 'blue0', 0, false);                
-            case 2: animation.addByPrefix('static', 'green0', 0, false);                
-            case 3: animation.addByPrefix('static', 'red0', 0, false);                
-        }
+		animation.addByPrefix('static', '${StrumNote.getDir(dir % 4, true, true)}0', 0, false);                
 
         animation.play('static');
 		scale.set(0.7, 0.7);
