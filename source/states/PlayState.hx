@@ -2,13 +2,12 @@ package states;
 
 import flixel.FlxObject;
 import flixel.sound.FlxSound;
-import flixel.text.FlxText;
-import game.Character;
-import game.Combo;
 import game.chart.UNOChart;
 import game.managers.music.BeatState;
 import game.managers.music.VoicesPack;
 import game.notes.StrumLine;
+import game.objects.Character;
+import game.objects.Combo;
 
 class PlayState extends BeatState
 {

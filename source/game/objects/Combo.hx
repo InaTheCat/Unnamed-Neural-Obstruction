@@ -1,4 +1,4 @@
-package game;
+package game.objects;
 
 class Combo extends FlxSpriteGroup
 {

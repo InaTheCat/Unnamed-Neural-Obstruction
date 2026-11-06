@@ -5,7 +5,6 @@ import game.chart.UNOChart;
 import game.managers.strums.HitWindow;
 import game.notes.Note;
 import game.notes.StrumLine;
-import game.options.Options;
 import openfl.events.KeyboardEvent;
 import states.PlayState;
 

@@ -2,6 +2,7 @@ package game.notes;
 
 import game.chart.UNOChart;
 import game.managers.strums.StrumController;
+import game.objects.Character;
 import states.PlayState;
 
 class StrumLine extends FlxSpriteGroup

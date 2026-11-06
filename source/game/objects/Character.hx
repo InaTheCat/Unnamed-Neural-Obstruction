@@ -1,8 +1,7 @@
-package game;
+package game.objects;
 
 import flixel.math.FlxPoint;
 import flixel.util.FlxTimer;
-import game.options.Options;
 
 using StringTools;
 
